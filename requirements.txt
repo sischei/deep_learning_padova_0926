@@ -1,0 +1,34 @@
+# Deep Learning for Solving Dynamic Models
+# University of Padova, 23-24 September 2026
+#
+#   python -m venv .venv && source .venv/bin/activate
+#   pip install -r requirements.txt
+#
+# On the Nuvolos Cloud this environment is pre-installed; you only need this
+# file if you want to run the notebooks on your own machine.
+#
+# Python 3.10-3.12. No GPU required: every notebook runs on CPU, and the three
+# heavier ones (IRBC, the 56-cohort OLG benchmark, continuous-time Aiyagari)
+# expose a RUN_MODE = "smoke" switch that bounds epochs and sample sizes.
+
+# --- scientific core (every session) ---
+numpy>=1.26
+scipy>=1.11
+matplotlib>=3.8
+pandas>=2.0
+
+# --- classical ML, Gaussian processes, active subspaces ---
+# Sessions 1 and 6.
+scikit-learn>=1.3
+
+# --- TensorFlow / Keras 3 ---
+# Sessions 1 (01_04, 01_06), 2, 3, 4 and 5: all DEQN notebooks are TensorFlow.
+tensorflow>=2.16
+
+# --- PyTorch ---
+# Sessions 1 (01_05), 6, 7, 8 and 9: surrogates, PINNs and continuous-time HA.
+torch>=2.2
+
+# --- notebooks ---
+jupyterlab>=4.0
+ipykernel>=6.29
