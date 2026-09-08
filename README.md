@@ -1,5 +1,5 @@
 <p align="center">
-<img src="screens/deep_learning_dynamic_models_hero.png" width="800px"/>
+<img src="screens/landing-page.png" width="100%" alt="Deep Learning for Solving Dynamic Models — a two-day lecture suite at the University of Padova, 23–24 September 2026"/>
 </p>
 
 # Deep Learning for Solving Dynamic Models
