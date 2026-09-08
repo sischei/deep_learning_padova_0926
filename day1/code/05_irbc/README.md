@@ -1,6 +1,6 @@
 # Session 5 — Scaling up: IRBC with DEQNs
 
-Day 1, 15:30–16:30. Slides: [`05_IRBC.pdf`](../../slides/05_IRBC.pdf)
+Day 1, 15:40–16:30. Slides: [`05_IRBC.pdf`](../../slides/05_IRBC.pdf)
 
 The closing session of Day 1, and the point where a tensor-product grid stops being an option at all.
 Session 4 stacked residuals along the *age* dimension; here they stack along a *country* dimension.

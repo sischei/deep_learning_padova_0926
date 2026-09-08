@@ -11,7 +11,7 @@
 %   Part III Benchmark (AGS 2022 leading example)   (12)
 %            same 9-step skeleton, applied to
 %            the 56-cohort two-asset model that
-%            notebook 10 (benchmark_persistent) implements
+%            04_02_OLG_Benchmark_DEQN_persistent implements
 %   Part IV  Wrap-up + references                    (2)
 % ============================================================================
 
@@ -82,7 +82,7 @@
 % ---------- Title ----------
 \title[OLG -- Padova 2026]%
 {Deep Learning for Solving Dynamic Models}
-\subtitle{Session 4 --- Overlapping generations with DEQNs}
+\subtitle{Session 4: Overlapping generations with DEQNs}
 \author{Simon Scheidegger}
 \institute[HEC Lausanne]{HEC, University of Lausanne}
 \date{University of Padova\\September 23, 2026}
@@ -103,25 +103,18 @@
 }
 
 \begin{frame}{Roadmap}
-\footnotesize
-\begin{block}{Part I --- What is an OLG model?}
-\vspace{-3pt}\begin{itemize}\itemsep0pt
-    \item Why overlapping generations; cohort structure; the DEQN recipe in one line.
-\end{itemize}
+\small
+\begin{block}{Part I: What is an OLG model?}
+Why overlapping generations; the cohort structure; the DEQN recipe in one line.
 \end{block}
-\vspace{-2pt}
-\begin{block}{Part II --- The analytic 6-agent model (Krueger \& K\"ubler, 2004)}
-\vspace{-3pt}\begin{itemize}\itemsep0pt
-    \item Model $\to$ equilibrium $\to$ cost $\to$ FREE $\to$ architecture $\to$ training $\to$ validation against the closed form.
-    \item Primary notebook: \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}; companion ablation \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb}.
-\end{itemize}
+\begin{block}{Part I\textonehalf: The simplest OLG, two periods (Diamond, 1965)}
+One decision, one Euler equation, one closed form. Notebook \texttt{04\_00}.
 \end{block}
-\vspace{-2pt}
-\begin{block}{Part III --- The leading example of AGS (2022): the 56-cohort benchmark}
-\vspace{-3pt}\begin{itemize}\itemsep0pt
-    \item Same 9-step recipe at research scale: two assets, two borrowing constraints, capital adjustment costs, persistent shocks, hump-shaped labor.
-    \item Primary notebook: \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}; companion ablation \texttt{04\_05\_OLG\_Benchmark\_DEQN\_exogenous.ipynb}.
-\end{itemize}
+\begin{block}{Part II: The analytic six-agent model (Krueger \& K\"ubler, 2004)}
+Euler equation and closed form derived; recursive equilibrium; cost function; network; validation. Notebook \texttt{04\_01}.
+\end{block}
+\begin{block}{Part III: The 56-cohort benchmark of Azinovic, Gaegauf \& Scheidegger (2022)}
+CRRA, hump-shaped labor, two assets, two constraints, persistent shocks. Notebook \texttt{04\_02}.
 \end{block}
 \end{frame}
 
@@ -129,6 +122,7 @@
 \begin{frame}{Learning objectives}
 \textbf{By the end of this lecture you should be able to:}
 \begin{itemize}
+  \item Derive the Euler equation and the closed-form savings rate of a log-utility OLG economy, and say precisely which two assumptions make the closed form possible
   \item Construct a finite-dimensional overlapping-generations equilibrium with cohort-specific savings and lifecycle heterogeneity
   \item Derive equilibrium conditions and build the mean-squared Euler-residual loss for a multi-cohort OLG model
   \item Implement the DEQN recipe: model specification, equilibrium definition, cost function, network training, and validation
@@ -238,13 +232,145 @@ The \emphc{equilibrium conditions $G$}.  Everything else -- the network, the SGD
 
 
 % =====================================================================
+% Part I 1/2 -- The simplest OLG: Diamond (1965), two periods
+% =====================================================================
+
+\section{Part I\textonehalf: The simplest OLG, two periods}
+
+\begin{frame}{Diamond (1965): Two Periods, One Decision}
+\small
+\begin{columns}[T]
+\column{0.55\textwidth}
+\textbf{Households.}  Live two periods.
+\begin{itemize}\itemsep2pt
+    \item \emphc{Young:} work (one unit), earn $w_t$; consume $c^y_t$, save $s_t$ in capital:
+          $c^y_t + s_t = w_t$.
+    \item \emphc{Old:} no labor; sell the capital, consume the proceeds: $c^o_{t+1} = r_{t+1}\,s_t$.
+    \item Preferences $\ln c^y_t + \beta\,\mathbb{E}_t \ln c^o_{t+1}$, \; $\beta = 0.7$.
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Firm.}  Same technology as later: $\eta(z)K^\alpha L^{1-\alpha} + (1-\delta(z))K$, $L=1$.
+The old hold all the capital: $K_t = s_{t-1}$.
+\[
+r_t = \alpha\,\eta(z_t)K_t^{\alpha-1} + 1 - \delta(z_t),\qquad w_t = (1-\alpha)\,\eta(z_t)K_t^{\alpha}.
+\]
+
+\column{0.42\textwidth}
+\begin{block}{State}
+$(z_t,\,k_t)$ with $k_t = K_t$ the capital the old carry in. Prices are functions of it.
+\end{block}
+\begin{block}{Shocks}
+The same four i.i.d.\ states $(\eta,\delta)$ as in Part II, probability $\tfrac14$ each.
+\end{block}
+\vspace{0.3em}
+{\footnotesize Two cohorts alive at once is the smallest overlapping structure there is.}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{The Euler Equation, Derived and Solved}
+\small
+Substitute both budget constraints: the young choose $s$ to maximise
+\[
+\ln(w_t - s) \;+\; \beta\,\mathbb{E}_t \ln\bigl(r_{t+1}\,s\bigr).
+\]
+\textbf{Step 1.}  $\ln(r_{t+1}s) = \ln r_{t+1} + \ln s$: the return and the choice \emphc{separate}.
+
+\textbf{Step 2.}  First-order condition:
+\[
+\frac{1}{w_t - s} \;=\; \beta\,\mathbb{E}_t\!\left[\frac{r_{t+1}}{r_{t+1}\,s}\right] \;=\; \frac{\beta}{s}
+\qquad\Longrightarrow\qquad
+\boxed{\;s_t = \frac{\beta}{1+\beta}\,w_t \;=\; 0.4118\,w_t\;}
+\]
+
+\vspace{0.3em}
+\begin{block}{Two observations}
+\vspace{-2pt}\begin{enumerate}\itemsep1pt
+    \item The return cancels. Under log utility the savings \emph{rate} does not depend on the
+          distribution of $r_{t+1}$, whether it is risky or safe, persistent or i.i.d.
+    \item The old have no wage, so today's wage is the household's entire lifetime resource.
+          There is nothing to borrow against.
+\end{enumerate}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{The DEQN for It}
+\small
+\begin{columns}[T]
+\column{0.52\textwidth}
+\textbf{Unknown:} one function $s = f(z,k)$.
+
+\textbf{Network:} $\N_\theta(z,k)\to\hat\sigma\in(0,1)$, a savings \emph{fraction} of the wage,
+$\hat s = \hat\sigma\,w(z,k)$. So $0\le \hat s\le w$ and $c^y = w-\hat s > 0$ by construction.
+
+\textbf{Residual} (relative Euler error): tomorrow's capital is $K'=\hat s$, tomorrow's return
+$r'(z',K')$ follows for each of the four shocks, the old consume $c^{o\prime}=r'\hat s$, and
+\[
+e(z,k) \;=\; \frac{\bigl(\beta\,\mathbb{E}[\,r'/c^{o\prime}\,]\bigr)^{-1}}{w-\hat s} \;-\; 1 .
+\]
+\textbf{Loss:} mean of $e^2$ over a cloud of states that is re-simulated under the current policy
+after every gradient step.
+
+\column{0.45\textwidth}
+\begin{block}{What is missing so far}
+Tomorrow's policy does not enter: the old consume what they hold. With three or more cohorts the
+residual has to evaluate $\N_\theta$ at the next state, and that recursion through the network's own
+future behaviour is what a Deep Equilibrium Net handles.
+\end{block}
+\vspace{0.3em}
+{\footnotesize The notebook computes $r'$ and $c^{o\prime}$ explicitly although they cancel, so that
+the code carries over to the six-cohort case unchanged.}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{\emphc{Finger Exercise:} Two Periods}
+\small
+\begin{enumerate}\itemsep6pt
+    \item Part II will state a general formula for the savings rate of a cohort with $A-h$ periods
+          still ahead: $\beta_h = \beta\,(1-\beta^{A-h})/(1-\beta^{A-h+1})$. Evaluate it at $A=2$, $h=1$.
+    \item Suppose tomorrow's return $r_{t+1}$ becomes \emph{riskier} (same mean, more spread). What
+          happens to $s_t$? Why?
+    \item Now suppose the old \emph{also} received a wage $w_{t+1}$. Would the young still save a fixed
+          fraction of $w_t$? Would they ever want to borrow?
+\end{enumerate}
+\vspace{0.4em}
+{\footnotesize 3 minutes. Then open \texttt{04\_00\_OLG\_Diamond\_Warmup.ipynb}: about one minute on a
+laptop. The network should report $\hat\sigma = 0.4118$ at every state the economy visits, and drift away from it elsewhere, which is why training uses a simulated cloud.}
+\end{frame}
+
+
+\begin{frame}{\emphc{Solution:} Two Periods}
+\small
+\begin{enumerate}\itemsep6pt
+    \item $\beta_1 = \beta\,(1-\beta)/(1-\beta^2) = \beta/(1+\beta)$: the two-period result is the
+          $A=2$ case of the general formula.
+    \item Nothing changes. $\mathbb{E}\ln(r's) = \mathbb{E}\ln r' + \ln s$, so the spread of $r'$ only
+          shifts a constant that the first-order condition does not see. (With CRRA, $\gamma>1$, the
+          young would save more, a precautionary motive, and the closed form is lost.)
+    \item No, and yes. A future wage is a second lifetime resource; the young would want to borrow
+          against it when $w_t$ is low, and saving would depend on $(w_t, w_{t+1}, r_{t+1})$ jointly.
+          This is the 56-cohort benchmark of Part III in miniature.
+\end{enumerate}
+\vspace{0.3em}
+\begin{center}
+\includegraphics[height=2.7cm]{figures/olg2_savings_fraction.pdf}
+\end{center}
+\vspace{-0.2em}
+{\scriptsize Left: training loss. Right: learned savings fraction against the capital state for each shock; closed form dashed; the shaded band is the ergodic set.}
+\end{frame}
+
+
+% =====================================================================
 % Part II -- Analytic 6-agent model (Krueger & Kubler 2004)
 % =====================================================================
 
 \section{Part II: Analytic 6-agent OLG (Krueger \& K\"ubler, 2004)}
 
 % --- II.1 Setup --------------------------------------------------------
-\begin{frame}{II.1 Setup --- the Analytic Model}
+\begin{frame}{II.1 Setup: the Analytic Model}
 \footnotesize
 \begin{columns}[T]
 \column{0.58\textwidth}
@@ -255,7 +381,7 @@ The \emphc{equilibrium conditions $G$}.  Everything else -- the network, the SGD
     \item \emphc{No uncertainty about lifetime}: all agents live exactly $A$ periods.
     \item Exogenous aggregate shock $z_t \in \{1,2,3,4\}$ drawn \emphc{i.i.d.}\ with transition $\pi_{ss'} = 0.25$.
     \item \emphc{Log utility} $u(c) = \ln c$ -- chosen because it gives a \emphc{closed-form} equilibrium (Krueger \& K\"ubler, 2004).
-    \item \emphc{Labor:} only the youngest cohort works: $\ell^1 = 1,\ \ell^s = 0$ for $s \ge 2$.
+    \item \emphc{Labor:} only the youngest cohort works: $\ell^1 = 1,\ \ell^h = 0$ for $h \ge 2$.
 \end{itemize}
 
 \column{0.41\textwidth}
@@ -281,40 +407,40 @@ $z$ & $\eta(z)$ & $\delta(z)$ & $\pi$\\
 
 
 % --- II.2 Households I -------------------------------------------------
-\begin{frame}{II.2 Households --- Preferences and the Savings Technology}
+\begin{frame}{II.2 Households: Preferences and the Savings Technology}
 \small
 Agents supply their labor \emphc{inelastically} for a market wage $w_t$.
 
 \vspace{0.6em}
-An agent \emphc{currently of age $s$} alive at $t$ maximises remaining time-separable discounted expected lifetime utility ($\beta < 1$):
+An agent \emphc{currently of age $h$} alive at $t$ maximises remaining time-separable discounted expected lifetime utility ($\beta < 1$):
 \[
-\mathbb{E}_t\!\left[\sum_{i=0}^{A-s} \beta^i \,\ln\!\bigl(c_{t+i}^{\,s+i}\bigr)\right] \qquad (1)
+\mathbb{E}_t\!\left[\sum_{i=0}^{A-s} \beta^i \,\ln\!\bigl(c_{t+i}^{\,h+i}\bigr)\right] \qquad (1)
 \]
 
 \vspace{0.3em}
-Households can save a unit of consumption to obtain a unit of capital good next period, denoted $a_t^s$.
+Households can save a unit of consumption to obtain a unit of capital good next period, denoted $a_t^{\,h}$.
 
 \vspace{0.4em}
 The savings become \emphc{capital in the next period}:
 \[
-a_t^{\,s} \;=\; k_{t+1}^{\,s+1}, \qquad \forall t,\ \forall s \in \{1, \ldots, A-1\}. \qquad (2)
+a_t^{\,h} \;=\; k_{t+1}^{\,h+1}, \qquad \forall t,\ \forall h \in \{1, \ldots, A-1\}. \qquad (2)
 \]
 \end{frame}
 
 
 % --- II.3 Households II ------------------------------------------------
-\begin{frame}{II.3 Households --- Constraints, Budget, Boundary}
+\begin{frame}{II.3 Households: Constraints, Budget, Boundary}
 \small
 Households \emphc{cannot die with debt}.  Borrowing is bounded:
 \[
-a_t^{\,s} \;\ge\; \underline{a}. \qquad (3)
+a_t^{\,h} \;\ge\; \underline{a}. \qquad (3)
 \]
 In the analytic model we set $\underline{a} = 0$: \emphc{no borrowing} for any cohort.
 
 \vspace{0.4em}
-At time $t$, households sell their capital to the firm at market price $r_t > 0$.  The per-period \emphc{budget constraint} of cohort $s$ reads
+At time $t$, households sell their capital to the firm at market price $r_t > 0$.  The per-period \emphc{budget constraint} of cohort $h$ reads
 \[
-c_t^{\,s} \;+\; a_t^{\,s} \;=\; r_t\, k_t^{\,s} \;+\; \ell^s\, w_t. \qquad (4)
+c_t^{\,h} \;+\; a_t^{\,h} \;=\; r_t\, k_t^{\,h} \;+\; \ell^h\, w_t. \qquad (4)
 \]
 
 \vspace{0.4em}
@@ -346,22 +472,22 @@ f(K, L, z) \;=\; \eta(z)\, K^\alpha\, L^{1-\alpha} \;+\; K\bigl(1-\delta(z)\bigr
 There are \emphc{competitive spot markets} for the consumption good, capital, and labor.
 
 \vspace{0.5em}
-{\footnotesize In the analytic model $L_t = \sum_{s=1}^A \ell^s = 1$ (only age-1 works), so the firm problem reduces to $\max_{K \ge 0} \eta(z) K^\alpha - (r_t - (1-\delta(z))) K$.}
+{\footnotesize In the analytic model $L_t = \sum_{h=1}^A \ell^h = 1$ (only age-1 works), so the firm problem reduces to $\max_{K \ge 0} \eta(z) K^\alpha - (r_t - (1-\delta(z))) K$.}
 \end{frame}
 
 
 % --- II.5 Equilibrium definition ---------------------------------------
-\begin{frame}{II.5 Competitive Equilibrium --- Definition}
+\begin{frame}{II.5 Competitive Equilibrium: Definition}
 \footnotesize
 \begin{block}{Definition 1 (competitive equilibrium)}
 \vspace{-2pt}
-Given initial conditions $z_0,\,\{k_0^{\,s}\}_{s=1}^{A-1}$, a competitive equilibrium is a collection of choices for households $\bigl\{(c_t^{\,s},\,a_t^{\,s})_{s=1}^{A}\bigr\}_{t=0}^{\infty}$, for the representative firm $(K_t, L_t)_{t=0}^{\infty}$, and prices $(r_t, w_t)_{t=0}^{\infty}$, such that:
+Given initial conditions $z_0,\,\{k_0^{\,h}\}_{h=1}^{A-1}$, a competitive equilibrium is a collection of choices for households $\bigl\{(c_t^{\,h},\,a_t^{\,h})_{h=1}^{A}\bigr\}_{t=0}^{\infty}$, for the representative firm $(K_t, L_t)_{t=0}^{\infty}$, and prices $(r_t, w_t)_{t=0}^{\infty}$, such that:
 \begin{enumerate}\itemsep1pt
     \item Given $(r_t, w_t)_{t\ge 0}$, household choices maximize the lifetime utility (1) subject to the savings-to-capital identity (2), the borrowing limit (3), and the per-period budget (4):\\[1pt]
-    \mbox{}\hspace{1em}{\scriptsize $a_t^{\,s} = k_{t+1}^{\,s+1};\;\; a_t^{\,s} \ge \underline{a};\;\; c_t^{\,s} + a_t^{\,s} = r_t k_t^{\,s} + \ell^s w_t.$}
+    \mbox{}\hspace{1em}{\scriptsize $a_t^{\,h} = k_{t+1}^{\,h+1};\;\; a_t^{\,h} \ge \underline{a};\;\; c_t^{\,h} + a_t^{\,h} = r_t k_t^{\,h} + \ell^h w_t.$}
     \item Given $(r_t, w_t)$, the firm maximises profits:\\[1pt]
     \mbox{}\hspace{1em}$(K_t, L_t) \in \arg\max_{K, L \ge 0} f(K, L, z_t) - r_t K - w_t L$.
-    \item \emphc{All markets clear:} for all $t$,\;\, $L_t = \sum_{s=1}^A \ell^s, \;\; K_t = \sum_{s=1}^A k_t^{\,s}.$
+    \item \emphc{All markets clear:} for all $t$,\;\, $L_t = \sum_{h=1}^A \ell^h, \;\; K_t = \sum_{h=1}^A k_t^{\,h}.$
 \end{enumerate}
 \vspace{-2pt}
 \end{block}
@@ -378,16 +504,96 @@ r_t \;=\; \alpha\,\eta(z_t)\, K_t^{\alpha-1}\, L_t^{1-\alpha} \;+\; \bigl(1-\del
 \]
 
 \vspace{0.3em}
-\textbf{Household optimality} for any cohort of age $s \in \{1, \ldots, A-1\}$ (FOC in $c_t^{\,s}$ gives $\nu_t^s = u'(c_t^{\,s})$; FOC in $a_t^{\,s}$ gives the standard \emphc{interior} Euler equation):
+\textbf{Household optimality} for any cohort of age $h \in \{1, \ldots, A-1\}$ (FOC in $c_t^{\,h}$ gives $\nu_t^h = u'(c_t^{\,h})$; FOC in $a_t^{\,h}$ gives the standard \emphc{interior} Euler equation):
 \[
-\boxed{\;\underbrace{u'\!\bigl(c_t^{\,s}\bigr)}_{=\,1/c_t^{\,s}\text{ since }u=\ln} \;=\; \beta\;\E{u'\!\bigl(c_{t+1}^{\,s+1}\bigr)\,r_{t+1}}\;}
+\boxed{\;\underbrace{u'\!\bigl(c_t^{\,h}\bigr)}_{=\,1/c_t^{\,h}\text{ since }u=\ln} \;=\; \beta\;\E{u'\!\bigl(c_{t+1}^{\,h+1}\bigr)\,r_{t+1}}\;}
 \]
 
 \vspace{0.3em}
 \textbf{Terminal cohort.}  Age $A$: consume everything, save nothing.
 
 \vspace{0.3em}
-{\scriptsize \emphc{Why no KKT multiplier?}  In this calibration ($\gamma=1$, $\beta=0.7$, only the youngest cohort works) the borrowing constraint $a_t^{\,s}\ge 0$ never binds in equilibrium, so $\lambda_t^{\,s}\equiv 0$ and drops out of the Euler equation, the FREE signature, and the loss.  Part III re-introduces multipliers for the binding constraints of the 56-cohort benchmark.}
+{\scriptsize \emphc{Why no KKT multiplier?}  No cohort has future labor income (only the newborn works, once), so there is nothing to borrow against and $a_t^{\,h}\ge 0$ never binds: $\lambda_t^{\,h}\equiv 0$. Part III re-introduces multipliers, since a hump-shaped wage profile gives the young a reason to borrow.}
+\end{frame}
+
+
+% --- II.6a Euler derivation ---------------------------------------------
+\begin{frame}{II.6a Deriving the Euler Equation}
+\small
+Cohort $h$ at date $t$ chooses $\{c,\,a\}$ for its remaining $A-h+1$ periods; $\nu$ is attached to the budget
+constraint (4), $\lambda\ge 0$ to the borrowing limit:
+\[
+\mathcal{L} \;=\; \mathbb{E}_t\sum_{i=0}^{A-h}\beta^i\Bigl[\ln c_{t+i}^{\,h+i}
+ + \nu_{t+i}^{\,h+i}\bigl(r_{t+i}k_{t+i}^{\,h+i} + \ell^{h+i}w_{t+i} - c_{t+i}^{\,h+i} - a_{t+i}^{\,h+i}\bigr)
+ + \lambda_{t+i}^{\,h+i}\,a_{t+i}^{\,h+i}\Bigr],
+\qquad k_{t+i+1}^{\,h+i+1} = a_{t+i}^{\,h+i}.
+\]
+\vspace{-4pt}
+\begin{itemize}\itemsep1pt
+    \item FOC in $c_t^{\,h}$: $\nu_t^{\,h} = 1/c_t^{\,h}$, the marginal utility of cash.
+    \item FOC in $a_t^{\,h}$: $-\nu_t^{\,h} + \lambda_t^{\,h} + \beta\,\mathbb{E}_t\bigl[\nu_{t+1}^{\,h+1}\,r_{t+1}\bigr] = 0$,
+          since $a_t^{\,h}$ becomes $k_{t+1}^{\,h+1}$ and earns $r_{t+1}$.
+    \item Complementary slackness: $\lambda_t^{\,h}\ge 0$, $a_t^{\,h}\ge 0$, $\lambda_t^{\,h}a_t^{\,h}=0$.
+\end{itemize}
+\vspace{-6pt}
+\[
+\boxed{\;\frac{1}{c_t^{\,h}} \;=\; \beta\,\mathbb{E}_t\!\left[\frac{r_{t+1}}{c_{t+1}^{\,h+1}}\right] + \lambda_t^{\,h}\;}
+\qquad a_t^{\,A}=0,\quad c_t^{\,A} = r_t k_t^{\,A}.
+\]
+\vspace{-6pt}
+With $\lambda_t^{\,h}=0$ this is the interior Euler equation of II.6. Part III keeps $\lambda$ and adds a second multiplier.
+\end{frame}
+
+
+% --- II.6b why a closed form ---------------------------------------------
+\begin{frame}{II.6b Why This Model Has a Closed Form, and Why the Benchmark Does Not}
+\small
+\begin{columns}[T]
+\column{0.55\textwidth}
+\begin{block}{Two assumptions}
+\vspace{-2pt}\begin{enumerate}\itemsep3pt
+    \item \emphc{Log utility.}  $\mathbb{E}\ln(r'a) = \mathbb{E}\ln r' + \ln a$, so the savings rate does
+          not depend on the return distribution: income and substitution effects of a return shock
+          cancel. Persistent shocks would change nothing here; i.i.d.\ shocks only keep the aggregate
+          dynamics simple.
+    \item \emphc{No future labor income.}  Only the newborn works, once. Cash-on-hand
+          $W_t^{\,h} = r_t k_t^{\,h} + \ell^h w_t$ is the household's entire state, there is nothing
+          to borrow against, and $\lambda\equiv 0$.
+\end{enumerate}
+\end{block}
+
+\column{0.42\textwidth}
+\begin{alertblock}{What the 56-cohort benchmark drops}
+\vspace{-2pt}\begin{itemize}\itemsep2pt
+    \item CRRA with $\gamma=2$: the return no longer separates, and a riskier $r'$ raises saving.
+    \item Hump-shaped $\ell^h$: the young have wages ahead of them and want to borrow, so the
+          constraint binds, and so does a collateral constraint on bonds.
+\end{itemize}
+\vspace{2pt}
+No closed form; multipliers in the network; a numerical solver is needed.
+\end{alertblock}
+\end{columns}
+\end{frame}
+
+
+% --- II.6c backward induction --------------------------------------------
+\begin{frame}{II.6c Backward Induction to $\beta_h$}
+\small
+Write $W$ for cash-on-hand and $V_h(W)$ for the value of a cohort of age $h$.
+\begin{itemize}\itemsep4pt
+    \item \textbf{Age $A$:} no tomorrow. $c = W$, \; $V_A(W) = \ln W$.
+    \item \textbf{Age $A-1$:} $\max_a\;\ln(W-a) + \beta\,\mathbb{E}\ln(r'a)$. FOC $\tfrac{1}{W-a}=\tfrac{\beta}{a}$
+          $\Rightarrow a = \tfrac{\beta}{1+\beta}W$, \; $V_{A-1}(W) = (1+\beta)\ln W + \text{const}$.
+    \item \textbf{Age $A-2$:} $\max_a\;\ln(W-a) + \beta(1+\beta)\,\mathbb{E}\ln(r'a)$
+          $\Rightarrow a = \tfrac{\beta+\beta^2}{1+\beta+\beta^2}W$, \; $V_{A-2}(W) = (1+\beta+\beta^2)\ln W + \text{const}$.
+    \item \textbf{Age $h$,} by induction:
+\end{itemize}
+\[
+\boxed{\;\beta_h \;=\; \frac{a}{W} \;=\; \frac{\beta+\beta^2+\cdots+\beta^{A-h}}{1+\beta+\cdots+\beta^{A-h}}
+\;=\; \beta\,\frac{1-\beta^{A-h}}{1-\beta^{A-h+1}},\qquad h=1,\ldots,A-1.\;}
+\]
+\vspace{0.2em}
+{\footnotesize The constant absorbs $\mathbb{E}\ln r'$ at every step, which is why the return distribution never reaches the decision. $W$ is the $\text{inc}_t^{\,h}$ of the budget constraint (4), so the sigmoid savings-fraction head of II.9 has the same shape as the closed form.}
 \end{frame}
 
 
@@ -408,9 +614,33 @@ e_{\text{REE}}^{\,i}(x_j) \;:=\;
 \frac{\Bigl(u'\Bigr)^{-1}\!\!\left(\beta\,\E{r\bigl(\hat x_{j,+}\bigr)\,u'\bigl(\hat c^{\,i+1}(\hat x_{j,+})\bigr)}\right)}{\hat c^{\,i}(x_j)} \;-\; 1.
 \]
 
-\textbf{Sampling next state.}  $\hat x_{j,+} = \bigl(z_+,\; 0,\; \hat a^{\,[1:A-1]}(x_j)\bigr)$ with $z_+$ drawn from $\pi$ (newborn enters with $k^1 = 0$).
+\textbf{Next state and expectation.}  $\hat x_{j,+} = \bigl(z_+,\; 0,\; \hat a^{\,[1:A-1]}(x_j)\bigr)$, the newborn entering with $k^1 = 0$; $\mathbb{E}$ is the exact four-term sum over $z_+$.
 
-{\scriptsize \emphc{Feasibility.}  $a^s\ge 0$ and $c^s\ge 0$ are enforced by the sigmoid savings-fraction output of II.9 (each $a^s\in[0,\mathrm{inc}^s]$); small soft penalties on negative $c$ and $K$ are added in the notebook as numerical backstops but are inactive with this head.}
+\textbf{No market-clearing residual.}  Next period's capital is defined as $K_{t+1}=\sum_h \hat a^{\,h}(x_j)$, so the capital market clears by construction. Part III needs one for bonds.
+
+\end{frame}
+
+
+% --- II.8a From a sequence to a function --------------------------------
+\begin{frame}{II.8a From a Sequence to a Function}
+\small
+Definition 1 describes an equilibrium as sequences $\{c_t^{\,h}, a_t^{\,h}, r_t, w_t\}_{t\ge 0}$. A neural network
+represents a function, not a sequence. The link is a sufficient state.
+
+\begin{block}{$(z_t,\bm{k}_t)$ is all a household needs to know}
+\vspace{-2pt}\begin{itemize}\itemsep2pt
+    \item Today's prices: $K_t=\sum_h k_t^{\,h}$ and $z_t$ pin down $(r_t,w_t)$, hence every cohort's cash-on-hand.
+    \item Tomorrow's prices: if behaviour is the same in the same state, $(z_{t+1},\bm{k}_{t+1})$ depends only
+          on $(z_t,\bm{k}_t)$, the shock, and that behaviour.
+\end{itemize}
+\end{block}
+We therefore look for a \emphc{recursive} equilibrium: time-invariant policies $a^h(z,\bm{k})$ with the law of motion
+$\bm{k}' = \bigl(0,\,a^1(z,\bm{k}),\ldots,a^{A-1}(z,\bm{k})\bigr)$. Existence and stationarity are assumed; in Part II
+the closed form is such a function, so the assumption is verified.
+
+\vspace{0.2em}
+{\footnotesize The DEQN literature calls this object a functional rational expectations equilibrium: one function whose
+equilibrium residuals vanish at every state. The next slide writes its signature.}
 \end{frame}
 
 
@@ -433,18 +663,17 @@ f\!\left(\!\begin{bmatrix} z_t \\ \bm{k}_t \end{bmatrix}\!\right)
 \]
 \end{exampleblock}
 
-\textbf{Such that, for all cohorts $s = 1, \ldots, A-1$, the (interior) Euler equation holds:}
+\textbf{Such that, for all cohorts $h = 1, \ldots, A-1$, the (interior) Euler equation holds:}
 \[
-\beta\,\E{\frac{r_{t+1}\,u'(c_{t+1}^{\,s+1})}{u'(c_t^{\,s})}} - 1 \;=\; 0 \qquad (\text{Euler equation}).
+\beta\,\E{\frac{r_{t+1}\,u'(c_{t+1}^{\,h+1})}{u'(c_t^{\,h})}} - 1 \;=\; 0 \qquad (\text{Euler equation}).
 \]
 Stack these $A-1$ conditions as $G\bigl([z_t, \bm{k}_t],\, f([z_t, \bm{k}_t])\bigr) = \bm{0}$.
 
-{\scriptsize $A=6 \Rightarrow 5$ outputs; extended state of dim $16+4A=40$ -- pure feature engineering.  The residual \emph{squared} in the loss is the consumption-equivalent form of II.7 (same zeros).}
 \end{frame}
 
 
 % --- II.9 Architecture --------------------------------------------------
-\begin{frame}{II.9 Deep Equilibrium Net --- Architecture (Analytic)}
+\begin{frame}{II.9 Deep Equilibrium Net: Architecture (Analytic)}
 \small
 \begin{columns}[T,totalwidth=0.96\textwidth]
 \column{0.46\textwidth}
@@ -463,7 +692,7 @@ such that
 \[
 G\!\left(\!\begin{bmatrix} z_t \\ \bm{k}_t\end{bmatrix},\; \N_\theta\!\left(\!\begin{bmatrix} z_t \\ \bm{k}_t\end{bmatrix}\!\right)\right) \;\approx\; \bm{0}.
 \]
-{\footnotesize \emphc{Sigmoid savings-fraction} output $\Rightarrow$ $0 \le a_t^{\,s} \le \mathrm{inc}_t^{\,s}$ \emphc{by construction}, so $a_t^{\,s}\ge 0$ (borrowing constraint) and $c_t^{\,s}\ge 0$ both hold at every iteration without an explicit multiplier.}
+{\footnotesize \emphc{Sigmoid savings-fraction} output $\Rightarrow$ $0 \le a_t^{\,h} \le \mathrm{inc}_t^{\,h}$ \emphc{by construction}, so $a_t^{\,h}\ge 0$ (borrowing constraint) and $c_t^{\,h}\ge 0$ both hold at every iteration without an explicit multiplier.}
 
 \column{0.48\textwidth}
 \centering
@@ -522,7 +751,7 @@ G\!\left(\!\begin{bmatrix} z_t \\ \bm{k}_t\end{bmatrix},\; \N_\theta\!\left(\!\b
 % --- Hand-over to the analytic-model notebook -------------------------
 \begin{frame}{Companion Notebook Hand-over}
 \scriptsize
-\emphc{Open notebook \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}} (the persistent-simulation primary; the exogenous-sampling companion is \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb}).  It implements the model, equilibrium conditions, loss, FREE map, architecture, training, and validation covered in Part II.
+\emphc{Open notebook \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}} (the persistent-simulation primary; the exogenous-sampling companion is \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb}; if you skipped it, \texttt{04\_00} is the two-period warm-up with the same structure in sixty lines).  It implements the model, equilibrium conditions, loss, FREE map, architecture, training, and validation covered in Part II.
 \vspace{-2pt}
 \begin{block}{Cell-to-slide map}
 \vspace{-4pt}
@@ -569,56 +798,16 @@ II.10--II.13 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
 
 
 % --- II.11 Training results -------------------------------------------
-\begin{frame}{II.11 Training Results --- Analytic Model}
+\begin{frame}{II.11 Training Results: Analytic Model (teaching-mode run)}
 \small
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    width=6.5cm, height=4.3cm,
-    xlabel={Episode}, ylabel={$\log_{10}(\Loss)$},
-    xmin=0, xmax=2000, ymin=-8, ymax=2,
-    grid=major, grid style={gray!15},
-    axis line style={uzhblue}, tick style={uzhblue},
-    label style={font=\footnotesize}, ticklabel style={font=\scriptsize},
-    title style={font=\footnotesize, uzhblue},
-    title={Cost per episode}
-]
-\addplot[harvardcrimson, thick, smooth] coordinates {
-    (0,1.5) (20,0.2) (40,-0.6) (80,-1.2) (120,-1.8)
-    (200,-2.6) (300,-3.3) (500,-4.2) (800,-5.0) (1200,-5.8)
-    (1600,-6.5) (2000,-7.1)
-};
-\end{axis}
-\end{tikzpicture}
-\hfill
-\begin{tikzpicture}
-\begin{axis}[
-    width=6.5cm, height=4.3cm,
-    xlabel={Age $s$}, ylabel={Capital $k^s$},
-    xmin=1, xmax=6, ymin=0, ymax=0.5,
-    xtick={1,2,3,4,5,6},
-    grid=major, grid style={gray!15},
-    axis line style={uzhblue}, tick style={uzhblue},
-    label style={font=\footnotesize}, ticklabel style={font=\scriptsize},
-    title style={font=\footnotesize, uzhblue},
-    title={Lifecycle capital profile},
-    legend style={font=\tiny, draw=none, fill=none, at={(0.02,0.98)}, anchor=north west}
-]
-\addplot[harvardcrimson, thick, mark=o, mark options={solid}] coordinates {
-    (1,0.00) (2,0.30) (3,0.40) (4,0.38) (5,0.22) (6,0.00)
-};
-\addlegendentry{DEQN mean}
-\addplot[uzhblue, thick, dashed, mark=x] coordinates {
-    (1,0.00) (2,0.30) (3,0.40) (4,0.38) (5,0.22) (6,0.00)
-};
-\addlegendentry{Analytic (KK 2004)}
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.48\textwidth]{figures/olg6_loss.pdf}\hfill
+\includegraphics[width=0.48\textwidth]{figures/olg6_savings_bars.pdf}
 
 \vspace{0.15em}
 \begin{block}{Reading the plots}
-\emphc{Left:} cost falls in $\log_{10}$ as the network learns the Krueger--K\"ubler policy; teaching is diagnostic, production reaches tight residuals.\\
-\emphc{Right:} trained DEQN savings policy overlays the closed-form Krueger--K\"ubler solution across cohorts.
+\emphc{Left:} monitor loss and mean train-step loss per segment, $\log_{10}$ scale; the cloud is re-simulated each segment.\\
+\emphc{Right:} mean savings fraction by cohort next to the closed form $\beta_h$. From \texttt{04\_01}, \texttt{RUN\_MODE = "teaching"}, about five minutes on a laptop.
 \end{block}
 \end{frame}
 
@@ -626,7 +815,7 @@ II.10--II.13 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
 % --- II.12 Finger exercise --------------------------------------------
 \begin{frame}{\emphc{Finger Exercise:} Closed-Form Savings Rates}
 \small
-\textbf{Setup.}  With $u = \ln$, cohort $h$'s Euler equation reads $1/c_t^h = \beta\,\mathbb{E}_t[r_{t+1}/c_{t+1}^{h+1}]$ and the budget constraint is $c_t^h + a_t^h = \text{inc}_t^h$ where $\text{inc}_t^h = r_t k_t^h + \ell^h w_t$.  (The household-level setup slides II.2--II.6 used the index symbol $s$; from this slide onward we follow the script convention and use $h$ instead.)
+\textbf{Setup.}  With $u = \ln$, cohort $h$'s Euler equation reads $1/c_t^h = \beta\,\mathbb{E}_t[r_{t+1}/c_{t+1}^{h+1}]$ and the budget constraint is $c_t^h + a_t^h = \text{inc}_t^h$ where $\text{inc}_t^h = r_t k_t^h + \ell^h w_t$.
 
 \vspace{0.4em}
 \textbf{Claim (closed-form log-utility OLG savings rate; the validation target used by Krueger \& K\"ubler, 2004).}  With log utility and 100\% consumption at age $A$, the savings rate $\beta_h := a_t^h/\text{inc}_t^h$ of cohort $h$ depends only on age:
@@ -700,15 +889,23 @@ Cohort $h$ & Periods remaining ($A-h$) & Savings rate $\beta_h$\\
 \vspace{0.2em}
 \begin{block}{Validation strategy}
 \vspace{-2pt}
-The plotted points are the \emphc{exact closed form} from the finger-exercise solution slide.  The DEQN should reproduce this curve cohort-by-cohort.
-
-\vspace{2pt}
-The actual training run, DEQN-vs-analytic comparison, and Euler-error histogram are produced by \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb} (\S 8).  Production target in AGS (2022): mean relative Euler error $\lesssim 10^{-3}$.
+The points are the exact closed form. The DEQN should reproduce them cohort by cohort; the next slide checks it state by state. Production target in AGS (2022): mean relative Euler error below $10^{-3}$.
 \end{block}
 \end{frame}
 
+\begin{frame}{II.13$'$ Policy Functions State by State}
+\centering
+\includegraphics[width=0.98\textwidth]{figures/olg6_policy_scatter.pdf}
 
-\begin{frame}{II Take-away and Hands-on}
+\vspace{0.3em}
+{\small One panel per cohort: savings $a^h$ against cash-on-hand $\text{inc}^h$ on the simulated ergodic cloud. The closed form is a line through the origin with slope $\beta_h$; the DEQN should lie on it at every income level.}
+
+\vspace{0.2em}
+{\footnotesize The ergodic gross return is about $0.69$, below one because $\delta\in\{0.5,0.9\}$, and the young still save two thirds of their wage: capital is the only store of value in this economy.}
+\end{frame}
+
+
+\begin{frame}{II. Take-away and Hands-on}
 \footnotesize
 \begin{block}{What we just did}
 \begin{enumerate}\itemsep1pt
@@ -727,13 +924,13 @@ Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Set \texttt{RUN\_M
 
 
 % =====================================================================
-% Part III -- Benchmark (AGS 2022 leading example), notebook 10 (benchmark_persistent)
+% Part III -- Benchmark (AGS 2022 leading example), notebook 04_02
 % =====================================================================
 
 \section{Part III: Benchmark 56-cohort OLG (AGS 2022 \S 3)}
 
 % --- III.1 Setup -------------------------------------------------------
-\begin{frame}{III.1 Setup --- the Leading Example of AGS (2022)}
+\begin{frame}{III.1 Setup: the Leading Example of AGS (2022)}
 \small
 \begin{columns}[T]
 \column{0.56\textwidth}
@@ -741,11 +938,11 @@ Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Set \texttt{RUN\_M
 \begin{itemize}\itemsep1pt
     \item Agents live for $A = \emphc{56}$ periods (ages 25--80); one period = one year.
     \item CRRA utility $u(c) = c^{1-\gamma}/(1-\gamma)$ with $\gamma = 2$ (\emphc{not} log).
-    \item \emphc{Hump-shaped labor endowment} $\ell^s$ (Kotlikoff-style; right panel).
+    \item \emphc{Hump-shaped labor endowment} $\ell^h$ (Kotlikoff-style; right panel).
     \item \emphc{Persistent} Markov shocks on $(\eta,\delta)$ (not i.i.d.).
-    \item \emphc{Two assets}: capital $k^s$ and bonds $b^s$.
-    \item \emphc{Two constraints}: borrowing $k'^s \ge 0$ and collateral $k'^s + \kappa b'^s \ge 0$.
-    \item Capital adjustment costs $\Psi^s = \tfrac{\zeta}{2}(k'^s - r k^s)^2$.
+    \item \emphc{Two assets}: capital $k^h$ and bonds $b^h$.
+    \item \emphc{Two constraints}: borrowing $k'^h \ge 0$ and collateral $k'^h + \kappa b'^h \ge 0$.
+    \item Capital adjustment costs $\Psi^h = \tfrac{\zeta}{2}(k'^h - r k^h)^2$.
 \end{itemize}
 
 \column{0.42\textwidth}
@@ -753,7 +950,7 @@ Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Set \texttt{RUN\_M
 \begin{tikzpicture}
 \begin{axis}[
     width=5.4cm, height=4.2cm,
-    xlabel={Age (years)}, ylabel={Labor endowment $\ell^s$},
+    xlabel={Age (years)}, ylabel={Labor endowment $\ell^h$},
     xmin=25, xmax=80, ymin=0, ymax=1.5,
     xtick={30,40,50,60,70,80}, ytick={0, 0.4, 0.8, 1.2},
     grid=major, grid style={gray!15},
@@ -770,49 +967,49 @@ Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Set \texttt{RUN\_M
 \end{axis}
 \end{tikzpicture}
 
-{\scriptsize \emphc{Schematic shape only}, rises through working years, drops sharply at retirement, low but nonzero after.  See \emphc{Brumm, K\"ubler \& Scheidegger (2017)} for the exact $\ell^s$ used in the notebook; AGS (2022) reuse this calibration as part of their benchmark.}
+{\scriptsize \emphc{Schematic shape only}, rises through working years, drops sharply at retirement, low but nonzero after.  See \emphc{Brumm, K\"ubler \& Scheidegger (2017)} for the exact $\ell^h$ used in the notebook; AGS (2022) reuse this calibration as part of their benchmark.}
 \end{columns}
 \end{frame}
 
 
 % --- III.2 Households I ------------------------------------------------
-\begin{frame}{III.2 Households --- Preferences and Savings Technology}
+\begin{frame}{III.2 Households: Preferences and Savings Technology}
 \small
-An agent of age $s$ alive at $t$ maximises
+An agent of age $h$ alive at $t$ maximises
 \[
-\mathbb{E}_t\!\left[\sum_{i=0}^{A-s} \beta^i \,u\!\bigl(c_{t+i}^{\,s+i}\bigr)\right], \qquad u(c) = \frac{c^{1-\gamma}}{1-\gamma}, \qquad \gamma = 2. \qquad (1')
+\mathbb{E}_t\!\left[\sum_{i=0}^{A-s} \beta^i \,u\!\bigl(c_{t+i}^{\,h+i}\bigr)\right], \qquad u(c) = \frac{c^{1-\gamma}}{1-\gamma}, \qquad \gamma = 2. \qquad (1')
 \]
 
 \vspace{0.3em}
 \textbf{Two saving instruments} (instead of one):
 \begin{itemize}\itemsep2pt
-    \item \emphc{Capital} $k_{t+1}^{\,s+1}$: yields gross return $r_{t+1}$ next period; incurs an \emphc{adjustment cost} $\Psi_t^s = \tfrac{\zeta}{2}(k_{t+1}^{\,s+1} - r_t k_t^{\,s})^2$.
-    \item \emphc{Bonds} $b_{t+1}^{\,s+1}$: traded at price $p_t$ today, pay one unit of consumption next period. \emphc{Zero net supply}: $\sum_{s=1}^A b_t^s = 0$.
+    \item \emphc{Capital} $k_{t+1}^{\,h+1}$: yields gross return $r_{t+1}$ next period; incurs an \emphc{adjustment cost} $\Psi_t^h = \tfrac{\zeta}{2}(k_{t+1}^{\,h+1} - r_t k_t^{\,h})^2$.
+    \item \emphc{Bonds} $b_{t+1}^{\,h+1}$: traded at price $p_t$ today, pay one unit of consumption next period. \emphc{Zero net supply}: $\sum_{h=1}^A b_t^h = 0$.
 \end{itemize}
 
 \vspace{0.3em}
-Savings become next-period asset holdings ($\forall s \in \{1, \ldots, A-1\}$):
+Savings become next-period asset holdings ($\forall h \in \{1, \ldots, A-1\}$):
 \[
-k_{t+1}^{\,s+1} \;=\; a_{t,k}^{\,s}, \qquad b_{t+1}^{\,s+1} \;=\; a_{t,b}^{\,s}. \qquad (2')
+k_{t+1}^{\,h+1} \;=\; a_{t,k}^{\,h}, \qquad b_{t+1}^{\,h+1} \;=\; a_{t,b}^{\,h}. \qquad (2')
 \]
 \end{frame}
 
 
 % --- III.3 Households II -----------------------------------------------
-\begin{frame}{III.3 Households --- Constraints, Budget, Boundary}
+\begin{frame}{III.3 Households: Constraints, Budget, Boundary}
 \small
-\textbf{Two constraints on the capital--bonds pair $(k'^s, b'^s)$:}
+\textbf{Two constraints on the capital--bonds pair $(k'^h, b'^h)$:}
 \[
-k'^s \;\ge\; 0 \quad (\text{borrowing constraint}), \qquad\quad
-k'^s \;+\; \kappa\, b'^s \;\ge\; 0 \quad (\text{collateral constraint}).
+k'^h \;\ge\; 0 \quad (\text{borrowing constraint}), \qquad\quad
+k'^h \;+\; \kappa\, b'^h \;\ge\; 0 \quad (\text{collateral constraint}).
 \qquad (3')
 \]
 
 \vspace{0.4em}
-\textbf{Budget constraint} of cohort $s$ (bonds enter at price $p_t$ on the left-hand side, pay off on the right):
+\textbf{Budget constraint} of cohort $h$ (bonds enter at price $p_t$ on the left-hand side, pay off on the right):
 \[
-c_t^{\,s} \;+\; k_{t+1}^{\,s+1} \;+\; p_t\, b_{t+1}^{\,s+1} \;+\; \Psi_t^s
-\;=\; r_t\, k_t^{\,s} \;+\; b_t^{\,s} \;+\; \ell_t^{\,s}\, w_t.
+c_t^{\,h} \;+\; k_{t+1}^{\,h+1} \;+\; p_t\, b_{t+1}^{\,h+1} \;+\; \Psi_t^h
+\;=\; r_t\, k_t^{\,h} \;+\; b_t^{\,h} \;+\; \ell_t^{\,h}\, w_t.
 \qquad (4')
 \]
 
@@ -828,20 +1025,20 @@ k_t^{\,1} = 0,\ b_t^{\,1} = 0; \qquad k_{t+1}^{\,A+1} = 0,\ b_{t+1}^{\,A+1} = 0.
 
 
 % --- III.4 Firms & Markets ---------------------------------------------
-\begin{frame}{III.4 Firms and Markets --- Adding the Bond Market}
+\begin{frame}{III.4 Firms and Markets: Adding the Bond Market}
 \small
 \textbf{Representative firm.}  Same Cobb--Douglas as Part II:
 \[
 f(K, L, z) \;=\; \eta(z)\, K^{\alpha}\, L^{1-\alpha} \;+\; K\bigl(1-\delta(z)\bigr).
 \]
-Labor now aggregates over the hump-shaped profile: $L_t = \sum_{s=1}^{A} \ell^s$ (a constant).
+Labor now aggregates over the hump-shaped profile: $L_t = \sum_{h=1}^{A} \ell^h$ (a constant).
 
 \vspace{0.5em}
 \textbf{Markets cleared in equilibrium.}
 \begin{enumerate}\itemsep2pt
-    \item Labor: $L_t = \sum_{s=1}^{A} \ell^s$.
-    \item Capital: $K_t = \sum_{s=1}^{A} k_t^{\,s}$.
-    \item \emphc{Bonds (new): $\displaystyle 0 \;=\; \sum_{s=1}^{A} b_t^{\,s}.$}\quad (Zero net supply.)
+    \item Labor: $L_t = \sum_{h=1}^{A} \ell^h$.
+    \item Capital: $K_t = \sum_{h=1}^{A} k_t^{\,h}$.
+    \item \emphc{Bonds (new): $\displaystyle 0 \;=\; \sum_{h=1}^{A} b_t^{\,h}.$}\quad (Zero net supply.)
 \end{enumerate}
 
 \vspace{0.3em}
@@ -850,11 +1047,11 @@ Labor now aggregates over the hump-shaped profile: $L_t = \sum_{s=1}^{A} \ell^s$
 
 
 % --- III.5 Equilibrium definition --------------------------------------
-\begin{frame}{III.5 Competitive Equilibrium --- Definition}
+\begin{frame}{III.5 Competitive Equilibrium: Definition}
 \small
 \begin{block}{Definition 1' (competitive equilibrium, benchmark)}
-Given initial conditions $z_0,\, \{k_0^{\,s}, b_0^{\,s}\}_{s=1}^{A-1}$, a competitive equilibrium is
-a collection of choices $\bigl\{(c_t^s,\,k_t^{\,s+1},\,b_t^{\,s+1})_{s=1}^{A-1}\bigr\}_{t=0}^\infty$,
+Given initial conditions $z_0,\, \{k_0^{\,h}, b_0^{\,h}\}_{h=1}^{A-1}$, a competitive equilibrium is
+a collection of choices $\bigl\{(c_t^h,\,k_{t+1}^{\,h+1},\,b_{t+1}^{\,h+1})_{h=1}^{A-1}\bigr\}_{t=0}^\infty$,
 firm demands $(K_t, L_t)_{t \ge 0}$, and prices $(r_t, w_t, p_t)_{t\ge 0}$, such that:
 \begin{enumerate}\itemsep1pt
     \item Households maximize $(1')$ subject to $(2')$--$(4')$.
@@ -874,29 +1071,28 @@ firm demands $(K_t, L_t)_{t \ge 0}$, and prices $(r_t, w_t, p_t)_{t\ge 0}$, such
 \textbf{Firm FOCs.}  Same closed form as Part II.
 
 \vspace{0.3em}
-\textbf{Two Euler equations per cohort}, for $s = 1, \ldots, A-1$ (with the marginal adjustment-cost wedge $\mathcal{A}_t^s := 1 + \zeta\,(k'^s_t - r_t k_t^s)$):
+\textbf{Two Euler equations per cohort}, for $h = 1, \ldots, A-1$ (with the marginal adjustment-cost wedge $\mathcal{A}_t^h := 1 + \zeta\,(k'^h_t - r_t k_t^h)$):
 \[
 \text{(capital)}\;\;
-u'(c_t^s)\,\mathcal{A}_t^s \;=\; \beta\,\E{u'(c_{t+1}^{s+1})\,r_{t+1}\,\mathcal{A}_{t+1}^{s+1}} \;+\; \lambda_{\text{b}}^s \;+\; \lambda_{\text{c}}^s,
+u'(c_t^h)\,\mathcal{A}_t^h \;=\; \beta\,\E{u'(c_{t+1}^{h+1})\,r_{t+1}\,\mathcal{A}_{t+1}^{h+1}} \;+\; \lambda_{\text{b}}^h \;+\; \mu^h,
 \]
 \[
 \text{(bonds)}\;\;
-u'(c_t^s)\cdot p_t \;=\; \beta\,\E{u'(c_{t+1}^{s+1})} \;+\; \kappa\,\lambda_{\text{c}}^s.
+u'(c_t^h)\cdot p_t \;=\; \beta\,\E{u'(c_{t+1}^{h+1})} \;+\; \kappa\,\mu^h.
 \]
 
 \vspace{0.3em}
 \textbf{Two KKT triples per cohort.}
 \[
-\lambda_{\text{b}}^s \ge 0,\quad k'^s \ge 0,\quad \lambda_{\text{b}}^s\cdot k'^s = 0;
+\lambda_{\text{b}}^h \ge 0,\quad k'^h \ge 0,\quad \lambda_{\text{b}}^h\cdot k'^h = 0;
 \qquad
-\lambda_{\text{c}}^s \ge 0,\quad k'^s + \kappa b'^s \ge 0,\quad \lambda_{\text{c}}^s\cdot (k'^s + \kappa b'^s) = 0.
+\mu^h \ge 0,\quad k'^h + \kappa b'^h \ge 0,\quad \mu^h\cdot (k'^h + \kappa b'^h) = 0.
 \]
 
 \vspace{0.3em}
 \textbf{Terminal cohort.}  Age $A$: consume everything.
 
-\vspace{0.4em}
-{\footnotesize So per state we have $4(A-1)$ per-agent residuals + 1 bond market-clearing residual = $\bm{4\,(A-1) + 1}$ equations.}
+{\scriptsize The wedge $\mathcal{A}'$ on the right: next period's adjustment cost $\tfrac{\zeta}{2}(k''-r'k')^2$ depends on $k'$, with derivative $-r'\zeta(k''-r'k')$, so the marginal return to $k'$ is $r'\mathcal{A}'$. The bond equation with $\mu=0$ is $p = \beta\,\mathbb{E}[u'(c')]/u'(c)$, the price of a riskless claim; a binding collateral constraint adds $\kappa\mu/u'(c)$.\quad Per state: $4(A-1)$ per-agent residuals $+$ 1 bond-market residual $= 4(A-1)+1$.}
 \end{frame}
 
 
@@ -907,14 +1103,14 @@ u'(c_t^s)\cdot p_t \;=\; \beta\,\E{u'(c_{t+1}^{s+1})} \;+\; \kappa\,\lambda_{\te
 \vspace{-2pt}
 \[
 \Loss_{D_{\text{train}}}(\theta) \;=\; \frac{1}{|D_{\text{train}}|}\,\frac{1}{4(A-1)+1}\!
-\sum_{x_j \in D_{\text{train}}}\!\Biggl[\;\sum_{s=1}^{A-1} R^{\,s}(x_j)^2 \;+\; \bigl(e_{\text{MC},b}(x_j)\bigr)^2\;\Biggr],
+\sum_{x_j \in D_{\text{train}}}\!\Biggl[\;\sum_{h=1}^{A-1} R^{\,h}(x_j)^2 \;+\; \bigl(e_{\text{MC},b}(x_j)\bigr)^2\;\Biggr],
 \]
 
 \vspace{4pt}
 \hrule
 \vspace{4pt}
 \[
-\text{where}\;\;\;R^{\,s}(x_j)^2 \;:=\; \bigl(e_{\text{REE},k}^{\,s}\bigr)^2 + \bigl(e_{\text{REE},b}^{\,s}\bigr)^2 + \bigl(e_{\text{KKT},b}^{\,s}\bigr)^2 + \bigl(e_{\text{KKT},c}^{\,s}\bigr)^2.
+\text{where}\;\;\;R^{\,h}(x_j)^2 \;:=\; \bigl(e_{\text{REE},k}^{\,h}\bigr)^2 + \bigl(e_{\text{REE},b}^{\,h}\bigr)^2 + \bigl(e_{\text{KKT},b}^{\,h}\bigr)^2 + \bigl(e_{\text{KKT},c}^{\,h}\bigr)^2.
 \]
 \vspace{-4pt}
 \end{block}
@@ -922,10 +1118,10 @@ u'(c_t^s)\cdot p_t \;=\; \beta\,\E{u'(c_{t+1}^{s+1})} \;+\; \kappa\,\lambda_{\te
 \vspace{-2pt}
 \textbf{Component map.}
 \begin{itemize}\itemsep0pt
-    \item $e_{\text{REE},k}^{\,s},\;e_{\text{REE},b}^{\,s}$: relative residuals of the capital and bond Euler equations.
-    \item $e_{\text{KKT},b}^{\,s} = \lambda_{\text{b}}^s \cdot k'^s$: borrowing KKT.
-    \item $e_{\text{KKT},c}^{\,s} = \lambda_{\text{c}}^s \cdot (k'^s + \kappa b'^s)$: collateral KKT.
-    \item $e_{\text{MC},b} = \sum_{s=1}^{A-1} \hat b'^{\,s}$: bond market clearing (\emphc{chosen} next-period bonds, not the current state).
+    \item $e_{\text{REE},k}^{\,h},\;e_{\text{REE},b}^{\,h}$: relative residuals of the capital and bond Euler equations.
+    \item $e_{\text{KKT},b}^{\,h} = \lambda_{\text{b}}^h \cdot k'^h$: borrowing KKT.
+    \item $e_{\text{KKT},c}^{\,h} = \mu^h \cdot (k'^h + \kappa b'^h)$: collateral KKT.
+    \item $e_{\text{MC},b} = \sum_{h=1}^{A-1} \hat b'^{\,h}$: bond market clearing (\emphc{chosen} next-period bonds, not the current state).
 \end{itemize}
 
 \vspace{0.2em}
@@ -955,164 +1151,75 @@ f\!\left(\!\begin{bmatrix} z_t \\ \bm{k}_t \\ \bm{b}_t \end{bmatrix}\!\right)
 {\footnotesize Output blocks: capital savings; borrowing multipliers; bond holdings $\hat b'^h$ (transformed to satisfy the collateral floor $\hat k'^h + \kappa\,\hat b'^h \ge 0$); collateral multipliers; equilibrium bond price (one scalar).}
 \vspace{-3pt}\end{exampleblock}
 
-\textbf{Such that} $G\bigl([z_t, \bm{k}_t, \bm{b}_t],\,f([z_t, \bm{k}_t, \bm{b}_t])\bigr) = \bm{0}$ where $G$ stacks the $4(A-1)+1$ equations of III.6.
+\textbf{Such that} $G\bigl([z_t, \bm{k}_t, \bm{b}_t],\,f(\cdot)\bigr) = \bm{0}$, where $G$ stacks the $4(A-1)+1$ equations of III.6.
 
 \vspace{0.3em}
-{\footnotesize With $A = 56$: minimal state dim $=113$; the notebook input is $240$ after engineered aggregates and transition probabilities.  Output dim $=4\times55+1=\bm{221}$.  Collateral is then formed as $\hat q^h=\hat k'^h+\kappa\,\hat b'^h$; the output transforms enforce $\hat k'^h,\hat\lambda_b^h,\hat\mu^h\ge0$ and the collateral floor $\hat q^h\ge0$ (via $\hat b'^h\ge-\hat k'^h/\kappa$).}
+{\footnotesize With $A = 56$: minimal state dimension $113$; the notebook input is $240$ after engineered aggregates and transition probabilities; output dimension $4\times55+1=221$.}
 \end{frame}
 
 
 % --- III.9 Architecture ------------------------------------------------
-\begin{frame}{III.9 Architecture --- Benchmark}
-\scriptsize
+\begin{frame}{III.9 Architecture: Benchmark}
+\small
 \begin{center}
-$\N_\theta:\;\R^{240} \to \R^{221}$
+$\N_\theta:\;\R^{240} \to \R^{221}$, \quad two ReLU hidden layers of $128$ (teaching) or $1000$ (production) units, Adam.
 \end{center}
-\vspace{-4pt}
-
-\begin{block}{Sizes from \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}}
-\centering
-\begin{tabular}{ll}
-\toprule
-Notebook input   & $240$ (minimal state: $113$) \\
-Hidden layers    & $2{\times}128$ (teach.) / $2{\times}1000$ (prod.) \\
-Output dim       & $4(A{-}1) + 1 = 221$ \\
-Output layer     & softplus (multipliers) / bounded-exp (capital, bonds, bond price) \\
-Optimizer        & Adam, lr $10^{-5}$\\
-\bottomrule
-\end{tabular}
+\begin{block}{Output heads, from \texttt{04\_02}}
+\vspace{-2pt}\begin{itemize}\itemsep3pt
+    \item $\hat k'^h$ and $\hat q^h$: a bounded exponential times a state-dependent baseline,
+          $a_{\text{base}}\exp(1.5\tanh z)$, equal to the baseline at zero raw output.
+    \item $\hat\lambda_b^h$, $\hat\mu^h$: softplus, so non-negative. $\hat p$: $\beta$ times a bounded exponential.
+    \item $\hat b'^h = (\hat q^h-\hat k'^h)/\kappa$.
+\end{itemize}
 \end{block}
-
-\vspace{-3pt}
-\begin{exampleblock}{Output slicing}
-\vspace{-6pt}
-\[
-\N_\theta(x_t)
-=
-\bigl(\hat k'^{1:A-1},\;\hat\lambda_b^{1:A-1},\;\hat b'^{1:A-1},\;\hat\mu^{1:A-1},\;\hat p\bigr).
-\]
-\vspace{-4pt}
-Same MLP template as Part II, plus a bond-price head; collateral formed as $\hat q^h=\hat k'^h+\kappa\,\hat b'^h$.
-\end{exampleblock}
+\begin{block}{What this head cannot do}
+With it $\hat k'^h \ge 0.0045$ and $\hat q^h>0$ for every network output, so neither constraint can bind:
+the multipliers go to zero and III.12 reports binding fractions of zero. A head that reaches zero
+(\texttt{CONSTRAINT\_HEAD} in \texttt{04\_02}) does not train at the teaching preset and is left as the extension.
+\end{block}
 \end{frame}
 
 
 % --- III.10 Training: loss curve + lifecycle capital with bands -------
-\begin{frame}{III.10 Training --- Loss and Lifecycle Capital}
+\begin{frame}{III.10 Training: Loss and Lifecycle Capital (teaching-mode run)}
 \small
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    width=6.5cm, height=4.5cm,
-    xlabel={Episode}, ylabel={$\log_{10}(\Loss)$},
-    xmin=0, xmax=2000, ymin=-8, ymax=8,
-    grid=major, grid style={gray!15},
-    axis line style={uzhblue}, tick style={uzhblue},
-    label style={font=\footnotesize}, ticklabel style={font=\scriptsize},
-    title style={font=\footnotesize, uzhblue},
-    title={Cost per episode (teaching, $128^2$, 2{,}000 ep.)}
-]
-\addplot[harvardcrimson, thick, smooth] coordinates {
-    (0,7.2) (10,4.5) (20,0.5) (30,-0.8) (50,-1.2) (100,-1.6)
-    (200,-2.3) (300,-3.0) (500,-3.8) (800,-4.5) (1200,-5.0)
-    (1600,-5.5) (2000,-5.8)
-};
-\end{axis}
-\end{tikzpicture}
-\hfill
-\begin{tikzpicture}
-\begin{axis}[
-    width=6.5cm, height=4.5cm,
-    xlabel={Age (years)}, ylabel={Capital $k^s$ on wake-up},
-    xmin=25, xmax=80, ymin=0, ymax=2.5,
-    xtick={30,40,50,60,70,80},
-    grid=major, grid style={gray!15},
-    axis line style={uzhblue}, tick style={uzhblue},
-    label style={font=\footnotesize}, ticklabel style={font=\scriptsize},
-    title style={font=\footnotesize, uzhblue},
-    title={Lifecycle capital},
-    legend style={font=\tiny, draw=none, fill=none, at={(0.02,0.98)}, anchor=north west}
-]
-% 99.9 percentile (outer dashed)
-\addplot[black, dashed, thin] coordinates {
-    (25,0.00) (32,0.05) (40,0.30) (48,0.80) (56,1.50) (64,2.15) (72,0.80) (80,0.10)
-};
-\addlegendentry{0.1/99.9 pctile}
-% 90 percentile (dash-dot)
-\addplot[black, densely dashdotted, thin] coordinates {
-    (25,0.00) (32,0.04) (40,0.25) (48,0.70) (56,1.35) (64,1.92) (72,0.70) (80,0.08)
-};
-\addlegendentry{10/90 pctile}
-% mean (solid)
-\addplot[harvardcrimson, very thick] coordinates {
-    (25,0.00) (32,0.03) (40,0.18) (48,0.55) (56,1.05) (64,1.55) (72,0.55) (80,0.05)
-};
-\addlegendentry{mean}
-% 10 percentile
-\addplot[black, densely dashdotted, thin] coordinates {
-    (25,0.00) (32,0.02) (40,0.12) (48,0.40) (56,0.75) (64,1.20) (72,0.38) (80,0.03)
-};
-% 0.1 percentile
-\addplot[black, dashed, thin] coordinates {
-    (25,0.00) (32,0.01) (40,0.08) (48,0.30) (56,0.55) (64,0.62) (72,0.20) (80,0.01)
-};
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.48\textwidth]{figures/olg56_loss.pdf}\hfill
+\includegraphics[width=0.48\textwidth]{figures/olg56_lifecycle_a.pdf}
 
 \vspace{0.15em}
 \begin{block}{Reading the plots}
-\emphc{Left:} loss falls sharply but oscillates because each episode re-simulates the cloud.\\
-\emphc{Right:} lifecycle capital is hump-shaped: accumulation during working years, decumulation after retirement.  Bands are simulated percentiles.
+\emphc{Left:} loss per segment; each segment re-simulates the cloud under the current policy.\\
+\emphc{Right:} capital saving by age on the ergodic cloud, mean and 10/90 percentiles. Teaching preset, $128^2$ units, 200 segments; the production run in AGS (2022) tightens the residuals but not the shape.
 \end{block}
 \end{frame}
 
 
 % --- III.11 Consumption by shock state --------------------------------
 \begin{frame}{III.11 Consumption Profiles by Aggregate State}
-\footnotesize
-\begin{block}{State-conditioned slices of the trained policy}
-\vspace{-3pt}
-For each aggregate state $z \in \{1,2,3,4\}$ the trained policy yields a lifecycle consumption profile $c^s(z)$ over ages $s=25,\ldots,80$, read off a long ergodic simulation from \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}.  (The notebook ships pooled lifecycle bands and residual diagnostics; the per-shock breakdown is a small add.)
-\end{block}
+\centering
+\includegraphics[width=0.62\textwidth]{figures/olg56_lifecycle_consumption_by_shock.pdf}
 
-\begin{block}{The four aggregate states}
-\vspace{-3pt}
-\centering\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{cccl}
-\toprule
-$z$ & $\eta(z)$ & $\delta(z)$ & expected consumption ranking \\
-\midrule
-2 & $1.022$ & $0.08$ & \emphc{highest} -- best technology, low depreciation \\
-4 & $1.022$ & $0.11$ & high \\
-1 & $0.978$ & $0.08$ & low \\
-3 & $0.978$ & $0.11$ & \emphc{lowest} -- bad technology, high depreciation \\
-\bottomrule
-\end{tabular}
-\end{block}
-
-\begin{alertblock}{What to look for in the live plot}
-\vspace{-3pt}
-Four distinct profiles, ordered as in the table; exact magnitudes and crossover ages come from \S 11 of the notebook.
-\end{alertblock}
+\vspace{0.2em}
+{\small Mean lifecycle consumption on the ergodic cloud, one curve per aggregate state $z=(\eta,\delta)$, from \texttt{04\_02} \S 8. Teaching run: mean consumption is highest in state 2 (high TFP, normal depreciation), then states 4, 1 and 3; the TFP gap outweighs the depreciation gap. The ordering is measured on the ergodic cloud, not conjectured.}
 \end{frame}
 
 
 % --- III.12 Reading the diagnostics -----------------------------------
 \begin{frame}{III.12 Reading the Diagnostics}
 \footnotesize
-\begin{block}{How do we know the network actually solved the equilibrium?}
+\begin{block}{How do we know the network solved the equilibrium?}
 \vspace{-2pt}\begin{enumerate}\itemsep1pt
-    \item \emphc{Loss level.}  $\log_{10}\Loss \lesssim -5$ means equilibrium residuals at the $10^{-3}$ level or smaller -- AGS (2022) threshold.
-    \item \emphc{Per-equation Euler errors.}  Plot mean $|e_{\text{REE},k}^{\,s}|$ and $|e_{\text{REE},b}^{\,s}|$ by age $s$; expect $\sim 10^{-3}$ everywhere.
-    \item \emphc{Bond market clearing.}  $|e_{\text{MC},b}| < 10^{-4}$ on the ergodic simulation path.
-    \item \emphc{Borrow-binding fraction.}  Ages where $\lambda_{\text{b}}^s > 0$; standard calibration: only the youngest few cohorts.
-    \item \emphc{Policy-drift on a fixed anchor cloud.}  Evaluate the policy on \texttt{X\_anchor} each monitoring interval; report \texttt{policy\_drift\_rms}, \texttt{policy\_drift\_max}; flag the run \emph{time-invariant} once both fall below \texttt{TIME\_INVARIANCE\_TOL\_RMS} / \texttt{\_MAX}.
-    \item \emphc{Ergodic simulation.}  Simulate $10\,000$ periods; plot lifecycle consumption + capital with percentile bands.
+    \item \emphc{Loss level and Euler errors by age}: mean $|e_{\text{REE},k}^{\,h}|$, $|e_{\text{REE},b}^{\,h}|$ around $10^{-3}$ in production.
+    \item \emphc{Bond market clearing}: $|e_{\text{MC},b}|$ small on the ergodic path.
+    \item \emphc{Binding fractions by age} (figure): share of ergodic states at which $\hat k'^h$ is at zero with $\hat\lambda_b^h>0$, and likewise for the collateral pair. With the default head both are zero by construction (III.9); the diagnostic is what shows it.
+    \item \emphc{Policy drift on a fixed anchor cloud}: the run is time-invariant once \texttt{policy\_drift\_rms} and \texttt{\_max} are below tolerance.
+    \item \emphc{Lifecycle profiles} on a long simulated path (III.10, III.11).
 \end{enumerate}
 \end{block}
-
-\vspace{-2pt}
-\textbf{Hands-on: \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}} (persistent-simulation primary; \texttt{04\_05\_OLG\_Benchmark\_DEQN\_exogenous.ipynb} is the feedback-free ablation, same model and loss, different training cloud).  \S 1--4 match III.1--III.5; \S 5--7 = training and policy stability; \S 8 = plots/diagnostics of III.10--III.12.  Teaching runtime ($\sim$200 segments, 128-wide): a few minutes.
+\begin{center}\includegraphics[height=2.3cm]{figures/olg56_binding_by_age.pdf}\end{center}
+\vspace{-6pt}
+{\scriptsize Hands-on: \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}; \texttt{04\_05} is the exogenous-sampling ablation. Teaching runtime about ten minutes on a laptop.}
 \end{frame}
 
 
@@ -1126,13 +1233,14 @@ Four distinct profiles, ordered as in the table; exact magnitudes and crossover 
 \footnotesize
 \begin{block}{What we accomplished}
 \vspace{-2pt}\begin{enumerate}\itemsep1pt
-    \item Introduced OLG as a finite-dimensional family of heterogeneous-agent models -- well suited to DEQNs because the aggregate state stays finite-dimensional.
-    \item Applied the DEQN recipe \emphc{twice}:
+    \item OLG models: a finite-dimensional family of heterogeneous-agent models, suited to DEQNs.
+    \item Applied the DEQN recipe \emphc{three times}:
     \begin{itemize}\itemsep0pt
+        \item \emphc{Part I\textonehalf:} Diamond's two-period model, one Euler equation, solved by hand and by the network.
         \item \emphc{Part II:} the 6-agent Krueger--K\"ubler (2004) analytic model, validated against the closed form ($\lesssim 10^{-3}$ mean Euler error).
-        \item \emphc{Part III:} the 56-cohort leading-example benchmark of AGS (2022): CRRA, hump labor, persistent shocks, two assets, two borrowing constraints, capital adjustment costs.
+        \item \emphc{Part III:} the 56-cohort benchmark of AGS (2022): CRRA, hump-shaped labor, persistent shocks, two assets, two constraints, adjustment costs.
     \end{itemize}
-    \item \emphc{Same 9-step recipe} both times: setup, households I/II, firms, equilibrium, conditions, cost, FREE, architecture.
+    \item \emphc{Same recipe} every time: model, equilibrium conditions, cost, recursive equilibrium, network, training, validation.
 \end{enumerate}
 \end{block}
 
@@ -1146,9 +1254,11 @@ Four distinct profiles, ordered as in the table; exact magnitudes and crossover 
 \begin{frame}{References and Further Reading}
 \small
 \begin{itemize}\itemsep3pt
-    \item Azinovic, M., Gaegauf, L., \& Scheidegger, S. (2022). \emph{Deep equilibrium nets.} International Economic Review 63(4), 1471--1525.  \;[\,notebook 10 (\texttt{benchmark\_persistent}) implements \S 3 of this paper].
+    \item Azinovic, M., Gaegauf, L., \& Scheidegger, S. (2022). \emph{Deep equilibrium nets.} International Economic Review 63(4), 1471--1525.  \;[\,\texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb} implements \S 3 of this paper].
 
-    \item Krueger, D., \& K\"ubler, F. (2004). \emph{Computing equilibrium in OLG models with stochastic production.} Journal of Economic Dynamics \& Control 28(7), 1411--1436.  \;[\,notebook 08 (\texttt{analytic\_persistent}) implements their 6-agent analytic model].
+    \item Krueger, D., \& K\"ubler, F. (2004). \emph{Computing equilibrium in OLG models with stochastic production.} Journal of Economic Dynamics \& Control 28(7), 1411--1436.  \;[\,\texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb} implements their 6-agent analytic model].
+
+    \item Diamond, P. A. (1965). \emph{National debt in a neoclassical growth model.} American Economic Review 55(5), 1126--1150.  \;[the two-period model of Part I\textonehalf; \texttt{04\_00\_OLG\_Diamond\_Warmup.ipynb}].
 
     \item Fischer, A. (1992). \emph{A special Newton-type optimization method.} Optimization 24, 269--284.  \;[FB-complementarity function -- used in the \textbf{IRBC chapter (Ch.~3)}; mentioned in this lecture only as an alternative to the product-form KKT residuals adopted here.]
 
@@ -1160,16 +1270,17 @@ Four distinct profiles, ordered as in the table; exact magnitudes and crossover 
 % --- Bridge to the Agentic-Programming Lecture ---
 \begin{frame}{Bridge: one more dimension to add}
 \footnotesize
-\textbf{What we just did.}  Cohort structure changed the \emph{size} of the residual system --- one
-Euler equation per generation, stacked into a single Lagrangian primitive --- but not the training
-principle. Borrowing and collateral constraints entered through product-form KKT residuals, and
-two-tape automatic differentiation meant no residual was ever derived by hand.
+\textbf{What we just did.}  Cohort structure changed the size of the residual system, one Euler equation per
+generation, derived once from the Lagrangian and stacked into one loss, but not the training principle. The
+two-period model gave the idea, the six-cohort model a closed form to validate against, and the 56-cohort
+benchmark added what breaks the closed form: CRRA, future wages, and the borrowing and collateral constraints
+the young actually hit, encoded as product-form KKT residuals.
 
 \vspace{0.5em}
 \textbf{Next (Session 5): the international real business cycle model.}  OLG stacked equations along
 the \emph{age} dimension. IRBC stacks them along a \emph{country} dimension instead: $N$ Euler
 equations plus a world resource constraint on a $2N$-dimensional state. Same loss, same training
-loop --- and the point where a tensor-product grid is no longer an option at all.
+loop, and the point where a tensor-product grid is no longer an option.
 
 \vspace{0.5em}
 \textbf{Bring with you.}  The architecture search and loss balancing from Session 3: IRBC is the

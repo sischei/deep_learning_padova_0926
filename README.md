@@ -1,5 +1,5 @@
 <p align="center">
-<img src="screens/landing-page.png" width="100%" alt="Deep Learning for Solving Dynamic Models — a two-day lecture suite at the University of Padova, 23–24 September 2026"/>
+<img src="screens/landing-page.png" width="100%" alt="Deep Learning for Solving Dynamic Models, a two-day lecture suite at the University of Padova, 23–24 September 2026"/>
 </p>
 
 # Deep Learning for Solving Dynamic Models
@@ -13,21 +13,21 @@ A two-day lecture suite held at the **University of Padova**, **23–24 Septembe
 * This course is designed for Ph.D. students and researchers in economics, finance and related
   disciplines. It introduces recent advances in machine learning and computational science for
   **solving and estimating dynamic stochastic economic models**.
-* Classical grid-based methods — projection, value-function iteration, perturbation — break down once
+* Classical grid-based methods, projection, value-function iteration, perturbation, break down once
   a model has many state dimensions, overlapping generations, occasionally binding constraints, or
   continuous-time dynamics. This course teaches a toolbox built for exactly those models.
 * The unifying idea is simple: **let the economics drive the learning problem**. Equilibrium
   conditions, Bellman equations and PDEs become the residual loss (Deep Equilibrium Nets,
   Physics-Informed Neural Networks), or they shape the simulator that generates the training data a
   deep surrogate or Gaussian process then learns.
-* Each method is built from scratch on a benchmark where the answer is known — Brock–Mirman,
-  cake-eating, Black–Scholes — before being applied to models where it is not: IRBC, 56-cohort OLG,
+* Each method is built from scratch on a benchmark where the answer is known, Brock–Mirman,
+  cake-eating, Black–Scholes, before being applied to models where it is not: IRBC, 56-cohort OLG,
   continuous-time Aiyagari.
 * The format is interactive and workshop-like, combining theory with hands-on coding in Python.
 
 ## Prerequisites
 
-Please arrive with these in place — the ten hours are reserved for method content.
+Please arrive with these in place, the ten hours are reserved for method content.
 
 * Basic econometrics.
 * Basic programming in Python. See [QuantEcon](https://python-programming.quantecon.org/intro.html)
@@ -56,7 +56,7 @@ epochs and sample sizes.
 
 ## Schedule
 
-### [Day 1](day1) — Wednesday, 23 September 2026
+### [Day 1](day1), Wednesday, 23 September 2026
 
 | **Time** | **Session** | **Slides** | **Code** |
 |---|---|---|---|
@@ -65,11 +65,11 @@ epochs and sample sizes.
 | 10:45 – 12:00 | **2.** Deep Equilibrium Nets: the method and the Brock–Mirman benchmark | [slides](day1/slides/02_DeepEquilibriumNets.pdf) | [code](day1/code/02_deep_equilibrium_nets) |
 | 12:00 – 13:30 | *Lunch break* | | |
 | 13:30 – 14:25 | **3.** Neural architecture search and loss balancing | [NAS](day1/slides/03a_Neural_Architecture_Search.pdf) · [loss balancing](day1/slides/03b_Loss_Balancing.pdf) | [code](day1/code/03_nas_loss_balancing) |
-| 14:25 – 15:15 | **4.** Overlapping generations with DEQNs | [slides](day1/slides/04_OLG_Models_DEQNs.pdf) | [code](day1/code/04_olg) |
-| 15:15 – 15:30 | *Coffee break* | | |
-| 15:30 – 16:30 | **5.** Scaling up: the international real business cycle model | [slides](day1/slides/05_IRBC.pdf) | [code](day1/code/05_irbc) |
+| 14:25 – 15:25 | **4.** Overlapping generations with DEQNs | [slides](day1/slides/04_OLG_Models_DEQNs.pdf) | [code](day1/code/04_olg) |
+| 15:25 – 15:40 | *Coffee break* | | |
+| 15:40 – 16:30 | **5.** Scaling up: the international real business cycle model | [slides](day1/slides/05_IRBC.pdf) | [code](day1/code/05_irbc) |
 
-### [Day 2](day2) — Thursday, 24 September 2026
+### [Day 2](day2), Thursday, 24 September 2026
 
 | **Time** | **Session** | **Slides** | **Code** |
 |---|---|---|---|
@@ -104,14 +104,19 @@ Python; a 10-D search over depth, width, activation and learning-rate decay. Why
 residual losses on different scales silently kill training, and how non-dimensionalisation,
 inverse-loss weighting and ReLoBRaLo fix it.
 
-**4. Overlapping generations.** One Euler equation per cohort, stacked into a single Lagrangian
-primitive — the training principle does not change. Two-tape automatic differentiation so residuals
-are never hand-derived. An analytic 6-generation model validated against the Krueger–Kübler closed
-form, then the 56-cohort benchmark with borrowing and collateral constraints via product-form KKT
-residuals.
+**4. Overlapping generations.** The session built for Padova's own research focus, and the one with
+the most time. It opens with Diamond's two-period model, one decision and one Euler equation, derived
+and solved by hand and then by a sixty-line network, before the six-cohort Krueger–Kübler model, where
+the closed-form savings rate is derived by backward induction and the two assumptions behind it are
+named: log utility, and no future labor income. The step from a sequence equilibrium to a recursive
+one, which every DEQN relies on, is made explicit. The trained network is validated against the closed
+form cohort by cohort, at every income level. The 56-cohort benchmark of Azinovic, Gaegauf and
+Scheidegger (2022) then drops both assumptions, with CRRA utility, hump-shaped wages and two assets,
+and the constraints the young hit are handled by product-form KKT residuals whose binding frequencies
+are measured rather than assumed.
 
 **5. Scaling up: IRBC.** The finale of Day 1. N symmetric countries, N Euler equations and a world
-resource constraint on a 2N-dimensional state — residuals stacked along a country dimension rather
+resource constraint on a 2N-dimensional state, residuals stacked along a country dimension rather
 than an age one. Why DEQNs scale here and tensor grids do not. Training on the ergodic set,
 Euler-residual validation, irreversible investment, and comparative statics read straight off the
 trained policy. The loss balancing from Session 3 earns its keep here.
@@ -127,7 +132,7 @@ surrogate removes it. Scalar SMM for the persistence ϱ on Brock–Mirman, then 
 with identification diagnostics and the partial-identification ridge.
 
 **8. Economics-informed neural networks: foundations.** From equilibrium residuals to PDE residuals
-— the same idea with a different operator. The PINN loss on collocation points; automatic
+,  the same idea with a different operator. The PINN loss on collocation points; automatic
 differentiation for PDEs and the second derivatives it has to produce; the training loop, Adam →
 L-BFGS schedules in FP64, and why tanh. A 1-D ODE warm-up, then the central design choice: soft
 penalties versus hard trial solutions that satisfy the boundary conditions by construction, and how
@@ -136,7 +141,7 @@ to build one in 2-D. The 2-D Poisson equation end to end.
 **9. PINNs: economic and financial applications.** The cake-eating HJB with a scaled hard-BC trial
 solution, checked against its closed form; the Deep Galerkin Method as an optional architecture when
 the state space grows. Black–Scholes option pricing, with the Greeks for free by automatic
-differentiation. The other half of the method — inverse problems, recovering parameters from data.
+differentiation. The other half of the method, inverse problems, recovering parameters from data.
 When PINNs fail, how to tell, and the multi-component loss problem returning from Session 3. Then
 twelve minutes at the keyboard building a PINN from scratch, and the course wrap-up.
 
@@ -150,10 +155,11 @@ Each day carries hands-on notebooks marked as exercises, with full solutions pro
 |---|---|---|
 | 1 | [Genz approximation and loss functions](day1/code/01_deep_learning_intro/01_06_Genz_Approximation_and_Loss_Functions.ipynb) | in-notebook |
 | 2 | [DEQN exercises](day1/code/02_deep_equilibrium_nets/02_03_DEQN_Exercises_Blanks.ipynb) | [solutions](day1/code/02_deep_equilibrium_nets/02_04_DEQN_Exercises_Solutions.ipynb) |
-| 4 | [OLG savings rates and lifecycle profiles](day1/code/04_olg/04_03_OLG_Exercise.ipynb) | in-notebook |
+| 4 | [Two-period OLG: finger exercise + warm-up notebook](day1/code/04_olg/04_00_OLG_Diamond_Warmup.ipynb) | in-slides |
+| 4 | [OLG savings rates, ergodic prices and lifecycle profiles](day1/code/04_olg/04_03_OLG_Exercise.ipynb) | in-notebook |
 | 5 | [IRBC: comparative statics and loss weighting](day1/code/05_irbc/05_03_IRBC_Exercise.ipynb) | in-notebook |
 | 7 | [Surrogate-based SMM](day2/slides/07b_SMM_Exercise.pdf) (five finger exercises) | [notebooks](day2/code/07_structural_estimation) |
-| 9 | [Build a PINN from scratch](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) — run in class | in-notebook |
+| 9 | [Build a PINN from scratch](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb), run in class | in-notebook |
 
 ## Further reading
 
@@ -167,14 +173,14 @@ the slides, with full derivations and exercise solutions.
 
 Topics adjacent to this course that ten hours could not fit:
 
-* **Sequence-space DEQNs** — transition paths and MIT shocks.
-* **Heterogeneous agents with a continuum** — Krusell–Smith and Young's method.
-* **Climate economics and integrated assessment models** — DICE with DEQNs, deep uncertainty
+* **Sequence-space DEQNs**, transition paths and MIT shocks.
+* **Heterogeneous agents with a continuum**, Krusell–Smith and Young's method.
+* **Climate economics and integrated assessment models**, DICE with DEQNs, deep uncertainty
   quantification, and constrained Pareto-improving carbon taxes.
-* **Continuous-time heterogeneous agents** — the HJB–KFE system, continuous-time Aiyagari, and the
+* **Continuous-time heterogeneous agents**, the HJB–KFE system, continuous-time Aiyagari, and the
   master equation. Slides and a runnable notebook are included in
   [`day2/optional_continuous_time_ha`](day2/optional_continuous_time_ha), as optional self-study.
-* **Agentic programming** — AI coding agents as research partners.
+* **Agentic programming**, AI coding agents as research partners.
 
 All of these are covered in the companion script and in the full-length version of this course.
 

@@ -94,7 +94,7 @@
 % ---------- Title ----------
 \title[IRBC -- Padova 2026]%
 {Deep Learning for Solving Dynamic Models}
-\subtitle{Session 5 --- Scaling up: the international real business cycle model}
+\subtitle{Session 5: Scaling up, the international real business cycle model}
 \author{Simon Scheidegger}
 \institute[HEC Lausanne]{HEC, University of Lausanne}
 \date{University of Padova\\September 23, 2026}
@@ -171,23 +171,25 @@ Brumm, Krause, Schaab \& Scheidegger (2022), ``Sparse Grids for Dynamic Economic
 \end{frame}
 
 % --- Slide 5: Why International Models? ---
-\begin{frame}{Why International Models?}
+\begin{frame}{Why International Models --- and Why IRBC as a Testbed?}
+\footnotesize
 \begin{columns}[T]
-\column{0.48\textwidth}
-\textbf{Key questions in international macro:}
-\begin{itemize}
-    \item How do \emphc{capital flows} respond to productivity shocks?
-    \item What governs \emphc{international risk sharing}?
-    \item How do \emphc{trade imbalances} emerge?
+\column{0.50\textwidth}
+\textbf{The economics.}  Capital flows, international risk sharing and trade imbalances all need
+$N$ heterogeneous countries linked through a world capital market. The IRBC model is the workhorse:
+\begin{itemize}\itemsep1pt
+    \item \emphc{Consumption-correlation puzzle} (Backus--Kehoe--Kydland 1992): complete markets
+          imply $\rho(c^i,c^j)\approx 1$; data say $\rho(c^i,c^j)<\rho(y^i,y^j)$.
+    \item \emphc{Home bias} and the \emphc{welfare cost of missing insurance} (Heathcote \& Perri 2002).
+    \item Macro-financial transmission through adjustment costs, constraints, Pareto weights.
 \end{itemize}
 
-\vspace{0.5em}
-$\Rightarrow$ Need models with $N$ heterogeneous countries.
-
 \vspace{0.3em}
-$\Rightarrow$ State space: $2N$ dimensions (capital + TFP per country).
+\textbf{The computation.}  State dimension is \emphc{linear in $N$}: $2N$ (capital and TFP per
+country). Smooth but highly nonlinear; the planner's problem gives a clean target; the standard
+benchmark for projection methods (Krueger \& Kubler 2004; Brumm \& Scheidegger 2017).
 
-\column{0.48\textwidth}
+\column{0.46\textwidth}
 \begin{center}
 \begin{tikzpicture}[
     country/.style={circle, draw=uzhblue, thick, fill=uzhgreylight,
@@ -198,11 +200,9 @@ $\Rightarrow$ State space: $2N$ dimensions (capital + TFP per country).
     \node[country] (c2) at (210:1.8) {$2$};
     \node[country] (c3) at (330:1.8) {$N$};
     \node[font=\large] at (270:1.2) {$\vdots$};
-
     \draw[flow] (c1) -- (c2) node[midway, left, font=\tiny] {capital};
     \draw[flow] (c1) -- (c3) node[midway, right, font=\tiny] {goods};
     \draw[flow, dashed] (c2) -- (c3) node[midway, below, font=\tiny] {risk};
-
     \node[below=0.3cm, font=\small\bfseries] at (0,-2.2) {Complete markets};
 \end{tikzpicture}
 \end{center}
@@ -210,43 +210,45 @@ $\Rightarrow$ State space: $2N$ dimensions (capital + TFP per country).
 \end{frame}
 
 % --- Slide 5b: IRBC in Macro-Finance ---
-\begin{frame}{Why IRBC for Macro-Finance Research?}
-\footnotesize
-Workhorse for \emphc{open-economy asset pricing} and \emphc{international risk sharing}:
-
-\vspace{0.2em}
-\begin{itemize}\itemsep0pt
-    \item \textbf{International risk sharing.}  Complete markets imply perfectly correlated consumption; data do not (Backus, Kehoe \& Kydland 1992).
-    \item \textbf{Market structure \& welfare.}  Complete vs.\ incomplete markets; welfare cost of missing insurance (Heathcote \& Perri 2002).
-    \item \textbf{Capital flows \& current account} from intertemporal savings + heterogeneous productivity.
-    \item \textbf{Home bias}: frictionless benchmark for observed portfolio holdings.
-    \item \textbf{Macro-financial transmission} via adjustment costs, constraints, Pareto weights.
-\end{itemize}
-\end{frame}
+% --- Padova cut: frame "Why IRBC for Macro-Finance Research?" (13 lines) commented out ---
+% \begin{frame}{Why IRBC for Macro-Finance Research?}
+% \footnotesize
+% Workhorse for \emphc{open-economy asset pricing} and \emphc{international risk sharing}:
+% 
+% \vspace{0.2em}
+% \begin{itemize}\itemsep0pt
+%     \item \textbf{International risk sharing.}  Complete markets imply perfectly correlated consumption; data do not (Backus, Kehoe \& Kydland 1992).
+%     \item \textbf{Market structure \& welfare.}  Complete vs.\ incomplete markets; welfare cost of missing insurance (Heathcote \& Perri 2002).
+%     \item \textbf{Capital flows \& current account} from intertemporal savings + heterogeneous productivity.
+%     \item \textbf{Home bias}: frictionless benchmark for observed portfolio holdings.
+%     \item \textbf{Macro-financial transmission} via adjustment costs, constraints, Pareto weights.
+% \end{itemize}
+% \end{frame}
 
 % --- Slide 5c: IRBC as a computational testbed ---
-\begin{frame}{IRBC: Puzzles and Computational Testbed}
-\footnotesize
-\begin{columns}[T]
-\column{0.49\textwidth}
-\textbf{Macro-finance puzzles:}
-\begin{itemize}\itemsep2pt
-    \item \emphc{Consumption-correlation puzzle} (Backus--Kehoe--Kydland 1992):
-    complete markets imply $\rho(c^i,c^j)\!\approx\!1$, but in the data $\rho(c^i,c^j)<\rho(y^i,y^j)$.
-    \item \emphc{Portfolio home-bias puzzle}: optimal diversification predicts large foreign-equity holdings; observed portfolios are strongly domestic.
-    \item \emphc{Real-exchange-rate (RER) volatility} (Backus--Smith): the ratio of price levels $P^j/P^i$ is far more volatile than the consumption ratio $c^j/c^i$; IRBC with nontraded goods (Stockman \& Tesar, 1995) reproduces this.
-\end{itemize}
-
-\column{0.49\textwidth}
-\textbf{Computational testbed:}
-\begin{itemize}\itemsep0pt
-    \item State dim.\ \emphc{linear} in $N$: $2N$.
-    \item Smooth but \emphc{highly nonlinear}.
-    \item \emphc{Planner} gives a clean target.
-    \item Benchmark for projection methods (Krueger \& Kubler 2004; Brumm \& Scheidegger 2017).
-\end{itemize}
-\end{columns}
-\end{frame}
+% --- Padova cut: frame "IRBC: Puzzles and Computational Testbed" (22 lines) commented out ---
+% \begin{frame}{IRBC: Puzzles and Computational Testbed}
+% \footnotesize
+% \begin{columns}[T]
+% \column{0.49\textwidth}
+% \textbf{Macro-finance puzzles:}
+% \begin{itemize}\itemsep2pt
+%     \item \emphc{Consumption-correlation puzzle} (Backus--Kehoe--Kydland 1992):
+%     complete markets imply $\rho(c^i,c^j)\!\approx\!1$, but in the data $\rho(c^i,c^j)<\rho(y^i,y^j)$.
+%     \item \emphc{Portfolio home-bias puzzle}: optimal diversification predicts large foreign-equity holdings; observed portfolios are strongly domestic.
+%     \item \emphc{Real-exchange-rate (RER) volatility} (Backus--Smith): the ratio of price levels $P^j/P^i$ is far more volatile than the consumption ratio $c^j/c^i$; IRBC with nontraded goods (Stockman \& Tesar, 1995) reproduces this.
+% \end{itemize}
+% 
+% \column{0.49\textwidth}
+% \textbf{Computational testbed:}
+% \begin{itemize}\itemsep0pt
+%     \item State dim.\ \emphc{linear} in $N$: $2N$.
+%     \item Smooth but \emphc{highly nonlinear}.
+%     \item \emphc{Planner} gives a clean target.
+%     \item Benchmark for projection methods (Krueger \& Kubler 2004; Brumm \& Scheidegger 2017).
+% \end{itemize}
+% \end{columns}
+% \end{frame}
 
 % --- Slide 6: Model Overview ---
 \begin{frame}{Model Overview}
@@ -976,27 +978,28 @@ $N$ & \textbf{States} & \textbf{Policies} & \textbf{NN params} & \textbf{Grid pt
 \end{frame}
 
 % --- Slide 30: From Brock-Mirman to IRBC ---
-\begin{frame}{From Brock--Mirman to IRBC}
-\begin{center}
-\begin{tabular}{lll}
-\toprule
-& \textbf{Brock--Mirman} & \textbf{IRBC} \\
-\midrule
-Countries & 1 & $N$ \\
-States & $(K, z)$ & $(k^1, \ldots, k^N, z^1, \ldots, z^N)$ \\
-Policies & $C$ (or $s$) & $(k^{1\prime}, \ldots, k^{N\prime}, \lambda, \mu^1, \ldots, \mu^N)$ \\
-Equations & 1 Euler & $N$ Euler $+$ 1 ARC $+$ $N$ FB \\
-Constraints & none & irreversibility, adj.\ costs \\
-Shocks & 1 & $N+1$ \\
-Output act. & sigmoid & linear $+$ transforms \\
-Analytical sol. & yes ($\delta=1$) & no \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\vspace{0.3em}
-{\small The IRBC is a natural \emphc{scaling test} for the DEQN methodology.}
-\end{frame}
+% --- Padova cut: frame "From Brock--Mirman to IRBC" (21 lines) commented out ---
+% \begin{frame}{From Brock--Mirman to IRBC}
+% \begin{center}
+% \begin{tabular}{lll}
+% \toprule
+% & \textbf{Brock--Mirman} & \textbf{IRBC} \\
+% \midrule
+% Countries & 1 & $N$ \\
+% States & $(K, z)$ & $(k^1, \ldots, k^N, z^1, \ldots, z^N)$ \\
+% Policies & $C$ (or $s$) & $(k^{1\prime}, \ldots, k^{N\prime}, \lambda, \mu^1, \ldots, \mu^N)$ \\
+% Equations & 1 Euler & $N$ Euler $+$ 1 ARC $+$ $N$ FB \\
+% Constraints & none & irreversibility, adj.\ costs \\
+% Shocks & 1 & $N+1$ \\
+% Output act. & sigmoid & linear $+$ transforms \\
+% Analytical sol. & yes ($\delta=1$) & no \\
+% \bottomrule
+% \end{tabular}
+% \end{center}
+% 
+% \vspace{0.3em}
+% {\small The IRBC is a natural \emphc{scaling test} for the DEQN methodology.}
+% \end{frame}
 
 % --- Slide 31: Recap ---
 \begin{frame}{Recap: Three Building Blocks}
@@ -1023,7 +1026,12 @@ Persistent simulation: one continuing trajectory ensemble, Adam on the sum of sq
 \end{block}
 \end{columns}
 
-\vspace{0.8em}
+\vspace{0.5em}
+{\small \textbf{Relative to Brock--Mirman:} one country $\to N$; state $(K,z)\to(k^{1:N},z^{1:N})$;
+one Euler equation $\to N$ Euler $+$ 1 ARC $+$ $N$ Fischer--Burmeister; a closed form (at $\delta=1$)
+$\to$ none. The IRBC is the natural \emphc{scaling test} for the method.}
+
+\vspace{0.4em}
 \begin{center}
 $\Rightarrow$ \textbf{Next:} implementation in TensorFlow/Keras and results.
 \end{center}
@@ -1115,85 +1123,88 @@ c_{ss} &= Y_{ss} - I_{ss} \approx 0.0459
 \end{frame}
 
 % --- Slide 36: Network Definition (Code) ---
-\begin{frame}[fragile]{Network Definition (Keras)}
-\begin{center}
-\begin{minipage}{0.85\textwidth}
-\begin{lstlisting}
-N_COUNTRIES = 2
-n_states = 2 * N_COUNTRIES      # = 4
-n_policies = 2 * N_COUNTRIES + 1 # = 5
-
-nn = keras.Sequential([
-    keras.layers.Dense(128, activation='tanh',
-                       input_shape=(n_states,)),
-    keras.layers.Dense(128, activation='tanh'),
-    keras.layers.Dense(n_policies, activation=None,
-                       kernel_initializer='zeros')
-])
-\end{lstlisting}
-\end{minipage}
-\end{center}
-
-\vspace{0.3em}
-\begin{itemize}
-    \item \texttt{tanh} hidden activations; output layer is linear (zero-initialized)
-    \item Raw outputs pass through custom transforms (\texttt{exp$\cdot$tanh}, \texttt{sigmoid}, \texttt{softplus}) to enforce the constraints
-    \item Output: $[k^{1\prime}, k^{2\prime}, \lambda, \mu^1, \mu^2]$
-\end{itemize}
-\end{frame}
+% --- Padova cut: frame "Network Definition (Keras)" (26 lines) commented out ---
+% \begin{frame}[fragile]{Network Definition (Keras)}
+% \begin{center}
+% \begin{minipage}{0.85\textwidth}
+% \begin{lstlisting}
+% N_COUNTRIES = 2
+% n_states = 2 * N_COUNTRIES      # = 4
+% n_policies = 2 * N_COUNTRIES + 1 # = 5
+% 
+% nn = keras.Sequential([
+%     keras.layers.Dense(128, activation='tanh',
+%                        input_shape=(n_states,)),
+%     keras.layers.Dense(128, activation='tanh'),
+%     keras.layers.Dense(n_policies, activation=None,
+%                        kernel_initializer='zeros')
+% ])
+% \end{lstlisting}
+% \end{minipage}
+% \end{center}
+% 
+% \vspace{0.3em}
+% \begin{itemize}
+%     \item \texttt{tanh} hidden activations; output layer is linear (zero-initialized)
+%     \item Raw outputs pass through custom transforms (\texttt{exp$\cdot$tanh}, \texttt{sigmoid}, \texttt{softplus}) to enforce the constraints
+%     \item Output: $[k^{1\prime}, k^{2\prime}, \lambda, \mu^1, \mu^2]$
+% \end{itemize}
+% \end{frame}
 
 % --- Slide 37: Production & Consumption (Code) ---
-\begin{frame}[fragile]{Production \& Consumption}
-\begin{columns}[T]
-\column{0.48\textwidth}
-\textbf{Production:}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-def production(k, z):
-    return A_tfp * tf.exp(z) \
-           * k**zeta
-\end{lstlisting}
-
-$Y^j = A_{\text{tfp}} \exp(z^j) (k^j)^\zeta$
-
-\column{0.48\textwidth}
-\textbf{Consumption (from FOC):}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-def consumption(lamb, j):
-    tau = (A_tfp - delta)**(1./gammas[j])
-    return (lamb/tau)**(-gammas[j])
-\end{lstlisting}
-
-$c^j = (\lambda / \tau^j)^{-\gamma_j}$
-\end{columns}
-
-\vspace{0.5em}
-{\small All functions are vectorized over the batch dimension using TensorFlow operations.}
-\end{frame}
+% --- Padova cut: frame "Production \& Consumption" (26 lines) commented out ---
+% \begin{frame}[fragile]{Production \& Consumption}
+% \begin{columns}[T]
+% \column{0.48\textwidth}
+% \textbf{Production:}
+% \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+% def production(k, z):
+%     return A_tfp * tf.exp(z) \
+%            * k**zeta
+% \end{lstlisting}
+% 
+% $Y^j = A_{\text{tfp}} \exp(z^j) (k^j)^\zeta$
+% 
+% \column{0.48\textwidth}
+% \textbf{Consumption (from FOC):}
+% \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+% def consumption(lamb, j):
+%     tau = (A_tfp - delta)**(1./gammas[j])
+%     return (lamb/tau)**(-gammas[j])
+% \end{lstlisting}
+% 
+% $c^j = (\lambda / \tau^j)^{-\gamma_j}$
+% \end{columns}
+% 
+% \vspace{0.5em}
+% {\small All functions are vectorized over the batch dimension using TensorFlow operations.}
+% \end{frame}
 
 % --- Slide 38: Adjustment Costs (Code) ---
-\begin{frame}[fragile]{Adjustment Costs}
-\begin{lstlisting}
-def adj_cost(k, kp):
-    j = kp / k - 1.0
-    return 0.5 * kappa * j**2 * k
-
-def adj_cost_kp(k, kp):
-    return kappa * (kp / k - 1.0)
-
-def adj_cost_k(k, kp):
-    j = kp / k - 1.0
-    return -0.5 * kappa * j * (j + 2.0)
-\end{lstlisting}
-
-\vspace{0.3em}
-\textbf{Marginal product of capital:}
-\begin{lstlisting}
-def mpk(k, z, kp):
-    Fk = zeta * A_tfp * tf.exp(z) \
-         * k**(zeta - 1)
-    return 1 - delta + Fk - adj_cost_k(k, kp)
-\end{lstlisting}
-\end{frame}
+% --- Padova cut: frame "Adjustment Costs" (23 lines) commented out ---
+% \begin{frame}[fragile]{Adjustment Costs}
+% \begin{lstlisting}
+% def adj_cost(k, kp):
+%     j = kp / k - 1.0
+%     return 0.5 * kappa * j**2 * k
+% 
+% def adj_cost_kp(k, kp):
+%     return kappa * (kp / k - 1.0)
+% 
+% def adj_cost_k(k, kp):
+%     j = kp / k - 1.0
+%     return -0.5 * kappa * j * (j + 2.0)
+% \end{lstlisting}
+% 
+% \vspace{0.3em}
+% \textbf{Marginal product of capital:}
+% \begin{lstlisting}
+% def mpk(k, z, kp):
+%     Fk = zeta * A_tfp * tf.exp(z) \
+%          * k**(zeta - 1)
+%     return 1 - delta + Fk - adj_cost_k(k, kp)
+% \end{lstlisting}
+% \end{frame}
 
 % --- Slide 39: Fischer-Burmeister (Code) ---
 \begin{frame}[fragile]{Fischer--Burmeister Function}
