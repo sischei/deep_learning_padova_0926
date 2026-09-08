@@ -22,7 +22,8 @@ A two-day lecture suite held at the **University of Padova**, **23–24 Septembe
   deep surrogate or Gaussian process then learns.
 * Each method is built from scratch on a benchmark where the answer is known, Brock–Mirman,
   cake-eating, Black–Scholes, before being applied to models where it is not: IRBC, 56-cohort OLG,
-  continuous-time Aiyagari.
+  continuous-time Aiyagari. Where a model does not solve at classroom scale, the notes say so and
+  point at the code that does.
 * The format is interactive and workshop-like, combining theory with hands-on coding in Python.
 
 ## Prerequisites
@@ -48,9 +49,33 @@ Please arrive with these in place, the ten hours are reserved for method content
 
 - Nuvolos Support: <support@nuvolos.cloud>
 
-To run the notebooks on your own machine instead, see [`requirements.txt`](requirements.txt).
-Everything runs on CPU; the three heaviest notebooks expose a `RUN_MODE = "smoke"` switch that bounds
-epochs and sample sizes.
+### Running the notebooks on your own machine
+
+Python 3.10–3.12. No GPU is needed: every notebook runs on a CPU, and the heaviest ones expose a
+`RUN_MODE` switch (`"smoke"` / `"teaching"` / `"production"`) that bounds epochs and sample sizes.
+
+```bash
+git clone https://github.com/sischei/deep_learning_padova_0926.git
+cd deep_learning_padova_0926
+
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+
+pip install --upgrade pip
+pip install -r requirements.txt
+
+python -m ipykernel install --user --name padova --display-name "Padova 2026"
+jupyter lab
+```
+
+Then open any notebook and pick the **Padova 2026** kernel. To check that the install worked:
+
+```bash
+python -c "import tensorflow, torch, sklearn; print(tensorflow.__version__, torch.__version__)"
+```
+
+On Apple Silicon, `pip install tensorflow` pulls the arm64 wheel; `tensorflow-metal` is not needed for
+anything taught here. The exact package list is in [`requirements.txt`](requirements.txt).
 
 ---
 
@@ -110,10 +135,14 @@ and solved by hand and then by a sixty-line network, before the six-cohort Krueg
 the closed-form savings rate is derived by backward induction and the two assumptions behind it are
 named: log utility, and no future labor income. The step from a sequence equilibrium to a recursive
 one, which every DEQN relies on, is made explicit. The trained network is validated against the closed
-form cohort by cohort, at every income level. The 56-cohort benchmark of Azinovic, Gaegauf and
-Scheidegger (2022) then drops both assumptions, with CRRA utility, hump-shaped wages and two assets,
-and the constraints the young hit are handled by product-form KKT residuals whose binding frequencies
-are measured rather than assumed.
+form cohort by cohort, at every income level. The session closes on the 56-cohort benchmark of
+Azinovic, Gaegauf and Scheidegger (2022), which drops both assumptions, with CRRA utility, hump-shaped
+wages, two assets and two occasionally binding constraints handled by product-form KKT residuals. That
+model is presented on the slides rather than run in class: the reference implementation, with the
+paper's trained weights, is the
+[`DeepEquilibriumNets`](https://github.com/sischei/DeepEquilibriumNets/tree/master/code/python-scripts/benchmark)
+repository. The last slide is an honest account of what happened when it was shrunk to a laptop
+preset, which is the most useful thing in the session for anyone who goes home and tries this.
 
 **5. Scaling up: IRBC.** The finale of Day 1. N symmetric countries, N Euler equations and a world
 resource constraint on a 2N-dimensional state, residuals stacked along a country dimension rather

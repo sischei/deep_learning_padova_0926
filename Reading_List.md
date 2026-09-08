@@ -50,7 +50,9 @@ derivations, worked examples and exercise solutions. Everything below is supplem
   1126–1150. The two-period model the session opens with.
 * Krueger & Kübler (2004), *Computing Equilibrium in OLG Models with Stochastic Production*,
   *Journal of Economic Dynamics and Control* 28(7), 1411–1436. The closed form used for validation.
-* Azinovic, Gaegauf & Scheidegger (2022), §3, the 56-cohort benchmark.
+* Azinovic, Gaegauf & Scheidegger (2022), §3, the 56-cohort benchmark. Presented on the slides;
+  the reference implementation, with the paper's trained weights, is
+  [`DeepEquilibriumNets/code/python-scripts/benchmark`](https://github.com/sischei/DeepEquilibriumNets/tree/master/code/python-scripts/benchmark).
 * Companion script, Chapter 5.
 
 ## Sessions 6–7, Deep surrogates, Gaussian processes, and structural estimation

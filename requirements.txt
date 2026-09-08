@@ -32,3 +32,7 @@ torch>=2.2
 # --- notebooks ---
 jupyterlab>=4.0
 ipykernel>=6.29
+
+# --- python refresher only ---
+# python_basics_10 and _11 fetch a small dataset over HTTP.
+requests>=2.31
