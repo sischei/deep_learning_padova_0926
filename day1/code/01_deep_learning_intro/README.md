@@ -1,4 +1,4 @@
-# Session 1 — Introduction to machine learning and deep learning
+# Session 1, Introduction to machine learning and deep learning
 
 Day 1, 09:00–10:30. Slides: [`01_Intro_to_DeepLearning.pdf`](../../slides/01_Intro_to_DeepLearning.pdf)
 

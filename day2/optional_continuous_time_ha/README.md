@@ -4,7 +4,7 @@
 PINN machinery from [Session 8](../code/08_pinns) and [Session 9](../code/09_pinns_applications)
 all the way to a general-equilibrium heterogeneous-agent model.
 
-Everything here is complete and runnable — it simply did not fit in ten hours.
+Everything here is complete and runnable, it simply did not fit in ten hours.
 
 ## What it covers
 
@@ -17,7 +17,7 @@ Everything here is complete and runnable — it simply did not fit in ten hours.
 ## Where to start
 
 1. Session 9's [`09_03_PE_Discrete_HJB_PINN.ipynb`](../code/09_pinns_applications/09_03_PE_Discrete_HJB_PINN.ipynb)
-   is the natural bridge — one agent's HJB with an income process, solved by finite differences and
+   is the natural bridge, one agent's HJB with an income process, solved by finite differences and
    by a PINN. Understand that first.
 2. Then the slides here, for the step from partial to general equilibrium: the distribution becomes
    a state, and the KFE joins the HJB.
@@ -26,7 +26,7 @@ Everything here is complete and runnable — it simply did not fit in ten hours.
 ## Reading
 
 - Achdou, Han, Lasry, Lions & Moll (2022), *Income and Wealth Distribution in Macroeconomics: A
-  Continuous-Time Approach*, *Review of Economic Studies* 89(1), 45–86 — the finite-difference benchmark.
+  Continuous-Time Approach*, *Review of Economic Studies* 89(1), 45–86, the finite-difference benchmark.
 - Payne's lecture notes in [`../readings/Payne_continuous_time`](../readings/Payne_continuous_time):
   stochastic calculus, the Kolmogorov forward equation, solving differential equations, optimal
   control, equilibrium, and the Krusell–Smith master equation.

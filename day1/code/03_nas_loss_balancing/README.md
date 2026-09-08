@@ -1,4 +1,4 @@
-# Session 3 — Neural architecture search and loss balancing
+# Session 3, Neural architecture search and loss balancing
 
 Day 1, 13:30–14:25. Slides: [`03a_Neural_Architecture_Search.pdf`](../../slides/03a_Neural_Architecture_Search.pdf) · [`03b_Loss_Balancing.pdf`](../../slides/03b_Loss_Balancing.pdf)
 
@@ -15,5 +15,5 @@ IRBC's country-by-country Euler equations are exactly the multi-component losses
 without waiting for a full re-search.
 
 The hands-on exercise that applies inverse-loss weighting to a real model is
-[`05_03_IRBC_Exercise.ipynb`](../05_irbc/05_03_IRBC_Exercise.ipynb), in Session 5 — it needs the IRBC
+[`05_03_IRBC_Exercise.ipynb`](../05_irbc/05_03_IRBC_Exercise.ipynb), in Session 5, it needs the IRBC
 model first.

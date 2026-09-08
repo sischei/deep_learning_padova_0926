@@ -363,7 +363,7 @@ Endpoints are exact \emph{by construction}, so the boundary loss is identically 
     % Initial transform
     \node[block, below=0.25cm of inp] (S0) {$S_0 = \tanh(Wx\!+\!b)$};
 
-    % DGM Layers — stacked to show repetition
+    % DGM Layers, stacked to show repetition
     \node[layer, below=0.25cm of S0] (L1) {DGM Layer 1};
     \node[layer, below=0.2cm of L1] (L2) {DGM Layer 2};
     \node[font=\small, text=gray] at ($(L2.south)+(0,-0.18)$) {$\vdots$};
@@ -772,7 +772,7 @@ $\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\t
 {\footnotesize Connects directly to the deep-surrogate approach to structural estimation from Day 1.}
 \end{frame}
 
-% --- Slide 38c: When PINNs fail — the multi-component loss again ---
+% --- Slide 38c: When PINNs fail, the multi-component loss again ---
 \begin{frame}{When PINNs Fail: the Multi-Component Loss, Again}
 \textbf{The soft-BC loss is a weighted sum of residuals that live at different scales:}
 \[

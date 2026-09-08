@@ -1,4 +1,4 @@
-# Session 7 — Structural estimation via SMM
+# Session 7, Structural estimation via SMM
 
 Day 2, 10:05–11:00. Slides: [`07a_Structural_Estimation_SMM.pdf`](../../slides/07a_Structural_Estimation_SMM.pdf) · [`07b_SMM_Exercise.pdf`](../../slides/07b_SMM_Exercise.pdf)
 

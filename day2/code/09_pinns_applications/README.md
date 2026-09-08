@@ -1,4 +1,4 @@
-# Session 9 — Economics-informed neural networks: applications and hands-on
+# Session 9, Economics-informed neural networks: applications and hands-on
 
 Day 2, 15:10–16:00. Slides: [`09_PINNs_Applications.pdf`](../../slides/09_PINNs_Applications.pdf) · [`10_Wrap_Up.pdf`](../../slides/10_Wrap_Up.pdf)
 
