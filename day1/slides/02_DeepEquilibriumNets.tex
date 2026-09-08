@@ -132,46 +132,36 @@
 \begin{center}
 \begin{tikzpicture}[
     session/.style={rectangle, rounded corners=4pt, draw=uzhblue, thick, fill=softblue!15,
-                    minimum width=8.6cm, minimum height=0.82cm, align=left, font=\small,
+                    minimum width=8.6cm, minimum height=0.72cm, align=left, font=\small,
                     inner xsep=10pt, anchor=west},
     now/.style={session, fill=uzhblue!85, draw=uzhblue, text=white, font=\small\bfseries},
-    guest/.style={session, fill=softgreen!15, draw=softgreen!70!black},
     pause/.style={font=\scriptsize\itshape, text=uzhgreydark, anchor=west},
     time/.style={font=\small\bfseries, text=uzhgreydark, anchor=east}
 ]
-    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-4.9);
-
-    \node[time] at (-0.35, 0) {09:10 -- 10:30};
-    \node[now]  at (0.25, 0) {Deep Learning \& Deep Equilibrium Nets (part I)};
-    \fill[uzhblue] (0,0) circle (3.5pt);
-    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,0.45) {you are here $\blacktriangledown$};
-
-    \node[pause] at (0.25,-0.7) {coffee break};
-    \fill[uzhblue!30] (0,-0.7) circle (2pt);
-
-    \node[time] at (-0.35,-1.4) {11:00 -- 12:30};
-    \node[session] at (0.25,-1.4) {Deep Equilibrium Nets (part II): guided exercises};
-    \fill[uzhblue] (0,-1.4) circle (3.5pt);
-
-    \node[pause] at (0.25,-2.1) {lunch break};
-    \fill[uzhblue!30] (0,-2.1) circle (2pt);
-
-    \node[time] at (-0.35,-2.8) {13:30 -- 15:00};
-    \node[session] at (0.25,-2.8) {Deep Surrogates to Estimate Dynamic Models};
-    \fill[uzhblue] (0,-2.8) circle (3.5pt);
-
-    \node[pause] at (0.25,-3.5) {coffee break};
-    \fill[uzhblue!30] (0,-3.5) circle (2pt);
-
-    \node[time] at (-0.35,-4.2) {15:30 -- 17:00};
-    \node[guest] at (0.25,-4.2) {DeepHAM \& structural reinforcement learning~~{\footnotesize\itshape (Yang)}};
-    \fill[softgreen!70!black] (0,-4.2) circle (3.5pt);
+    \draw[uzhblue!30, line width=2pt] (0,0.45) -- (0,-4.76);
+    \node[time] at (-0.35,0.00) {09:00--10:30};
+    \node[session] at (0.25,0.00) {Introduction to machine learning and deep learning};
+    \fill[uzhblue] (0,0.00) circle (3.5pt);
+    \node[pause] at (0.25,-0.62) {coffee break};
+    \fill[uzhblue!30] (0,-0.62) circle (2pt);
+    \node[time] at (-0.35,-1.24) {10:45--12:00};
+    \node[now] at (0.25,-1.24) {Deep Equilibrium Nets and Brock--Mirman};
+    \fill[uzhblue] (0,-1.24) circle (3.5pt);
+    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-0.86) {you are here $\blacktriangledown$};
+    \node[pause] at (0.25,-1.86) {lunch break};
+    \fill[uzhblue!30] (0,-1.86) circle (2pt);
+    \node[time] at (-0.35,-2.48) {13:30--14:25};
+    \node[session] at (0.25,-2.48) {Architecture search and loss balancing};
+    \fill[uzhblue] (0,-2.48) circle (3.5pt);
+    \node[time] at (-0.35,-3.10) {14:25--15:25};
+    \node[session] at (0.25,-3.10) {Overlapping generations with DEQNs};
+    \fill[uzhblue] (0,-3.10) circle (3.5pt);
+    \node[pause] at (0.25,-3.72) {coffee break};
+    \fill[uzhblue!30] (0,-3.72) circle (2pt);
+    \node[time] at (-0.35,-4.34) {15:40--16:30};
+    \node[session] at (0.25,-4.34) {IRBC with DEQNs};
+    \fill[uzhblue] (0,-4.34) circle (3.5pt);
 \end{tikzpicture}
-\end{center}
-
-\vspace{0.1cm}
-\begin{center}
-{\footnotesize \textbf{Materials:}~\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}~~$\cdot$~~\textbf{Cloud:}~\href{https://nuvolos.cloud}{nuvolos.cloud}}
 \end{center}
 \end{frame}
 
@@ -434,9 +424,9 @@ Occasionally binding constraints $\Rightarrow$ policy functions are \emphc{non-s
 \textbf{The wishlist.} A numerical method that is
 \begin{enumerate}
     \setlength{\itemsep}{2pt}
-    \item \textbf{global}, not a local perturbation;
+    \item \textbf{global}: not a local perturbation;
     \item content with a small residual error;
-    \item \textbf{grid-free}, avoiding growth like $n_g^{d_x}$;
+    \item \textbf{grid-free}: avoiding growth like $n_g^{d_x}$;
     \item comfortable with kinks and irregular ergodic sets;
     \item \textbf{parallel-friendly}.
 \end{enumerate}
@@ -687,7 +677,7 @@ A DEQN is \emphc{parameterized expectations with a neural network}: the same reg
     \item Maliar, Maliar \& Winant (2021), a unified framework
     \item Duarte (2018), continuous time
     \item Fern\'andez-Villaverde et al.\ (2020), dynamic programming
-    \item \emphc{DeepHAM} (Han, Yang \& E 2026), \emph{this afternoon at 15:30}
+    \item \emphc{DeepHAM} (Han, Yang \& E 2026), heterogeneous agents
     \item Kahou et al.\ (2021), symmetry and exchangeability
 \end{itemize}
 \end{columns}
@@ -911,7 +901,7 @@ $\E{\varepsilon_i'^{\,4}}$ gives $d_\varepsilon$ against a truth of $3$: the fou
 
 % --- Cost comparison ---
 \begin{frame}{Which Rule When}
-\textbf{Per-state cost}, IRBC model with $n_c$ countries, $d_\varepsilon = n_c+1$ shocks ($Q=3$ for the tensor product):
+\textbf{Per-state cost}: IRBC model with $n_c$ countries, $d_\varepsilon = n_c+1$ shocks ($Q=3$ for the tensor product):
 \begin{center}
 \renewcommand{\arraystretch}{1.05}
 \footnotesize
@@ -1032,7 +1022,7 @@ CVaR     & mean of the top $10\%$ of $|r|$                    & explicitly train
 \begin{itemize}\itemsep1pt\footnotesize
     \item \emphc{LogCosh and MSE} reach the lowest mean residual here, \emphc{Huber and CVaR} the narrowest tail, and \emphc{MAE stalls} because its gradient magnitude does not shrink with the residual.
     \item This is one model with one architecture and the values are seed-sensitive. MSE stays the default; LogCosh is worth benchmarking against it; use Huber, Quantile or CVaR when the worst case matters.
-    \item \emphc{Rank on the economic metric}, not the training loss: the two rankings need not agree.
+    \item \emphc{Rank on the economic metric}: not the training loss: the two rankings need not agree.
 \end{itemize}
 \end{frame}
 
@@ -1324,7 +1314,7 @@ The economics is tested in \emphc{rare, stressed and counterfactual} regions, ex
 \end{frame}
 
 % --- Hands-on preview ---
-\begin{frame}{Deep Equilibrium Nets, Part II: 11:00 -- 12:30}
+\begin{frame}{Hands-On: Build a DEQN Yourself}
 \textbf{You will build and train DEQNs yourself, starting from Brock--Mirman:}
 
 \vspace{0.4em}
@@ -1335,7 +1325,7 @@ The economics is tested in \emphc{rare, stressed and counterfactual} regions, ex
 \end{enumerate}
 
 \vspace{0.4em}
-{\footnotesize Then the two pathologies of Parts IV and V, on the same code: loss kernels (\texttt{02\_05}), architecture search (\texttt{02\_06}, \texttt{02\_07}), and loss balancing (\texttt{02\_08}).}
+{\footnotesize Loss kernels are compared in \texttt{02\_05}. Architecture search and loss balancing follow in Session 3, on the same code: \texttt{03\_01}, \texttt{03\_02}, \texttt{03\_03}.}
 
 \vspace{0.5em}
 \begin{center}
@@ -1388,7 +1378,7 @@ The exercise loss adds a squared \emph{Euler} residual to a squared \emph{Fische
 A book and graduate lecture script that develops these methods in full.\\[6pt]
 
 \begin{itemize}\itemsep3pt
-    \item \textbf{18 lectures}, from foundations to research-level applications.
+    \item \textbf{18 lectures}: from foundations to research-level applications.
     \item \emphc{Everything is in code}: each lecture ships with runnable notebooks.
     \item Covers what this lecture could only sketch: heterogeneous agents, occasionally binding constraints, estimation, and uncertainty quantification.
 \end{itemize}
@@ -1416,7 +1406,7 @@ A book and graduate lecture script that develops these methods in full.\\[6pt]
 \url{https://sischei.github.io}
 
 \vspace{0.6cm}
-{\small Next up: 11:00 -- 12:30, Deep Equilibrium Nets (part II)}\\[6pt]
+{\small Next up: architecture search and loss balancing (Session 3)}\\[6pt]
 {\small Materials:}\\[3pt]
 {\footnotesize\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}}\\[4pt]
 {\footnotesize Platform: \href{https://nuvolos.cloud}{nuvolos.cloud}}

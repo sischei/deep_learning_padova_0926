@@ -86,7 +86,7 @@
 % --- Exercise pause badge ---
 \newcommand{\exercisepause}{%
   \tikz[baseline=(X.base)]{\node[fill=darkgreen!80!black, text=white,
-  rounded corners=2pt, inner sep=3pt, font=\scriptsize\bfseries](X){PAUSE --- 5 min};}}
+  rounded corners=2pt, inner sep=3pt, font=\scriptsize\bfseries](X){PAUSE, 5 min};}}
 
 
 % ============================================================================
@@ -343,7 +343,7 @@ The network effectively solves a \emph{single-task} problem.
 \end{frame}
 
 % --- Slide 7: Equal Weighting Failure ---
-\begin{frame}{Equal Weighting --- Training Dynamics}
+\begin{frame}{Equal Weighting: Training Dynamics}
 \begin{center}
 \includegraphics[width=0.95\linewidth]{figures/loss_norm_equal_weights.pdf}
 \end{center}
@@ -421,7 +421,7 @@ This automatically up-weights small losses and down-weights large ones.
 \end{frame}
 
 % --- Slide 10: Inverse-Loss Formula ---
-\begin{frame}{Inverse-Loss Weighting --- Summary}
+\begin{frame}{Inverse-Loss Weighting: Summary}
 \begin{block}{Algorithm}
 At each epoch $t$:
 \begin{enumerate}
@@ -443,7 +443,7 @@ Typical choices: $\beta_{\mathrm{ema}} = 0.99$, $\epsilon = 10^{-8}$.
 \begin{frame}{SoftAdapt}
 \begin{columns}[T]
 \column{0.55\textwidth}
-\textbf{Idea:} Weight based on \emph{relative loss changes} --- components that are improving slowly get higher weight.
+\textbf{Idea:} Weight based on \emph{relative loss changes}, components that are improving slowly get higher weight.
 
 \vspace{0.2cm}
 \begin{block}{Rate of change}
@@ -481,7 +481,7 @@ Typical choices: $\beta_{\mathrm{ema}} = 0.99$, $\epsilon = 10^{-8}$.
 \end{frame}
 
 % --- Slide 12: SoftAdapt Formula ---
-\begin{frame}[shrink=15]{SoftAdapt --- Formula}
+\begin{frame}[shrink=15]{SoftAdapt: Formula}
 \begin{block}{Weight update (Heydari et al., 2019)}
 \[
     \hat{w}_i^{(t)} = \frac{\exp\!\bigl(\Delta_i^{(t)} / T\bigr)}{\sum_{j=1}^K \exp\!\bigl(\Delta_j^{(t)} / T\bigr)} \cdot K
@@ -506,7 +506,7 @@ Raw $\Delta_i^{(t)}$ is dimensional: a component with loss $\sim 10^3$ produces 
 \end{frame}
 
 % --- Slide 13: ReLoBRaLo Idea ---
-\begin{frame}{ReLoBRaLo --- Relative Loss Balancing with Random Lookback}
+\begin{frame}{ReLoBRaLo: Relative Loss Balancing with Random Lookback}
 \begin{columns}[T]
 \column{0.55\textwidth}
 \textbf{Key innovations} (Bischof \& Kraus, 2025), adapted here as a deterministic classroom version:
@@ -535,7 +535,7 @@ Raw $\Delta_i^{(t)}$ is dimensional: a component with loss $\sim 10^3$ produces 
 \end{frame}
 
 % --- Slide 14: ReLoBRaLo Algorithm ---
-\begin{frame}{ReLoBRaLo --- Algorithm}
+\begin{frame}{ReLoBRaLo: Algorithm}
 \begin{block}{Weight update at epoch $t$}
 \begin{algorithmic}[1]
 \STATE Compute losses $\mathcal{L}_1^{(t)}, \ldots, \mathcal{L}_K^{(t)}$
@@ -553,9 +553,9 @@ Raw $\Delta_i^{(t)}$ is dimensional: a component with loss $\sim 10^3$ produces 
 
 \vspace{0.3cm}
 \begin{itemize}
-    \item $\alpha$: smoothing --- how much to trust the historical weights
-    \item $\rho$: baseline mix --- relative weight on the initial-loss comparison
-    \item $T$: temperature --- sharpness of the softmax
+    \item $\alpha$: smoothing, how much to trust the historical weights
+    \item $\rho$: baseline mix, relative weight on the initial-loss comparison
+    \item $T$: temperature, sharpness of the softmax
 \end{itemize}
 \end{frame}
 
@@ -583,7 +583,7 @@ A DEQN has three loss components at iteration $t$: $\mathcal{L}_1^{(t)} = 10.0$,
 \end{frame}
 
 % --- Slide 15: ReLoBRaLo Hyperparameters ---
-\begin{frame}{ReLoBRaLo --- Hyperparameters}
+\begin{frame}{ReLoBRaLo: Hyperparameters}
 \small
 \begin{center}
 \footnotesize
@@ -609,7 +609,7 @@ Defaults work well in most cases. Only $T$ needs occasional tuning (see sensitiv
 \end{frame}
 
 % --- Slide 16: ReLoBRaLo Visual ---
-\begin{frame}{ReLoBRaLo --- Weight Evolution}
+\begin{frame}{ReLoBRaLo: Weight Evolution}
 \begin{center}
 \includegraphics[width=0.95\linewidth]{figures/loss_norm_relobralo_weights.pdf}
 \end{center}
@@ -639,7 +639,7 @@ The weights $w_i$ are \emphc{learnable parameters} updated via gradient descent 
 \column{0.42\textwidth}
 \textbf{Pros:}
 \begin{itemize}
-    \item Principled --- directly addresses gradient competition
+    \item Principled, directly addresses gradient competition
     \item Automatic, no manual tuning
 \end{itemize}
 
@@ -654,7 +654,7 @@ The weights $w_i$ are \emphc{learnable parameters} updated via gradient descent 
 \end{frame}
 
 % --- Slide 18: GradNorm Formula ---
-\begin{frame}{GradNorm --- Formula}
+\begin{frame}{GradNorm: Formula}
 \begin{block}{Gradient normalization loss (Chen et al., 2018)}
 \[
     \mathcal{L}_\text{grad} = \sum_{i=1}^{K} \Bigl| \bigl\| \nabla_{\bm{\theta}}\, w_i \mathcal{L}_i \bigr\|_2 - \bar{G} \cdot r_i^{(t)} \Bigr|
@@ -663,9 +663,9 @@ The weights $w_i$ are \emphc{learnable parameters} updated via gradient descent 
 
 where:
 \begin{itemize}
-    \item $\bar{G} = \frac{1}{K} \sum_{i} \|\nabla_{\bm{\theta}}\, w_i \mathcal{L}_i\|_2$ --- average gradient norm
-    \item $r_i^{(t)} = \bigl(\tilde{\mathcal{L}}_i^{(t)} / \bar{\tilde{\mathcal{L}}}^{(t)}\bigr)^\alpha$ --- relative inverse training rate
-    \item $\tilde{\mathcal{L}}_i^{(t)} = \mathcal{L}_i^{(t)} / \mathcal{L}_i^{(0)}$ --- loss ratio relative to initial
+    \item $\bar{G} = \frac{1}{K} \sum_{i} \|\nabla_{\bm{\theta}}\, w_i \mathcal{L}_i\|_2$, average gradient norm
+    \item $r_i^{(t)} = \bigl(\tilde{\mathcal{L}}_i^{(t)} / \bar{\tilde{\mathcal{L}}}^{(t)}\bigr)^\alpha$, relative inverse training rate
+    \item $\tilde{\mathcal{L}}_i^{(t)} = \mathcal{L}_i^{(t)} / \mathcal{L}_i^{(0)}$, loss ratio relative to initial
     \item $\alpha$ controls asymmetry ($\alpha = 1.5$ typical)
 \end{itemize}
 

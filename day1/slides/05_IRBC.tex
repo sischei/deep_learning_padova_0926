@@ -103,7 +103,7 @@
 % --- Exercise pause badge ---
 \newcommand{\exercisepause}{%
   \tikz[baseline=(X.base)]{\node[fill=darkgreen!80!black, text=white,
-  rounded corners=2pt, inner sep=3pt, font=\scriptsize\bfseries](X){PAUSE --- 5 min};}}
+  rounded corners=2pt, inner sep=3pt, font=\scriptsize\bfseries](X){PAUSE, 5 min};}}
 
 
 % ============================================================================
@@ -171,7 +171,7 @@ Brumm, Krause, Schaab \& Scheidegger (2022), ``Sparse Grids for Dynamic Economic
 \end{frame}
 
 % --- Slide 5: Why International Models? ---
-\begin{frame}{Why International Models --- and Why IRBC as a Testbed?}
+\begin{frame}{Why International Models, and Why IRBC as a Testbed?}
 \footnotesize
 \begin{columns}[T]
 \column{0.50\textwidth}
@@ -252,7 +252,7 @@ benchmark for projection methods (Krueger \& Kubler 2004; Brumm \& Scheidegger 2
 
 % --- Slide 6: Model Overview ---
 \begin{frame}{Model Overview}
-\textbf{International Real Business Cycle (IRBC) model} --- Backus, Kehoe \& Kydland (1992); here with the DEQN-style extensions of Azinovic, Gaegauf \& Scheidegger (2022):
+\textbf{International Real Business Cycle (IRBC) model}: Backus, Kehoe \& Kydland (1992); here with the DEQN-style extensions of Azinovic, Gaegauf \& Scheidegger (2022):
 
 \vspace{0.5em}
 \begin{itemize}
@@ -454,8 +454,8 @@ Pareto weights $\tau^j$ allocate welfare across countries. We now \emph{attach m
 \footnotesize
 Attach one multiplier per active constraint of the planner's problem:
 \begin{itemize}\itemsep2pt
-    \item $\lambda_t$ on the aggregate resource constraint --- the \emphc{shadow price of world output} at date $t$.
-    \item $\mu_t^j \geq 0$ on country $j$'s irreversibility --- the \emphc{shadow price of being unable to disinvest}.
+    \item $\lambda_t$ on the aggregate resource constraint, the \emphc{shadow price of world output} at date $t$.
+    \item $\mu_t^j \geq 0$ on country $j$'s irreversibility, the \emphc{shadow price of being unable to disinvest}.
 \end{itemize}
 
 \[
@@ -494,7 +494,7 @@ With the multipliers $\mu_t^j$ now defined, optimality of the planner's choice o
 {\footnotesize The non-negativity $\mu^j \geq 0$ is the \emph{standard KKT sign}: the multiplier on a $\geq$-constraint is non-negative at the optimum.  The smoothed Fischer--Burmeister residual on the next slide encodes this sign restriction \emph{and} the slackness condition $\mu^j I^j = 0$ in one differentiable expression.}
 
 \vspace{0.3em}
-\textbf{Numerical problem:} KKT involves $\min/\max$ --- \emphc{non-differentiable}, incompatible with SGD. Next slide: smooth it via the Fischer--Burmeister function.
+\textbf{Numerical problem:} KKT involves $\min/\max$, \emphc{non-differentiable}, incompatible with SGD. Next slide: smooth it via the Fischer--Burmeister function.
 \end{frame}
 
 % --- Slide 12: Fischer-Burmeister ---
@@ -516,7 +516,7 @@ With the multipliers $\mu_t^j$ now defined, optimality of the planner's choice o
 $\text{FB}_0(\mu, I) = 0$ $\Leftrightarrow$ $\mu \geq 0$, $I \geq 0$, $\mu \cdot I = 0$.  For $\varepsilon>0$, this exact zero set is slightly smoothed near the origin.
 
 \vspace{0.2em}
-$\Rightarrow$ For $\varepsilon>0$, \emphc{differentiable} everywhere---compatible with SGD.
+$\Rightarrow$ For $\varepsilon>0$, \emphc{differentiable} everywhere, compatible with SGD.
 
 \column{0.48\textwidth}
 \begin{center}
@@ -677,7 +677,7 @@ $N$ & \textbf{States} & \textbf{Policies} & \textbf{Equations} \\
 
 \vspace{0.3em}
 \begin{itemize}
-    \item Dimensions grow \emphc{linearly} in $N$---no combinatorial explosion
+    \item Dimensions grow \emphc{linearly} in $N$, no combinatorial explosion
     \item Traditional grid methods: $\mathcal{O}(n^{2N})$ grid points
     \item DEQNs: a single neural network, trained via SGD
 \end{itemize}
@@ -813,7 +813,7 @@ Consider the 2-country IRBC model. Suppose we \emphc{double} the capital depreci
 
 \vspace{0.2em}
 {\small
-The notebooks keep a \emphc{linear} output and apply bounded transforms: $k^{j\prime}=k^j\exp\{\bar g\tanh r\}$ and $\lambda=\lambda_{\text{ref}}\exp\{s\tanh r\}$ -- the $\tanh$ caps the exponent, so no overflow (unlike a raw $e^x$) -- while the inequality multipliers $\mu^j$ use \textbf{softplus}.
+The notebooks keep a \emphc{linear} output and apply bounded transforms: $k^{j\prime}=k^j\exp\{\bar g\tanh r\}$ and $\lambda=\lambda_{\text{ref}}\exp\{s\tanh r\}$, the $\tanh$ caps the exponent, so no overflow (unlike a raw $e^x$), while the inequality multipliers $\mu^j$ use \textbf{softplus}.
 }
 \end{frame}
 
@@ -893,7 +893,7 @@ $N$ & \textbf{Shocks} & $Q$ & \textbf{Quad.\ nodes} \\
 \end{enumerate}
 
 \vspace{0.3em}
-{\small Each quadrature node requires a \emphc{forward pass} through the network---but all nodes in a batch can be evaluated in parallel.}
+{\small Each quadrature node requires a \emphc{forward pass} through the network, but all nodes in a batch can be evaluated in parallel.}
 \end{frame}
 
 % --- Slide 27: State Transition ---
@@ -1058,20 +1058,20 @@ $\Rightarrow$ \textbf{Next:} implementation in TensorFlow/Keras and results.
 
 \vspace{0.2em}
 \begin{enumerate}\itemsep1pt
-    \item \texttt{05\_01\_IRBC\_DEQN\_smooth.ipynb} -- \emph{smooth benchmark, in-class walk-through (this lecture's \texttt{code/})}
+    \item \texttt{05\_01\_IRBC\_DEQN\_smooth.ipynb}, \emph{smooth benchmark, in-class walk-through (this lecture's \texttt{code/})}
     \begin{itemize}\itemsep0pt
         \item Parameters \& steady state, monomial quadrature; Keras network, production/consumption/adjustment-cost equations
         \item Cost function (Euler + ARC), persistent-simulation training loop
         \item Time-invariance check and zero-shock stochastic steady state
     \end{itemize}
 
-    \item \texttt{05\_02\_IRBC\_DEQN\_irreversible.ipynb} -- \emph{irreversible-investment extension (this lecture's \texttt{code/})}
+    \item \texttt{05\_02\_IRBC\_DEQN\_irreversible.ipynb}, \emph{irreversible-investment extension (this lecture's \texttt{code/})}
     \begin{itemize}\itemsep0pt
         \item KKT multipliers $\mu^j$ and feasibility-by-construction policy; Fischer--Burmeister complementarity loss
         \item Same training loop and diagnostics as the smooth benchmark
     \end{itemize}
 
-    \item \texttt{05\_03\_IRBC\_Exercise.ipynb} -- \emph{hands-on exercise}
+    \item \texttt{05\_03\_IRBC\_Exercise.ipynb}, \emph{hands-on exercise}
     \begin{itemize}\itemsep0pt
         \item Task 1: comparative statics on the deterministic steady state
         \item Task 2: inverse-loss weighting for multi-component losses (ReLoBRaLo, from Session 3)
@@ -1252,7 +1252,7 @@ def compute_cost(states, nn):
 
 % --- Slide 41: Persistent-Simulation Training ---
 \begin{frame}{Persistent-Simulation Training}
-The companion notebooks train on \emphc{one continuing trajectory ensemble} -- no Phase~1 / Phase~2 switch, no resets to steady state.
+The companion notebooks train on \emphc{one continuing trajectory ensemble}, no Phase~1 / Phase~2 switch, no resets to steady state.
 
 \vspace{0.15em}
 \begin{itemize}
@@ -1302,7 +1302,7 @@ With a single training pipeline (no Phase~1/Phase~2 switch), \emph{four} signals
 \vspace{0.3em}
 \begin{enumerate}\itemsep3pt
     \item \textbf{Total loss} decays monotonically across training segments (the \emph{loss-vs-segment} panel in the notebooks).
-    \item \textbf{Per-residual mean magnitudes} -- \texttt{mean\_abs\_euler}, \texttt{mean\_abs\_arc}, and (in 04b) \texttt{mean\_abs\_fb} -- all fall below the prescribed tolerance.
+    \item \textbf{Per-residual mean magnitudes}: \texttt{mean\_abs\_euler}, \texttt{mean\_abs\_arc}, and (in 04b) \texttt{mean\_abs\_fb}, all fall below the prescribed tolerance.
     \item \textbf{Policy drift on the anchor cloud} crosses from \emphc{moving} to \emphc{stable}: only then is the policy time-invariant in the recursive sense.
     \item \textbf{Zero-shock SSS} converges from dispersed feasible starts to a common point with $I^j \to \delta\,k^j$ and (in 04b) $\mu^j \to 0$.
 \end{enumerate}
@@ -1313,7 +1313,7 @@ With a single training pipeline (no Phase~1/Phase~2 switch), \emph{four} signals
 
 % --- Slide 44: Convergence: Per-Equation ---
 \begin{frame}{Convergence: Per-Equation Residuals}
-\textbf{After training}, we evaluate residuals on a test cloud (smooth + irreversible):
+\textbf{After training}: we evaluate residuals on a test cloud (smooth + irreversible):
 
 \vspace{0.5em}
 \begin{center}
@@ -1336,7 +1336,7 @@ FB (country 2) & $\sim 10^{-5}$ & $\sim 10^{-4}$ \\
 \begin{itemize}
     \item Euler residuals $< 10^{-3}$ $\Rightarrow$ policy is accurate to within 0.1\%
     \item FB residuals near zero $\Rightarrow$ complementarity is well satisfied (04b only)
-    \item These are \emphc{relative errors}---interpretable as percentage deviations
+    \item These are \emphc{relative errors}, interpretable as percentage deviations
 \end{itemize}
 \end{frame}
 

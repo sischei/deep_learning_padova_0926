@@ -76,7 +76,7 @@ $0.36$ & $0.10$ & $0.04$ & $0.96$ \\
 \bottomrule
 \end{tabular}\end{center}
 \vspace{-0.05cm}
-{\scriptsize Note: the textbook closed-form policy $s = \alpha\beta$ requires $\delta = 1$. We use $\delta = 0.10$, so no analytic policy exists and the Euler equation must be solved numerically -- the surrogate replaces this expensive inner solve.}
+{\scriptsize Note: the textbook closed-form policy $s = \alpha\beta$ requires $\delta = 1$. We use $\delta = 0.10$, so no analytic policy exists and the Euler equation must be solved numerically, the surrogate replaces this expensive inner solve.}
 
 \textbf{Pedagogical sequence:}
 \begin{itemize}
@@ -92,10 +92,10 @@ $0.36$ & $0.10$ & $0.04$ & $0.96$ \\
 \begin{frame}{Why $\varrho$, not $\beta$?}
 \small
 \begin{itemize}
-  \item $\beta$ is famously \emphc{poorly identified} from macro moments alone -- it shifts the level of the savings rate but every level moment depends on the same scalar.
+  \item $\beta$ is famously \emphc{poorly identified} from macro moments alone, it shifts the level of the savings rate but every level moment depends on the same scalar.
   \item In practice, $\beta$ is calibrated to a target steady-state interest rate (under log utility and full depreciation, $1/\beta = 1+r$ at SS; with general $\delta$, the SS Euler relation is $1/\beta = 1 + \alpha (k^*)^{\alpha-1} - \delta$).
   \item $\varrho$ has a \emphc{clean direct mapping} to autocorrelation moments: $\mathrm{Corr}(\log Y_t, \log Y_{t-1})$, $\mathrm{Corr}(\Delta\log C_t, \Delta\log C_{t-1})$, and the simulated volatility moment move with persistence.
-  \item This is the textbook example of a \emphc{sharply identified} scalar parameter -- exactly what we want for teaching the SMM workflow. (With three moments and one parameter the system is technically \emph{over-identified}; the extra moments make the criterion sharper.)
+  \item This is the textbook example of a \emphc{sharply identified} scalar parameter, exactly what we want for teaching the SMM workflow. (With three moments and one parameter the system is technically \emph{over-identified}; the extra moments make the criterion sharper.)
 \end{itemize}
 \vspace{0.2cm}
 The single-parameter exercise (notebook 03) recovers $\hat\varrho$ accurately under CRN. The joint exercise (notebook 03b) shows what happens when an additional, partially-identified parameter is freed.
@@ -148,7 +148,7 @@ $m_0 = \mathrm{mean}(s_t)$ (\emph{diagnostic only}) & Should be flat in $\varrho
 \[\hat\varrho = \argmin_{\varrho}\; [m(\varrho) - \hat{m}^{\mathrm{data}}]^\top W \,[m(\varrho) - \hat{m}^{\mathrm{data}}], \quad W = I.\]
 \vspace{-8pt}
 
-{\scriptsize $W = I$ is the unweighted criterion -- the cleanest pedagogical default. The efficient choice is $W = S^{-1}$ where $S = \mathrm{Var}\bigl(\sqrt{T}\,\hat m^{\mathrm{data}}\bigr)$; with $W = I$ the asymptotic variance of $\hat\varrho$ is suboptimal but consistency and the interior-solution argument are unchanged.}
+{\scriptsize $W = I$ is the unweighted criterion, the cleanest pedagogical default. The efficient choice is $W = S^{-1}$ where $S = \mathrm{Var}\bigl(\sqrt{T}\,\hat m^{\mathrm{data}}\bigr)$; with $W = I$ the asymptotic variance of $\hat\varrho$ is suboptimal but consistency and the interior-solution argument are unchanged.}
 \end{block}
 \begin{enumerate}
   \item Define one routine $\varrho \mapsto (C_t, I_t, Y_t) \mapsto m(\varrho)$ that reuses the trained surrogate.
@@ -193,8 +193,8 @@ Re-seed the simulator every evaluation. Without CRN the criterion is dominated b
   \item How close is $\hat\varrho$ to $\varrho_{\text{true}} = 0.90$?
   \item Plot the SMM objective profile and mark both $\varrho_{\text{true}}$ and $\hat\varrho$.
   \item Compare matched moments $m(\hat\varrho)$ versus targets $\hat{m}^{\mathrm{data}}$.
-  \item Plot $s(K, \varrho_{\text{true}})$ vs.\ $s(K, \hat\varrho)$ -- the curves should overlay almost exactly.
-  \item Trace each candidate moment as a function of $\varrho$ on the trained surrogate -- this is the identification picture.
+  \item Plot $s(K, \varrho_{\text{true}})$ vs.\ $s(K, \hat\varrho)$, the curves should overlay almost exactly.
+  \item Trace each candidate moment as a function of $\varrho$ on the trained surrogate, this is the identification picture.
 \end{itemize}
 \end{frame}
 
@@ -216,7 +216,7 @@ The 3-input network is a smooth function over the entire $(K, \varrho)$ rectangl
 \end{center}
 \vspace{-0.15cm}
 \small
-All four candidate moments traced as a function of $\varrho$: the three identifying moments $m_1, m_2, m_3$ (Task~2 table, leftmost three panels) are monotone or near-monotone in $\varrho$. The diagnostic moment $m_0=\mathrm{mean}(s_t)$ (rightmost panel) is essentially flat -- correctly diagnosed as uninformative.
+All four candidate moments traced as a function of $\varrho$: the three identifying moments $m_1, m_2, m_3$ (Task~2 table, leftmost three panels) are monotone or near-monotone in $\varrho$. The diagnostic moment $m_0=\mathrm{mean}(s_t)$ (rightmost panel) is essentially flat, correctly diagnosed as uninformative.
 \end{frame}
 
 \begin{frame}{Expected Result: SMM Objective + Estimate}
@@ -267,7 +267,7 @@ $\hat\theta = \argmin_{\theta = (\beta,\varrho)}\; [m(\theta) - \hat{m}^{\mathrm
   \itemsep1pt
   \item 4-input MLP $(z, K, \beta, \varrho) \to s$. Train once on the whole rectangle.
   \item Forge synthetic data at $(\beta_{\text{true}}, \varrho_{\text{true}}) = (0.96, 0.90)$.
-  \item Compute the SMM criterion on a $25\times 25$ grid in $(\beta, \varrho)$ -- visualize both moment subsets.
+  \item Compute the SMM criterion on a $25\times 25$ grid in $(\beta, \varrho)$, visualize both moment subsets.
   \item Refine with \texttt{scipy.optimize.minimize} (\texttt{L-BFGS-B}, which honours the box constraints natively, started from the grid argmin).
   \item Verify the solution is interior; report distance to truth on each axis.
 \end{enumerate}
@@ -275,7 +275,7 @@ $\hat\theta = \argmin_{\theta = (\beta,\varrho)}\; [m(\theta) - \hat{m}^{\mathrm
 
 % --- New frame: BoTorch UCB acquisition ---
 \begin{frame}{BoTorch UCB Acquisition for Joint Estimation}
-\textbf{Why active learning here.} On the 2D rectangle, most of the area sits far from the SMM minimiser -- pure exploration is wasteful. We want a design that hits both the basin of attraction \emphc{and} regions where the moment GP is uncertain.
+\textbf{Why active learning here.} On the 2D rectangle, most of the area sits far from the SMM minimiser, pure exploration is wasteful. We want a design that hits both the basin of attraction \emphc{and} regions where the moment GP is uncertain.
 
 \smallskip
 \textbf{Acquisition function} (notebook 03b):
@@ -312,7 +312,7 @@ Two slices of the same 4-input network. White dashed = truth, orange dotted = ov
 \end{center}
 \vspace{-0.15cm}
 \small
-Left: the just-identified criterion shows a \emphc{ridge} along $\beta$ -- exactly the partial-identification problem that motivates calibrating $\beta$ in practice. Right: adding two persistence moments collapses the ridge to a localized minimum.
+Left: the just-identified criterion shows a \emphc{ridge} along $\beta$, exactly the partial-identification problem that motivates calibrating $\beta$ in practice. Right: adding two persistence moments collapses the ridge to a localized minimum.
 \end{frame}
 
 % --- New frame: GP surrogate of the SMM criterion ---

@@ -145,7 +145,7 @@ CRRA, hump-shaped labor, two assets, two constraints, persistent shocks. Noteboo
 \vspace{-3pt}\begin{itemize}\itemsep2pt
     \item \emphc{Lifecycle:} agents are born, work, save, retire, die.  A representative infinitely-lived household cannot speak to pensions, retirement, inheritance, or cohort-specific shocks.
     \item \emphc{Demographics:} at any $t$, many cohorts coexist, each with its own asset holdings and labor income.
-    \item \emphc{Finite asset distribution:} with $A$ cohorts, the cross-sectional wealth distribution is an $A$-vector -- not an infinite-dimensional object.  \emphc{Perfect for DEQNs:} state stays finite-dimensional with realistic heterogeneity.
+    \item \emphc{Finite asset distribution:} with $A$ cohorts, the cross-sectional wealth distribution is an $A$-vector, not an infinite-dimensional object.  \emphc{Perfect for DEQNs:} state stays finite-dimensional with realistic heterogeneity.
 \end{itemize}
 \end{block}
 \vspace{-3pt}
@@ -223,7 +223,7 @@ At each period $t$ we have $A$ coexisting cohorts.  A newborn enters (age 1); th
 \end{block}
 
 \begin{alertblock}{The only thing that depends on the model}
-The \emphc{equilibrium conditions $G$}.  Everything else -- the network, the SGD loop, the sampling method -- is generic.  \emphc{So to solve a new model, write down its $G$.}
+The \emphc{equilibrium conditions $G$}.  Everything else, the network, the SGD loop, the sampling method, is generic.  \emphc{So to solve a new model, write down its $G$.}
 \end{alertblock}
 
 \vspace{0.2em}
@@ -380,7 +380,7 @@ laptop. The network should report $\hat\sigma = 0.4118$ at every state the econo
     \item \emphc{One representative household per cohort}; a new one is born every period.
     \item \emphc{No uncertainty about lifetime}: all agents live exactly $A$ periods.
     \item Exogenous aggregate shock $z_t \in \{1,2,3,4\}$ drawn \emphc{i.i.d.}\ with transition $\pi_{ss'} = 0.25$.
-    \item \emphc{Log utility} $u(c) = \ln c$ -- chosen because it gives a \emphc{closed-form} equilibrium (Krueger \& K\"ubler, 2004).
+    \item \emphc{Log utility} $u(c) = \ln c$, chosen because it gives a \emphc{closed-form} equilibrium (Krueger \& K\"ubler, 2004).
     \item \emphc{Labor:} only the youngest cohort works: $\ell^1 = 1,\ \ell^h = 0$ for $h \ge 2$.
 \end{itemize}
 
@@ -857,8 +857,8 @@ Cohort $h$ & Periods remaining ($A-h$) & Savings rate $\beta_h$\\
 \begin{block}{Interpretation}
 \vspace{-3pt}\begin{itemize}\itemsep0pt
     \item Savings rate \emphc{monotonically declines} with age: as the horizon shrinks, saving less is optimal.
-    \item Youngest cohort saves \emphc{$\sim 66\%$} of its income -- longest horizon to enjoy the returns.
-    \item At $A$: terminal boundary $a^A = 0$ -- consume everything.
+    \item Youngest cohort saves \emphc{$\sim 66\%$} of its income, longest horizon to enjoy the returns.
+    \item At $A$: terminal boundary $a^A = 0$, consume everything.
 \end{itemize}
 \end{block}
 \end{frame}
@@ -918,7 +918,7 @@ The points are the exact closed form. The DEQN should reproduce them cohort by c
 \end{block}
 
 \begin{block}{Hands-on}
-Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Set \texttt{RUN\_MODE = "teaching"} ($\sim 5$ min) for the classroom run; \texttt{"smoke"} (the default) is a $\sim$30-s sanity check; \texttt{"production"} chases AGS Table~3 accuracy.  Both notebooks expose a \texttt{SAMPLING\_MODE = "simulation" / "exogenous"} switch (the persistent primary uses \texttt{"simulation"}, the companion \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb} uses \texttt{"exogenous"}); the model and loss are identical -- only the training cloud differs.
+Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Set \texttt{RUN\_MODE = "teaching"} ($\sim 5$ min) for the classroom run; \texttt{"smoke"} (the default) is a $\sim$30-s sanity check; \texttt{"production"} chases AGS Table~3 accuracy.  Both notebooks expose a \texttt{SAMPLING\_MODE = "simulation" / "exogenous"} switch (the persistent primary uses \texttt{"simulation"}, the companion \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb} uses \texttt{"exogenous"}); the model and loss are identical, only the training cloud differs.
 \end{block}
 \end{frame}
 
@@ -1071,7 +1071,7 @@ firm demands $(K_t, L_t)_{t \ge 0}$, and prices $(r_t, w_t, p_t)_{t\ge 0}$, such
 \textbf{Firm FOCs.}  Same closed form as Part II.
 
 \vspace{0.3em}
-\textbf{Two Euler equations per cohort}, for $h = 1, \ldots, A-1$ (with the marginal adjustment-cost wedge $\mathcal{A}_t^h := 1 + \zeta\,(k'^h_t - r_t k_t^h)$):
+\textbf{Two Euler equations per cohort}: for $h = 1, \ldots, A-1$ (with the marginal adjustment-cost wedge $\mathcal{A}_t^h := 1 + \zeta\,(k'^h_t - r_t k_t^h)$):
 \[
 \text{(capital)}\;\;
 u'(c_t^h)\,\mathcal{A}_t^h \;=\; \beta\,\E{u'(c_{t+1}^{h+1})\,r_{t+1}\,\mathcal{A}_{t+1}^{h+1}} \;+\; \lambda_{\text{b}}^h \;+\; \mu^h,
@@ -1260,7 +1260,7 @@ the multipliers go to zero and III.12 reports binding fractions of zero. A head 
 
     \item Diamond, P. A. (1965). \emph{National debt in a neoclassical growth model.} American Economic Review 55(5), 1126--1150.  \;[the two-period model of Part I\textonehalf; \texttt{04\_00\_OLG\_Diamond\_Warmup.ipynb}].
 
-    \item Fischer, A. (1992). \emph{A special Newton-type optimization method.} Optimization 24, 269--284.  \;[FB-complementarity function -- used in the \textbf{IRBC chapter (Ch.~3)}; mentioned in this lecture only as an alternative to the product-form KKT residuals adopted here.]
+    \item Fischer, A. (1992). \emph{A special Newton-type optimization method.} Optimization 24, 269--284.  \;[FB-complementarity function, used in the \textbf{IRBC chapter (Ch.~3)}; mentioned in this lecture only as an alternative to the product-form KKT residuals adopted here.]
 
     \item Code: \scriptsize\url{https://github.com/sischei/DeepEquilibriumNets}.
 \end{itemize}

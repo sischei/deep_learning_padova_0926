@@ -108,54 +108,36 @@
 \begin{center}
 \begin{tikzpicture}[
     session/.style={rectangle, rounded corners=4pt, draw=uzhblue, thick, fill=softblue!15,
-                    minimum width=8.6cm, minimum height=0.82cm, align=left, font=\small,
+                    minimum width=8.6cm, minimum height=0.72cm, align=left, font=\small,
                     inner xsep=10pt, anchor=west},
     now/.style={session, fill=uzhblue!85, draw=uzhblue, text=white, font=\small\bfseries},
-    guest/.style={session, fill=softgreen!15, draw=softgreen!70!black},
     pause/.style={font=\scriptsize\itshape, text=uzhgreydark, anchor=west},
     time/.style={font=\small\bfseries, text=uzhgreydark, anchor=east}
 ]
-    % timeline spine
-    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-4.9);
-
-    % 09:10 current session
-    \node[time] at (-0.35, 0) {09:10 -- 10:30};
-    \node[now]  at (0.25, 0) {Deep Learning \& Deep Equilibrium Nets (part I)};
-    \fill[uzhblue] (0,0) circle (3.5pt);
-    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,0.45) {you are here $\blacktriangledown$};
-
-    % coffee
-    \node[pause] at (0.25,-0.7) {coffee break};
-    \fill[uzhblue!30] (0,-0.7) circle (2pt);
-
-    % 11:00 DEQN part II
-    \node[time] at (-0.35,-1.4) {11:00 -- 12:30};
-    \node[session] at (0.25,-1.4) {Deep Equilibrium Nets (part II): guided exercises};
-    \fill[uzhblue] (0,-1.4) circle (3.5pt);
-
-    % lunch
-    \node[pause] at (0.25,-2.1) {lunch break};
-    \fill[uzhblue!30] (0,-2.1) circle (2pt);
-
-    % 13:30 surrogates
-    \node[time] at (-0.35,-2.8) {13:30 -- 15:00};
-    \node[session] at (0.25,-2.8) {Deep Surrogates to Estimate Dynamic Models};
-    \fill[uzhblue] (0,-2.8) circle (3.5pt);
-
-    % coffee
-    \node[pause] at (0.25,-3.5) {coffee break};
-    \fill[uzhblue!30] (0,-3.5) circle (2pt);
-
-    % 15:30 Yang
-    \node[time] at (-0.35,-4.2) {15:30 -- 17:00};
-    \node[guest] at (0.25,-4.2) {DeepHAM \& structural reinforcement learning~~{\footnotesize\itshape (Yang)}};
-    \fill[softgreen!70!black] (0,-4.2) circle (3.5pt);
+    \draw[uzhblue!30, line width=2pt] (0,0.45) -- (0,-4.76);
+    \node[time] at (-0.35,0.00) {09:00--10:30};
+    \node[now] at (0.25,0.00) {Introduction to machine learning and deep learning};
+    \fill[uzhblue] (0,0.00) circle (3.5pt);
+    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,0.38) {you are here $\blacktriangledown$};
+    \node[pause] at (0.25,-0.62) {coffee break};
+    \fill[uzhblue!30] (0,-0.62) circle (2pt);
+    \node[time] at (-0.35,-1.24) {10:45--12:00};
+    \node[session] at (0.25,-1.24) {Deep Equilibrium Nets and Brock--Mirman};
+    \fill[uzhblue] (0,-1.24) circle (3.5pt);
+    \node[pause] at (0.25,-1.86) {lunch break};
+    \fill[uzhblue!30] (0,-1.86) circle (2pt);
+    \node[time] at (-0.35,-2.48) {13:30--14:25};
+    \node[session] at (0.25,-2.48) {Architecture search and loss balancing};
+    \fill[uzhblue] (0,-2.48) circle (3.5pt);
+    \node[time] at (-0.35,-3.10) {14:25--15:25};
+    \node[session] at (0.25,-3.10) {Overlapping generations with DEQNs};
+    \fill[uzhblue] (0,-3.10) circle (3.5pt);
+    \node[pause] at (0.25,-3.72) {coffee break};
+    \fill[uzhblue!30] (0,-3.72) circle (2pt);
+    \node[time] at (-0.35,-4.34) {15:40--16:30};
+    \node[session] at (0.25,-4.34) {IRBC with DEQNs};
+    \fill[uzhblue] (0,-4.34) circle (3.5pt);
 \end{tikzpicture}
-\end{center}
-
-\vspace{0.1cm}
-\begin{center}
-{\footnotesize \textbf{Materials:}~\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}~~$\cdot$~~\textbf{Cloud:}~\href{https://nuvolos.cloud}{nuvolos.cloud}}
 \end{center}
 \end{frame}
 
@@ -312,7 +294,7 @@
 
 \vspace{0.7cm}
 \begin{center}
-\emphc{This summer school focuses on the last category:} deep learning as a \emph{computational} tool for economic modeling.
+\emphc{This course focuses on the last category:} deep learning as a \emph{computational} tool for economic modeling.
 \end{center}
 \end{frame}
 
@@ -597,7 +579,7 @@ Every machine learning algorithm follows the same three steps:
 \end{columns}
 
 \vspace{0.5cm}
-{\small Deep RL for heterogeneous-agent models is covered this afternoon (Yang, 15:30).  The neural network tools from this lecture are the building blocks for all of these paradigms.}
+{\small The neural network tools from this lecture are the building blocks for all of these paradigms.}
 \end{frame}
 
 % ============================================================================
@@ -1393,7 +1375,7 @@ Define the \textbf{error signal} at layer $\ell$: $\;\bm{\delta}^{(\ell)} \equiv
 \end{itemize}
 
 \vspace{0.25cm}
-\begin{exampleblock}{The hinge of this whole summer school}
+\begin{exampleblock}{The hinge of this whole course}
 \small Nothing in autodiff requires the loss to come from \emph{labels}; it only has to be a differentiable function of $\bm{\theta}$.  So we can put an \emphc{Euler-equation residual} in the loss and get $\nabla_{\bm{\theta}}$ for free.  That is exactly what \textbf{Deep Equilibrium Nets} do next.
 \end{exampleblock}
 \end{frame}
@@ -1883,7 +1865,7 @@ Specialized pattern, moderate history $\Rightarrow$ an LSTM is still a strong ba
 % --- Slide 54: Hands-On ---
 \begin{frame}{What Comes Next, and What to Run}
 \small
-\begin{block}{11:00 -- 12:30: Deep Equilibrium Nets (part II)}
+\begin{block}{Next, Session 2: Deep Equilibrium Nets}
 \small
 Everything from this lecture (networks, losses, SGD, regularization) comes together when we train a neural network to solve a dynamic stochastic model.
 \end{block}

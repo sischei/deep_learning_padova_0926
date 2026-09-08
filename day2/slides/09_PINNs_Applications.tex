@@ -243,15 +243,15 @@ deliberate choice between soft and hard boundary conditions.  Now we put it to w
 \vspace{0.5em}
 \textbf{VI.\ When to use one}~~\mbox{\small (10 min)}
 \begin{itemize}\setlength\itemsep{1pt}
-    \item PINNs vs.\ grid solvers; the other half --- inverse problems
+    \item PINNs vs.\ grid solvers; the other half, inverse problems
     \item Failure modes, and the multi-component loss returning from Session 3
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{Hands-on}~~\mbox{\small (12 min)} --- build a PINN from scratch, at the keyboard.
+\textbf{Hands-on}~~\mbox{\small (12 min)}: build a PINN from scratch, at the keyboard.
 
 \vspace{0.3em}
-\textbf{Wrap-up}~~\mbox{\small (8 min)} --- what to use when, and where to go next.
+\textbf{Wrap-up}~~\mbox{\small (8 min)}: what to use when, and where to go next.
 \end{frame}
 
 % ============================================================================
@@ -397,7 +397,7 @@ Endpoints are exact \emph{by construction}, so the boundary loss is identically 
 \vspace{0.4em}
 \begin{itemize}\setlength\itemsep{3pt}
     \item Pays off only in \emphc{higher dimensions}, or where the PDE has sharp features.
-    \item The input $x$ enters \emphc{every} layer, not just the first --- that is what resolves steep gradients.
+    \item The input $x$ enters \emphc{every} layer, not just the first, that is what resolves steep gradients.
     \item Each layer is \emphc{gated}, LSTM-style; the $x$-skips recall Highway Networks.
 \end{itemize}
 
@@ -713,7 +713,7 @@ Against this benchmark the notebook reports max absolute error $\approx 0.13$, m
 \column{0.52\textwidth}
 {\small Notebook \texttt{07} solves the same partial-equilibrium HJB both ways:}
 \begin{itemize}\setlength\itemsep{2pt}
-    \item \emphc{Upwind implicit FD}: 13 iterations on a 500-point grid, then the error is whatever the discretization gives you --- and you can shrink it by refining.
+    \item \emphc{Upwind implicit FD}: 13 iterations on a 500-point grid, then the error is whatever the discretization gives you, and you can shrink it by refining.
     \item \emphc{PINN}: thousands of epochs to reach $10^{-3}$--$10^{-2}$, with no comparable knob.
 \end{itemize}
 
@@ -764,7 +764,7 @@ $\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\t
 \vspace{0.5em}
 \begin{itemize}\setlength\itemsep{3pt}
     \item $\mu$ is just \emphc{another set of trainable parameters}: one extra tensor, same optimizer, same loop.
-    \item In economics $\mu$ is a \emphc{structural parameter} --- risk aversion, a discount rate, an adjustment cost --- and the data term is a moment condition.
+    \item In economics $\mu$ is a \emphc{structural parameter}, risk aversion, a discount rate, an adjustment cost, and the data term is a moment condition.
     \item This is estimation and solution in \emphc{one} optimization, rather than a solver nested inside an estimation loop.
 \end{itemize}
 
@@ -794,7 +794,7 @@ $\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\t
 \column{0.47\textwidth}
 \begin{block}{What to do, in order}
 \small
-\textbf{1.}~\emphc{Non-dimensionalize} first --- rescale so every residual is $O(1)$.\\[3pt]
+\textbf{1.}~\emphc{Non-dimensionalize} first, rescale so every residual is $O(1)$.\\[3pt]
 \textbf{2.}~Enforce \emphc{structurally} where you can: a hard-BC trial solution deletes $\ell_{\text{bc}}$ from the sum.\\[3pt]
 \textbf{3.}~Only then reach for adaptive weights.
 \end{block}
@@ -807,18 +807,18 @@ $\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\t
 % --- Slide 38d: Hands-on ---
 \begin{frame}{Hands-On: What to Run}
 \textbf{All seven notebooks are PyTorch, CPU-only, and self-contained.}\\[2pt]
-{\footnotesize Run them on \href{https://nuvolos.cloud}{nuvolos.cloud} --- no local setup needed.}
+{\footnotesize Run them on \href{https://nuvolos.cloud}{nuvolos.cloud}, no local setup needed.}
 
 \vspace{0.4em}
-\textbf{Session 8 --- the method}
+\textbf{Session 8, the method}
 \begin{itemize}\setlength\itemsep{1pt}
     \item The simplest possible PINN: $y''=-1$ with zero BCs \hfill{\footnotesize\texttt{08\_01}}
-    \item Soft penalty vs.\ hard trial solution --- the core choice \hfill{\footnotesize\texttt{08\_02}}
+    \item Soft penalty vs.\ hard trial solution, the core choice \hfill{\footnotesize\texttt{08\_02}}
     \item 2D Poisson: hard BCs by transfinite interpolation \hfill{\footnotesize\texttt{08\_03}}
 \end{itemize}
 
 \vspace{0.3em}
-\textbf{Session 9 --- the applications}
+\textbf{Session 9, the applications}
 \begin{itemize}\setlength\itemsep{1pt}
     \item The first economic application: the cake-eating HJB \hfill{\footnotesize\texttt{09\_01}}
     \item Black--Scholes, Greeks for free by autodiff \hfill{\footnotesize\texttt{09\_02}}
@@ -903,9 +903,8 @@ HJB equations, Black--Scholes, and any continuous-time model. Scales to \emphc{h
 
 \vspace{0.7cm}
 \textbf{Next up:}\\[6pt]
-{\large Deep Learning for}\\
-{\large Continuous-Time Models}\\[6pt]
-{\small 11:00--12:30~~$\cdot$~~Yucheng Yang}
+{\large Hands-on, then}\\
+{\large the course wrap-up}
 \end{center}
 \end{columns}
 \end{frame}

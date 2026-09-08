@@ -151,50 +151,37 @@
 }
 
 % --- Slide 2: Day 1 at a glance (same frame as lectures 1 and 2, marker moved) ---
-\begin{frame}{Day 1 at a Glance}
+\begin{frame}{Day 2 at a Glance}
 \begin{center}
 \begin{tikzpicture}[
     session/.style={rectangle, rounded corners=4pt, draw=uzhblue, thick, fill=softblue!15,
-                    minimum width=8.6cm, minimum height=0.82cm, align=left, font=\small,
+                    minimum width=8.6cm, minimum height=0.72cm, align=left, font=\small,
                     inner xsep=10pt, anchor=west},
     now/.style={session, fill=uzhblue!85, draw=uzhblue, text=white, font=\small\bfseries},
-    guest/.style={session, fill=softgreen!15, draw=softgreen!70!black},
     pause/.style={font=\scriptsize\itshape, text=uzhgreydark, anchor=west},
     time/.style={font=\small\bfseries, text=uzhgreydark, anchor=east}
 ]
-    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-4.9);
-
-    \node[time] at (-0.35, 0) {09:10 -- 10:30};
-    \node[session] at (0.25, 0) {Deep Learning \& Deep Equilibrium Nets (part I)};
-    \fill[uzhblue] (0,0) circle (3.5pt);
-
-    \node[pause] at (0.25,-0.7) {coffee break};
-    \fill[uzhblue!30] (0,-0.7) circle (2pt);
-
-    \node[time] at (-0.35,-1.4) {11:00 -- 12:30};
-    \node[session] at (0.25,-1.4) {Deep Equilibrium Nets (part II): guided exercises};
-    \fill[uzhblue] (0,-1.4) circle (3.5pt);
-
-    \node[pause] at (0.25,-2.1) {lunch break};
-    \fill[uzhblue!30] (0,-2.1) circle (2pt);
-
-    \node[time] at (-0.35,-2.8) {13:30 -- 15:00};
-    \node[now] at (0.25,-2.8) {Deep Surrogates to Estimate Dynamic Models};
-    \fill[uzhblue] (0,-2.8) circle (3.5pt);
-    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-2.35) {you are here $\blacktriangledown$};
-
-    \node[pause] at (0.25,-3.5) {coffee break};
-    \fill[uzhblue!30] (0,-3.5) circle (2pt);
-
-    \node[time] at (-0.35,-4.2) {15:30 -- 17:00};
-    \node[guest] at (0.25,-4.2) {DeepHAM \& structural reinforcement learning~~{\footnotesize\itshape (Yang)}};
-    \fill[softgreen!70!black] (0,-4.2) circle (3.5pt);
+    \draw[uzhblue!30, line width=2pt] (0,0.45) -- (0,-4.14);
+    \node[time] at (-0.35,0.00) {09:00--09:50};
+    \node[now] at (0.25,0.00) {Deep surrogates and Gaussian processes};
+    \fill[uzhblue] (0,0.00) circle (3.5pt);
+    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,0.38) {you are here $\blacktriangledown$};
+    \node[pause] at (0.25,-0.62) {coffee break};
+    \fill[uzhblue!30] (0,-0.62) circle (2pt);
+    \node[time] at (-0.35,-1.24) {10:05--11:00};
+    \node[session] at (0.25,-1.24) {Structural estimation via SMM};
+    \fill[uzhblue] (0,-1.24) circle (3.5pt);
+    \node[pause] at (0.25,-1.86) {lunch break};
+    \fill[uzhblue!30] (0,-1.86) circle (2pt);
+    \node[time] at (-0.35,-2.48) {14:00--14:55};
+    \node[session] at (0.25,-2.48) {PINNs I: foundations};
+    \fill[uzhblue] (0,-2.48) circle (3.5pt);
+    \node[pause] at (0.25,-3.10) {coffee break};
+    \fill[uzhblue!30] (0,-3.10) circle (2pt);
+    \node[time] at (-0.35,-3.72) {15:10--16:00};
+    \node[session] at (0.25,-3.72) {PINNs II: applications, hands-on, wrap-up};
+    \fill[uzhblue] (0,-3.72) circle (3.5pt);
 \end{tikzpicture}
-\end{center}
-
-\vspace{0.1cm}
-\begin{center}
-{\footnotesize \textbf{Materials:}~\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}~~$\cdot$~~\textbf{Cloud:}~\href{https://nuvolos.cloud}{nuvolos.cloud}}
 \end{center}
 \end{frame}
 
@@ -421,7 +408,7 @@ Because data is unlimited, scarcity-driven overfitting is not the binding constr
 \begin{block}{What a trained surrogate gives you}
 \begin{itemize}\itemsep1pt
   \item \emphc{Accurate enough for the downstream task}: in the option-pricing benchmark, 95th-percentile implied-vol errors below $0.13\%$ of the mean, rising to $0.43\%$ under a week to maturity. \emphc{Accuracy is not uniform over the box}
-  \item \textbf{Orders of magnitude faster}, and \textbf{differentiable}: gradients in $\str$ free, by autodiff
+  \item \textbf{Orders of magnitude faster}: and \textbf{differentiable}: gradients in $\str$ free, by autodiff
 \end{itemize}
 \end{block}
 \end{frame}
@@ -782,7 +769,7 @@ f(\x) \sim \mathcal{GP}\bigl(\mu(\x),\; k(\x,\x')\bigr).
 \qquad K_{ij} = k(\x_i, \x_j).
 \]
 
-\textbf{Condition on what you observed}, the two lines from three slides ago:
+\textbf{Condition on what you observed}: the two lines from three slides ago:
 \begin{align*}
 \bm\mu_{*|\mathcal{D}} &= K_*^\top K^{-1} \bm f\\
 \Sigma_{*|\mathcal{D}} &= K_{**} - K_*^\top K^{-1} K_*
@@ -985,7 +972,7 @@ var = kernel(X_te, X_te) - Ks.T @ v         # posterior variance
 \end{lstlisting}
 
 \vspace{0.1cm}
-{\footnotesize No training loop, no learning rate, no architecture: the whole model is the kernel and one Cholesky factorization. Compare Algorithm 2.1 in Rasmussen \& Williams (2006); notebook \texttt{03\_02} builds this and checks it against \texttt{sklearn}.}
+{\footnotesize No training loop, no learning rate, no architecture: the whole model is the kernel and one Cholesky factorization. Compare Algorithm 2.1 in Rasmussen \& Williams (2006); notebook \texttt{06\_02} builds this and checks it against \texttt{sklearn}.}
 \end{frame}
 
 % --- Complexity ---
@@ -1147,7 +1134,7 @@ U(\x) = w_{\mathrm{obj}}\, \mu(\x) + \frac{w_{\mathrm{var}}}{2}\,\log \sigma^2(\
 \textbf{(a)} three observations, the posterior drifting where there is no data. \textbf{(b)} the acquisition takes the max-variance point. \textbf{(c)} one more fills the gap: \emphc{five points suffice}.
 
 \vspace{2pt}
-\emphc{But do not oversell it.} Notebook \texttt{03\_02} runs this against a uniform design and they finish \emph{level} (MAE $0.0234$ vs $0.0237$ at $N=25$). For a \emph{stationary} kernel the posterior variance depends on the design alone, so on an interval uncertainty sampling essentially \emph{is} a space-filling design. It earns its keep where no such design exists: \emphc{irregular domains, ARD kernels, and dimensions where a grid is impossible}.}
+\emphc{But do not oversell it.} Notebook \texttt{06\_02} runs this against a uniform design and they finish \emph{level} (MAE $0.0234$ vs $0.0237$ at $N=25$). For a \emph{stationary} kernel the posterior variance depends on the design alone, so on an interval uncertainty sampling essentially \emph{is} a space-filling design. It earns its keep where no such design exists: \emphc{irregular domains, ARD kernels, and dimensions where a grid is impossible}.}
 \end{frame}
 
 % ============================================================================
@@ -1221,7 +1208,7 @@ GP $+$ active learning & every evaluation is precious & sequential, so hard to p
 \begin{itemize}\itemsep4pt
   \item \textbf{Train once, then simulate for free.} Surrogate 1 costs hours from scratch and minutes warm-started. Every downstream question is then a forward pass. Budget accordingly: the expensive part is the design, not the training.
   \item \textbf{Validate \emph{in the parameter direction}, not on average.} A surrogate with excellent mean error can still be nearly flat in $\str$: low residual, wrong policy. This is \emphc{lazy learning}; the cure (anchors and distillation) is Part VI of this morning's deck. \emphc{Do not skip this check}; it is the most common way a surrogate study goes quietly wrong.
-  \item \textbf{Report leave-one-out error, not training error}, and report the \emphc{maximum} over the parameter box, not the mean. The maximum is what bounds the bias in $\str^\star$.
+  \item \textbf{Report leave-one-out error, not training error}: and report the \emphc{maximum} over the parameter box, not the mean. The maximum is what bounds the bias in $\str^\star$.
   \item \textbf{Use common random numbers whenever you sweep a parameter.} Without them you are optimizing simulation noise, in estimation \emph{and} in policy design.
   \item \textbf{When one quantity-of-interest evaluation is expensive, add the second surrogate.} Expected welfare at one policy took 10{,}000 Monte Carlo paths; the GP layer cut the whole study to 500 simulations at leave-one-out error $3.2\times10^{-5}$.
 \end{itemize}
@@ -1230,18 +1217,18 @@ GP $+$ active learning & every evaluation is precious & sequential, so hard to p
 % --- Hands-on ---
 \begin{frame}{Hands-On: What to Run}
 \small
-Notebooks in \texttt{../code/03\_deep\_surrogates}: PyTorch $+$ scikit-learn, CPU-only, self-contained. \texttt{03\_01} and \texttt{03\_02} ship on \texttt{RUN\_MODE = "smoke"}; raise it once a run works.
+Notebooks in \texttt{../code/06\_surrogates\_and\_gps} and \texttt{../code/07\_structural\_estimation}: PyTorch $+$ scikit-learn, CPU-only, self-contained. \texttt{06\_01} and \texttt{06\_02} ship on \texttt{RUN\_MODE = "smoke"}; raise it once a run works.
 
 \vspace{0.15cm}
 \begin{itemize}\itemsep4pt
-  \item \textbf{A deep surrogate, end to end} \emph{(${\approx}3.5$ min)}. Black--Scholes over $(S, K, T, \sigma, r)$, then implied-vol inversion by root-finding \emph{and} by gradient descent. \emphc{Read its timing table:} on this toy the surrogate \emph{loses} to numpy: the ``price one label first'' rule biting. \hfill{\footnotesize\texttt{03\_01}}
-  \item \textbf{GP regression and active learning} \emph{(${\approx}30$ s)}. A GP from scratch in numpy, checked against \texttt{sklearn}; then the BAL loop and its budget sweep. \hfill{\footnotesize\texttt{03\_02}}
-  \item \textbf{Estimating $\varrho$ by SMM} \emph{(${\approx}10$ s)}. Train with $\varrho$ as a pseudo-state, simulate under common random numbers, recover the parameter. \hfill{\footnotesize\texttt{03\_03}}
-  \item \textbf{The identification ridge} \emph{(${\approx}10$ s)}. Free $\beta$ as well, watch the valley appear, and read the moment Jacobian's singular values. \hfill{\footnotesize\texttt{03\_04}}
+  \item \textbf{A deep surrogate, end to end} \emph{(${\approx}3.5$ min)}. Black--Scholes over $(S, K, T, \sigma, r)$, then implied-vol inversion by root-finding \emph{and} by gradient descent. \emphc{Read its timing table:} on this toy the surrogate \emph{loses} to numpy: the ``price one label first'' rule biting. \hfill{\footnotesize\texttt{06\_01}}
+  \item \textbf{GP regression and active learning} \emph{(${\approx}30$ s)}. A GP from scratch in numpy, checked against \texttt{sklearn}; then the BAL loop and its budget sweep. \hfill{\footnotesize\texttt{06\_02}}
+  \item \textbf{Estimating $\varrho$ by SMM} \emph{(${\approx}10$ s)}. Train with $\varrho$ as a pseudo-state, simulate under common random numbers, recover the parameter. \hfill{\footnotesize\texttt{07\_01}}
+  \item \textbf{The identification ridge} \emph{(${\approx}10$ s)}. Free $\beta$ as well, watch the valley appear, and read the moment Jacobian's singular values. \hfill{\footnotesize\texttt{07\_02}}
 \end{itemize}
 
 \vspace{0.15cm}
-{\footnotesize \textbf{If you only run one:} \texttt{03\_02}. It builds a GP from scratch, and its budget sweep is the measurement behind the honest version of the active-learning claim.}
+{\footnotesize \textbf{If you only run one:} \texttt{06\_02}. It builds a GP from scratch, and its budget sweep is the measurement behind the honest version of the active-learning claim.}
 \end{frame}
 
 % --- Closing ---
@@ -1263,7 +1250,7 @@ HEC, University of Lausanne\\[4pt]
 
 \vspace{0.5cm}
 {\footnotesize
-\textbf{Next up, 15:30 -- 17:00:} \emph{Solving heterogeneous agent models with DeepHAM and structural reinforcement learning} (Yang), where the model whose parameters we just estimated becomes one with a full cross-sectional distribution.
+\textbf{Next up, Session 7:} \emph{Structural estimation via the simulated method of moments}, where the surrogate we just built removes the inner-loop model solve.
 }
 
 \vspace{0.4cm}

@@ -290,7 +290,7 @@ We need \textbf{automated, systematic} methods to search the hyperparameter spac
 \end{block}
 
 \vspace{0.2cm}
-\textbf{Cost:} $\mathcal{O}(k^d)$ --- exponential in dimension $d$.
+\textbf{Cost:} $\mathcal{O}(k^d)$, exponential in dimension $d$.
 
 \vspace{0.2cm}
 \textbf{Pros:} Simple, embarrassingly parallel.
@@ -326,10 +326,10 @@ When only a \emph{few} dimensions matter, random search finds good configuration
 \end{block}
 
 \vspace{0.2cm}
-\textbf{Why?} Random points explore each dimension \emph{independently} --- more unique values per HP.
+\textbf{Why?} Random points explore each dimension \emph{independently}, more unique values per HP.
 
 \vspace{0.2cm}
-\textbf{Cost:} $\mathcal{O}(n)$ --- linear in budget $n$.
+\textbf{Cost:} $\mathcal{O}(n)$, linear in budget $n$.
 
 \column{0.45\textwidth}
 \begin{center}
@@ -360,7 +360,7 @@ When only a \emph{few} dimensions matter, random search finds good configuration
 \end{frame}
 
 % --- Slide 8: Grid vs Random Visual ---
-\begin{frame}{Grid vs.\ Random --- Why Random Wins}
+\begin{frame}{Grid vs.\ Random: Why Random Wins}
 \begin{center}
 \begin{tikzpicture}[scale=0.85]
     % --- Left panel: Grid ---
@@ -435,7 +435,7 @@ unimportant axis; random search samples the important axis more densely.}
 \end{enumerate}
 
 \vspace{0.3cm}
-\textbf{Key advantage:} \emphc{Sample-efficient} --- exploits structure in the response surface.
+\textbf{Key advantage:} \emphc{Sample-efficient}, exploits structure in the response surface.
 
 \column{0.42\textwidth}
 \begin{block}{Expected Improvement}
@@ -453,7 +453,7 @@ unimportant axis; random search samples the important axis more densely.}
 \end{frame}
 
 % --- Slide 10: Bayesian Optimization Visual ---
-\begin{frame}{Bayesian Optimization --- Visual}
+\begin{frame}{Bayesian Optimization: Visual}
 \begin{center}
 \begin{tikzpicture}[scale=0.9]
     \begin{axis}[
@@ -539,7 +539,7 @@ unimportant axis; random search samples the important axis more densely.}
 \end{frame}
 
 % --- Slide 12: Hyperband Visual ---
-\begin{frame}{Hyperband --- Successive Halving}
+\begin{frame}{Hyperband: Successive Halving}
 \begin{center}
 \begin{tikzpicture}[
     trialnode/.style={circle, draw, minimum size=8pt, inner sep=0pt},
@@ -649,7 +649,7 @@ Implementation & Trivial & Trivial & Moderate & Moderate \\
 
 % --- Slide 15: Defining a Search Space (plain Python) ---
 \begin{frame}[fragile]{Defining a Search Space}
-\begin{block}{A plain dict --- no library required}
+\begin{block}{A plain dict, no library required}
 {\scriptsize
 \begin{verbatim}
 SPACE = {
@@ -668,7 +668,7 @@ def sample_config(rng):
 \end{verbatim}
 }
 \end{block}
-{\scriptsize No \texttt{hp.Int} / \texttt{hp.Float} abstraction --- the search space is a dict, the sampler is one function.}
+{\scriptsize No \texttt{hp.Int} / \texttt{hp.Float} abstraction, the search space is a dict, the sampler is one function.}
 \end{frame}
 
 % --- Slide 16: Random Search from scratch ---
@@ -851,7 +851,7 @@ If manual tuning took $N$ trials, automated search with $3N$ trials will likely 
 
 \vspace{0.3cm}
 \begin{enumerate}
-    \item \textbf{Surrogate models:} Replace expensive simulations (e.g., climate IAMs) with NNs --- architecture determines approximation quality.
+    \item \textbf{Surrogate models:} Replace expensive simulations (e.g., climate IAMs) with NNs, architecture determines approximation quality.
 
     \vspace{0.2cm}
     \item \textbf{DSGE policy functions:} Deep equilibrium nets (Lecture 03) use NNs to approximate policy/value functions. \emphc{Architecture search over the policy network} can improve convergence.
@@ -871,7 +871,7 @@ If manual tuning took $N$ trials, automated search with $3N$ trials will likely 
 \textbf{Key takeaways:}
 \begin{enumerate}
     \item Architecture choice \emphc{strongly} affects NN performance
-    \item Random search is a strong baseline --- always try it first
+    \item Random search is a strong baseline, always try it first
     \item Bayesian optimization is most sample-efficient
     \item Hyperband / SHA offers the best speed/quality trade-off
     \item Production: KerasTuner, Optuna, Ray Tune, Ax all wrap these
@@ -881,7 +881,7 @@ If manual tuning took $N$ trials, automated search with $3N$ trials will likely 
 \textbf{References:}
 {\scriptsize
 \begin{itemize}\itemsep0pt
-    \item \emphc{Elsken, Metzen \& Hutter (2019)} --- \emph{NAS: A Survey}, JMLR 20(55).
+    \item \emphc{Elsken, Metzen \& Hutter (2019)}: \emph{NAS: A Survey}, JMLR 20(55).
     \item Bergstra \& Bengio (2012). \emph{Random search.} JMLR 13.
     \item Li et al.\ (2018). \emph{Hyperband.} JMLR 18(185).
     \item Garnett (2023). \emph{Bayesian optimization.} CUP.

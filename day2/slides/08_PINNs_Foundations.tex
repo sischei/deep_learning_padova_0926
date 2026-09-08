@@ -280,7 +280,7 @@ economic equilibrium conditions in \emphc{discrete time}:
 \begin{itemize}
     \item $G(\cdot) = 0$: Euler equations, budget constraints, market clearing
     \item Training points $\x_i$: simulated from the model's own dynamics
-    \item \emphc{No labeled data needed}, structural equations \emph{are} the loss
+    \item \emphc{No labeled data needed}: structural equations \emph{are} the loss
 \end{itemize}
 
 \vspace{0.5em}
@@ -341,8 +341,8 @@ Loss: PDE residual $\mathcal{R}(\cdot) = 0$
 \end{itemize}
 
 \vspace{0.4em}
-\begin{block}{Where this sits in the summer school}
-Day 1 solved equilibrium conditions in \emphc{discrete} time with DEQNs. This morning we do the \emphc{continuous-time} counterpart, and at 11:00 Yang takes the same machinery to heterogeneous-agent models, where the HJB is coupled to a Kolmogorov forward equation.
+\begin{block}{Where this sits in the course}
+Day 1 solved equilibrium conditions in \emphc{discrete} time with DEQNs. This afternoon we do the \emphc{continuous-time} counterpart. Coupling the HJB to a Kolmogorov forward equation, for heterogeneous agents, is the optional material in \texttt{day2/optional\_continuous\_time\_ha}.
 \end{block}
 \end{frame}
 
@@ -776,7 +776,7 @@ A small loss says the residual is small at the sampled points. Only the comparis
 \end{center}
 
 \vspace{0.4em}
-{\footnotesize Left: the network on top of $y(x)=\tfrac12x(1-x)$ --- indistinguishable at this
+{\footnotesize Left: the network on top of $y(x)=\tfrac12x(1-x)$, indistinguishable at this
 scale. Right: the absolute error, which is what actually tells you how well it did. Note the axis:
 it stays in a narrow band around $1.8\times10^{-3}$ across the domain, with no drift to the boundaries.}
 
@@ -1223,7 +1223,7 @@ Consider the same ODE $u''(x) = -1$ on $[0,1]$ with $u(0)=u(1)=0$.
 \textbf{Manufactured solution:} $u^\star(x,y) = x^2 + y + \sin(\pi x)\sin(\pi y)$.
 
 \vspace{0.4em}
-\textbf{Hard BCs via transfinite (Coons-patch) interpolation}, the standard 4-side construction that matches each boundary function exactly along its edge:
+\textbf{Hard BCs via transfinite (Coons-patch) interpolation}: the standard 4-side construction that matches each boundary function exactly along its edge:
 \[
 \hat{u}(x,y) = A(x,y) + \underbrace{x(1\!-\!x)\,y(1\!-\!y)}_{B(x,y)}\cdot\mathcal{N}_\theta(x,y)
 \]

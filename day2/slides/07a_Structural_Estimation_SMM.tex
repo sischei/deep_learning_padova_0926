@@ -151,50 +151,37 @@
 }
 
 % --- Slide 2: Day 1 at a glance (same frame as lectures 1 and 2, marker moved) ---
-\begin{frame}{Day 1 at a Glance}
+\begin{frame}{Day 2 at a Glance}
 \begin{center}
 \begin{tikzpicture}[
     session/.style={rectangle, rounded corners=4pt, draw=uzhblue, thick, fill=softblue!15,
-                    minimum width=8.6cm, minimum height=0.82cm, align=left, font=\small,
+                    minimum width=8.6cm, minimum height=0.72cm, align=left, font=\small,
                     inner xsep=10pt, anchor=west},
     now/.style={session, fill=uzhblue!85, draw=uzhblue, text=white, font=\small\bfseries},
-    guest/.style={session, fill=softgreen!15, draw=softgreen!70!black},
     pause/.style={font=\scriptsize\itshape, text=uzhgreydark, anchor=west},
     time/.style={font=\small\bfseries, text=uzhgreydark, anchor=east}
 ]
-    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-4.9);
-
-    \node[time] at (-0.35, 0) {09:10 -- 10:30};
-    \node[session] at (0.25, 0) {Deep Learning \& Deep Equilibrium Nets (part I)};
-    \fill[uzhblue] (0,0) circle (3.5pt);
-
-    \node[pause] at (0.25,-0.7) {coffee break};
-    \fill[uzhblue!30] (0,-0.7) circle (2pt);
-
-    \node[time] at (-0.35,-1.4) {11:00 -- 12:30};
-    \node[session] at (0.25,-1.4) {Deep Equilibrium Nets (part II): guided exercises};
-    \fill[uzhblue] (0,-1.4) circle (3.5pt);
-
-    \node[pause] at (0.25,-2.1) {lunch break};
-    \fill[uzhblue!30] (0,-2.1) circle (2pt);
-
-    \node[time] at (-0.35,-2.8) {13:30 -- 15:00};
-    \node[now] at (0.25,-2.8) {Deep Surrogates to Estimate Dynamic Models};
-    \fill[uzhblue] (0,-2.8) circle (3.5pt);
-    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-2.35) {you are here $\blacktriangledown$};
-
-    \node[pause] at (0.25,-3.5) {coffee break};
-    \fill[uzhblue!30] (0,-3.5) circle (2pt);
-
-    \node[time] at (-0.35,-4.2) {15:30 -- 17:00};
-    \node[guest] at (0.25,-4.2) {DeepHAM \& structural reinforcement learning~~{\footnotesize\itshape (Yang)}};
-    \fill[softgreen!70!black] (0,-4.2) circle (3.5pt);
+    \draw[uzhblue!30, line width=2pt] (0,0.45) -- (0,-4.14);
+    \node[time] at (-0.35,0.00) {09:00--09:50};
+    \node[session] at (0.25,0.00) {Deep surrogates and Gaussian processes};
+    \fill[uzhblue] (0,0.00) circle (3.5pt);
+    \node[pause] at (0.25,-0.62) {coffee break};
+    \fill[uzhblue!30] (0,-0.62) circle (2pt);
+    \node[time] at (-0.35,-1.24) {10:05--11:00};
+    \node[now] at (0.25,-1.24) {Structural estimation via SMM};
+    \fill[uzhblue] (0,-1.24) circle (3.5pt);
+    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-0.86) {you are here $\blacktriangledown$};
+    \node[pause] at (0.25,-1.86) {lunch break};
+    \fill[uzhblue!30] (0,-1.86) circle (2pt);
+    \node[time] at (-0.35,-2.48) {14:00--14:55};
+    \node[session] at (0.25,-2.48) {PINNs I: foundations};
+    \fill[uzhblue] (0,-2.48) circle (3.5pt);
+    \node[pause] at (0.25,-3.10) {coffee break};
+    \fill[uzhblue!30] (0,-3.10) circle (2pt);
+    \node[time] at (-0.35,-3.72) {15:10--16:00};
+    \node[session] at (0.25,-3.72) {PINNs II: applications, hands-on, wrap-up};
+    \fill[uzhblue] (0,-3.72) circle (3.5pt);
 \end{tikzpicture}
-\end{center}
-
-\vspace{0.1cm}
-\begin{center}
-{\footnotesize \textbf{Materials:}~\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}~~$\cdot$~~\textbf{Cloud:}~\href{https://nuvolos.cloud}{nuvolos.cloud}}
 \end{center}
 \end{frame}
 
@@ -385,7 +372,7 @@ More data makes $\widehat g_T$ precise; it does nothing to $e$. This is \emphc{n
 \end{alertblock}
 
 \vspace{0.1cm}
-\textbf{The practical consequence}, and the whole reason Part I ended with a validation step: report the surrogate's \emphc{maximum} error over the parameter box, not its mean. The maximum bounds the bias, and a surrogate with excellent \emph{average} accuracy can still be badly wrong in the one direction you are estimating. That happens at the end of this part.
+\textbf{The practical consequence}: and the whole reason Part I ended with a validation step: report the surrogate's \emphc{maximum} error over the parameter box, not its mean. The maximum bounds the bias, and a surrogate with excellent \emph{average} accuracy can still be badly wrong in the one direction you are estimating. That happens at the end of this part.
 
 \vspace{0.05cm}
 {\footnotesize Chen, Didisheim \& Scheidegger (2026), fn.\ 15, make the point about their own surrogate; the asymptotics are Hall \& Inoue (2003).}
@@ -430,7 +417,7 @@ $0.36$ & $0.10$ & $0.04$ & $0.96$ \\
 \end{itemize}
 
 \vspace{0.2cm}
-Notebook \texttt{03\_03} does the scalar case. Notebook \texttt{03\_04} then frees $\beta$ as well, and the pathology shows up immediately.
+Notebook \texttt{07\_01} does the scalar case. Notebook \texttt{07\_02} then frees $\beta$ as well, and the pathology shows up immediately.
 \end{frame}
 
 % --- Step 1 ---
@@ -537,10 +524,10 @@ $m_0 = \mathrm{mean}(s_t)$ \emph{(diagnostic)} & \emphc{nearly flat in $\varrho$
 \begin{columns}[T]
 \column{0.48\textwidth}
 \textbf{Two dynamic moments.} A long valley along $\beta$: many $(\beta,\varrho)$ pairs fit about equally well.
-\emphc{Condition number 96}, smallest singular value $0.021$.
+\emphc{Condition number 96}: smallest singular value $0.021$.
 \column{0.48\textwidth}
 \textbf{Add the level moments.} The valley closes into a basin.
-\emphc{Condition number 2.5}, smallest singular value $0.91$.
+\emphc{Condition number 2.5}: smallest singular value $0.91$.
 \end{columns}
 
 \vspace{0.15cm}

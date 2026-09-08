@@ -96,7 +96,7 @@
 % ---------- Title ----------
 \title[Continuous time -- Padova 2026]%
 {Deep Learning for Solving Dynamic Models}
-\subtitle{Session 9 --- Continuous-time heterogeneous agents: HJB, KFE, and PINNs}
+\subtitle{Session 9: Continuous-time heterogeneous agents: HJB, KFE, and PINNs}
 \author{Simon Scheidegger}
 \institute[HEC Lausanne]{HEC, University of Lausanne}
 \date{University of Padova\\September 24, 2026}
@@ -117,10 +117,10 @@
 
 \begin{frame}{Roadmap of This Session (40 min)}
 \begin{enumerate}\itemsep6pt
-  \item \textbf{Why continuous time} --- what the reformulation buys us (5 min)
-  \item \textbf{The HJB--KFE system} --- individual optimization plus the cross-sectional
+  \item \textbf{Why continuous time}: what the reformulation buys us (5 min)
+  \item \textbf{The HJB--KFE system}: individual optimization plus the cross-sectional
         distribution; Aiyagari mapped operator by operator (20 min)
-  \item \textbf{Numerics} --- upwind finite differences versus a PINN on the identical
+  \item \textbf{Numerics}: upwind finite differences versus a PINN on the identical
         problem, and when each stops being viable (15 min)
 \end{enumerate}
 \vspace{6pt}
@@ -349,25 +349,25 @@ Setting $\partial_t g = 0$, the \emphc{stationary} (ergodic) distribution solves
 
 \begin{frame}{Deriving the HJB: Five Steps}
 \small
-\textbf{Step 1} --- \emphc{Dynamic Programming Principle}. For small $h > 0$:
+\textbf{Step 1}: \emphc{Dynamic Programming Principle}. For small $h > 0$:
 \[
 V(a,n) = \max_c \left\{\int_0^h e^{-\rho t}u(c_t)\ud t + e^{-\rho h}\,\E{V(a_h, n_h) \mid a_0=a, n_0=n}\right\}
 \]
 
-\textbf{Step 2} --- \emphc{It\^o's lemma} on $V(a_t, n_t)$ (between jumps of $n$):
+\textbf{Step 2}: \emphc{It\^o's lemma} on $V(a_t, n_t)$ (between jumps of $n$):
 \[
 dV = V'(a,n)\cdot s(c,a,n)\ud t
 \]
 (no diffusion term since $da = s\ud t$ is deterministic between jumps)
 
-\textbf{Step 3} --- \emphc{Take expectations}, account for Poisson jumps:
+\textbf{Step 3}: \emphc{Take expectations}, account for Poisson jumps:
 \[
 \E{dV} = \left[V'(a,n)\cdot s + \lambda(n)\big(V(a,\hat{n}) - V(a,n)\big)\right]\ud t
 \]
 
-\textbf{Step 4} --- \emphc{Substitute} into DPP, divide by $h$, let $h \to 0$:
+\textbf{Step 4}: \emphc{Substitute} into DPP, divide by $h$, let $h \to 0$:
 
-\textbf{Step 5} --- \emphc{Impose optimality} over $c$:
+\textbf{Step 5}: \emphc{Impose optimality} over $c$:
 \[
 \boxed{\rho V(a,n) = \max_c\left\{u(c) + V'(a,n)\cdot(wn + ra - c) + \lambda(n)\big(V(a,\hat{n}) - V(a,n)\big)\right\}}
 \]
@@ -940,7 +940,7 @@ Speed (2D) & Faster & Slower \\
 \end{center}
 
 \vspace{0.1em}
-\textbf{Verdict}: \textbf{\emph{FD is faster and more accurate}} for low-dim stationary problems --- use it as the gold-standard benchmark. PINNs \emphc{scale to high dimensions}: aggregate shocks (KS, state $\ni g$), multiple assets, richer heterogeneity.
+\textbf{Verdict}: \textbf{\emph{FD is faster and more accurate}} for low-dim stationary problems, use it as the gold-standard benchmark. PINNs \emphc{scale to high dimensions}: aggregate shocks (KS, state $\ni g$), multiple assets, richer heterogeneity.
 \vspace{-0.2em}
 
 $\Longrightarrow$ Part III: \textbf{EMINNs} for the master equation.
@@ -979,9 +979,9 @@ Low-dim accuracy & $\sim 10^{-6}$ & problem-dependent & reported $\sim 10^{-5}$ 
 \footnotesize
 \textbf{Day 6 companion notebooks (self-contained, PyTorch):}
 \begin{itemize}\itemsep2pt
-    \item \textbf{NB 06} \textit{(self-study)}: \texttt{06\_PE\_Discrete\_HJB\_PINN.ipynb} --- 1D PE with discrete income: upwind FD + PINN
-    \item \textbf{NB 07} \textit{(self-study)}: \texttt{07\_PE\_Diffusion\_HJB\_PINN.ipynb} --- 2D PE with OU earnings: 2D FD + PINN
-    \item \textbf{NB 08} \textit{(in-class)}: \texttt{08\_Aiyagari\_Continuous\_Time\_FD\_and\_PINN\_PyTorch.ipynb} --- full GE Aiyagari: HJB + KFE + market clearing
+    \item \textbf{NB 06} \textit{(self-study)}: \texttt{06\_PE\_Discrete\_HJB\_PINN.ipynb}, 1D PE with discrete income: upwind FD + PINN
+    \item \textbf{NB 07} \textit{(self-study)}: \texttt{07\_PE\_Diffusion\_HJB\_PINN.ipynb}, 2D PE with OU earnings: 2D FD + PINN
+    \item \textbf{NB 08} \textit{(in-class)}: \texttt{08\_Aiyagari\_Continuous\_Time\_FD\_and\_PINN\_PyTorch.ipynb}, full GE Aiyagari: HJB + KFE + market clearing
 \end{itemize}
 
 \vspace{0.2em}
