@@ -31,27 +31,32 @@ Re-cuts applied:
 |---|---:|---:|---|
 | 1 Intro to DL | 57 | 90 | 1.58 comfortable |
 | 2 DEQNs | 54 | 75 | 1.39 comfortable |
-| 3 IRBC | 55 | 55 | 1.00 tight |
-| 4 NAS + loss balancing | 56 | 55 | **0.98 tightest** |
-| 5 OLG | 37 | 55 | 1.49 comfortable |
+| 3 NAS + loss balancing | 56 | 55 | **0.98 tightest** |
+| 4 OLG | 37 | 50 | 1.35 comfortable |
+| 5 IRBC | 55 | 60 | 1.09 tight |
 | 6 Surrogates + GPs | 39 | 50 | 1.28 comfortable |
 | 7 SMM | 42 | 55 | 1.31 comfortable |
 | 8 PINNs | 53 | 55 | 1.04 tight |
 | 9 CT-HA + wrap-up | 36 | 50 | 1.39 comfortable |
 
-**Trim order if running long:** the GradNorm comparison in Session 4 → the Bayesian active-learning
+**Trim order if running long:** the GradNorm comparison in Session 3 → the Bayesian active-learning
 demo in Session 6 → the master-equation slide in Session 9.
 
-Sessions 3, 4 and 8 are the ones to watch. Session 4 has the least slack, and it is also the session
-where a live demo is most tempting — consider running `04_02` from its cached `nas_results/` rather
-than re-searching.
+Sessions 3, 5 and 8 are the ones to watch. Session 3 has the least slack, and it is also the session
+where a live demo is most tempting — run `03_02` from its cached `nas_results/` rather than
+re-searching.
+
+**On the session order.** Architecture search and loss balancing come *before* the two large
+applications on purpose: IRBC's country-by-country Euler residuals and the cohort-stacked OLG system
+are exactly the multi-component losses that need balancing, so teaching the remedy first means both
+applications land on prepared ground. IRBC closes the day as the scaling finale.
 
 ## Compute
 
 Notebooks needing a GPU (demo in class, `RUN_MODE = "smoke"` for students on laptops):
 
-* `03_01`, `03_02` — IRBC
-* `05_02`, `05_05` — the 56-cohort OLG benchmark
+* `05_01`, `05_02` — IRBC
+* `04_02`, `04_05` — the 56-cohort OLG benchmark
 * `09_02` — continuous-time Aiyagari
 
 Everything else runs on a laptop CPU in a few minutes.

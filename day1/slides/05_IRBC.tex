@@ -94,7 +94,7 @@
 % ---------- Title ----------
 \title[IRBC -- Padova 2026]%
 {Deep Learning for Solving Dynamic Models}
-\subtitle{Session 3 --- Scaling up: the international real business cycle model}
+\subtitle{Session 5 --- Scaling up: the international real business cycle model}
 \author{Simon Scheidegger}
 \institute[HEC Lausanne]{HEC, University of Lausanne}
 \date{University of Padova\\September 23, 2026}
@@ -688,7 +688,7 @@ Consider the 2-country IRBC model. Suppose we \emphc{double} the capital depreci
 \begin{enumerate}
     \item Without running any code: will the steady-state capital stock in each country \emph{increase} or \emph{decrease}? Why?
     \item Will the optimal savings rate (investment / output) increase or decrease?
-    \item Open notebook \texttt{03\_01\_IRBC\_DEQN\_smooth.ipynb}, change $\delta$, and verify your prediction.
+    \item Open notebook \texttt{05\_01\_IRBC\_DEQN\_smooth.ipynb}, change $\delta$, and verify your prediction.
 \end{enumerate}
 \end{exampleblock}
 \end{frame}
@@ -1050,23 +1050,23 @@ $\Rightarrow$ \textbf{Next:} implementation in TensorFlow/Keras and results.
 
 \vspace{0.2em}
 \begin{enumerate}\itemsep1pt
-    \item \texttt{03\_01\_IRBC\_DEQN\_smooth.ipynb} -- \emph{smooth benchmark, in-class walk-through (this lecture's \texttt{code/})}
+    \item \texttt{05\_01\_IRBC\_DEQN\_smooth.ipynb} -- \emph{smooth benchmark, in-class walk-through (this lecture's \texttt{code/})}
     \begin{itemize}\itemsep0pt
         \item Parameters \& steady state, monomial quadrature; Keras network, production/consumption/adjustment-cost equations
         \item Cost function (Euler + ARC), persistent-simulation training loop
         \item Time-invariance check and zero-shock stochastic steady state
     \end{itemize}
 
-    \item \texttt{03\_02\_IRBC\_DEQN\_irreversible.ipynb} -- \emph{irreversible-investment extension (this lecture's \texttt{code/})}
+    \item \texttt{05\_02\_IRBC\_DEQN\_irreversible.ipynb} -- \emph{irreversible-investment extension (this lecture's \texttt{code/})}
     \begin{itemize}\itemsep0pt
         \item KKT multipliers $\mu^j$ and feasibility-by-construction policy; Fischer--Burmeister complementarity loss
         \item Same training loop and diagnostics as the smooth benchmark
     \end{itemize}
 
-    \item \texttt{04\_04\_IRBC\_Exercise.ipynb} -- \emph{hands-on exercise (lives in L05's \texttt{code/})}
+    \item \texttt{05\_03\_IRBC\_Exercise.ipynb} -- \emph{hands-on exercise}
     \begin{itemize}\itemsep0pt
         \item Task 1: comparative statics on the deterministic steady state
-        \item Task 2: inverse-loss weighting for multi-component losses (preview of ReLoBRaLo)
+        \item Task 2: inverse-loss weighting for multi-component losses (ReLoBRaLo, from Session 3)
     \end{itemize}
 \end{enumerate}
 \end{frame}
@@ -1440,25 +1440,32 @@ FB (country 2) & $\sim 10^{-5}$ & $\sim 10^{-4}$ \\
 \end{frame}
 
 % --- Bridge frame ---
-\begin{frame}[shrink=20]{Bridge: AutoDiff, Sequence Space, OLG}
-\textbf{What we leave with today.}  An IRBC DEQN trained with a single persistent-simulation pipeline and equal loss weights: the same recipe scales from $N=2$ to $N=10$ countries with no architectural change.  NAS-tuned width and ReLoBRaLo-balanced loss components are optional refinements, introduced with the NAS / loss-normalization material.
+\begin{frame}{Bridge: from solving to estimating}
+\textbf{What we leave with today.}  An IRBC DEQN trained with a single persistent-simulation
+pipeline and equal loss weights: the same recipe scales from $N=2$ to $N=10$ countries with no
+architectural change.  NAS-tuned width and ReLoBRaLo-balanced loss components, from Session 3 this
+afternoon, are the refinements to reach for when the equal-weight recipe stalls.
 
 \vspace{0.4em}
 \begin{columns}[T]
 \column{0.48\textwidth}
-\textbf{Next lectures.}
+\textbf{Day 1, in one line.}
 \begin{itemize}
-    \item Reverse-mode automatic differentiation \emph{inside} the equilibrium loss (forward/reverse modes, JVP/VJP, AD pitfalls).
-    \item \emph{Sequence-space} DEQNs: collapsing the recursion into a finite-horizon DAG (Brock--Mirman warm-up, then IRBC).
-    \item OLG with DEQNs: the analytic 6-cohort benchmark of Krueger--K\"ubler (2004) and the 56-cohort benchmark of Azinovic, Gaegauf \& Scheidegger (2022).
+    \item The equilibrium residual \emph{is} the loss (Session 2).
+    \item Architecture and loss weights are the two knobs that decide whether training works
+          (Session 3).
+    \item Cohorts and constraints do not change the principle (Session 4); neither does a
+          $2N$-dimensional state (today).
 \end{itemize}
 
 \column{0.48\textwidth}
-\textbf{Further ahead in the course.}
+\textbf{Tomorrow.}
 \begin{itemize}
-    \item Heterogeneous-agent solvers via Young's method (continuum approximated as a histogram).
-    \item Continuum-of-agents (continuous-time) DEQN.
-    \item Krusell--Smith with deep learning.
+    \item Solving is not the end: a trained solver is expensive to re-run. Deep surrogates and
+          Gaussian processes \emph{amortize} it (Session 6).
+    \item That makes structural estimation tractable (Session 7).
+    \item Then the same residual idea in continuous time: PDEs, HJB, and the coupled HJB--KFE
+          system (Sessions 8--9).
 \end{itemize}
 \end{columns}
 \end{frame}
@@ -1476,7 +1483,7 @@ FB (country 2) & $\sim 10^{-5}$ & $\sim 10^{-4}$ \\
 \url{https://sischei.github.io}
 
 \vspace{0.6cm}
-{\small Materials:~~\url{https://github.com/sischei/Deep_Learning_for_Solving_And_Estimating_Dynamic_Economic_Models}}
+{\small Materials:~~\url{https://github.com/sischei/deep_learning_padova_0926}}
 \end{center}
 
 \column{0.45\textwidth}

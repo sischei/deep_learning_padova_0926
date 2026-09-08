@@ -82,7 +82,7 @@
 % ---------- Title ----------
 \title[OLG -- Padova 2026]%
 {Deep Learning for Solving Dynamic Models}
-\subtitle{Session 5 --- Overlapping generations with DEQNs}
+\subtitle{Session 4 --- Overlapping generations with DEQNs}
 \author{Simon Scheidegger}
 \institute[HEC Lausanne]{HEC, University of Lausanne}
 \date{University of Padova\\September 23, 2026}
@@ -113,14 +113,14 @@
 \begin{block}{Part II --- The analytic 6-agent model (Krueger \& K\"ubler, 2004)}
 \vspace{-3pt}\begin{itemize}\itemsep0pt
     \item Model $\to$ equilibrium $\to$ cost $\to$ FREE $\to$ architecture $\to$ training $\to$ validation against the closed form.
-    \item Primary notebook: \texttt{05\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}; companion ablation \texttt{05\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb}.
+    \item Primary notebook: \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}; companion ablation \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb}.
 \end{itemize}
 \end{block}
 \vspace{-2pt}
 \begin{block}{Part III --- The leading example of AGS (2022): the 56-cohort benchmark}
 \vspace{-3pt}\begin{itemize}\itemsep0pt
     \item Same 9-step recipe at research scale: two assets, two borrowing constraints, capital adjustment costs, persistent shocks, hump-shaped labor.
-    \item Primary notebook: \texttt{05\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}; companion ablation \texttt{05\_05\_OLG\_Benchmark\_DEQN\_exogenous.ipynb}.
+    \item Primary notebook: \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}; companion ablation \texttt{04\_05\_OLG\_Benchmark\_DEQN\_exogenous.ipynb}.
 \end{itemize}
 \end{block}
 \end{frame}
@@ -522,7 +522,7 @@ G\!\left(\!\begin{bmatrix} z_t \\ \bm{k}_t\end{bmatrix},\; \N_\theta\!\left(\!\b
 % --- Hand-over to the analytic-model notebook -------------------------
 \begin{frame}{Companion Notebook Hand-over}
 \scriptsize
-\emphc{Open notebook \texttt{05\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}} (the persistent-simulation primary; the exogenous-sampling companion is \texttt{05\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb}).  It implements the model, equilibrium conditions, loss, FREE map, architecture, training, and validation covered in Part II.
+\emphc{Open notebook \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}} (the persistent-simulation primary; the exogenous-sampling companion is \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb}).  It implements the model, equilibrium conditions, loss, FREE map, architecture, training, and validation covered in Part II.
 \vspace{-2pt}
 \begin{block}{Cell-to-slide map}
 \vspace{-4pt}
@@ -703,7 +703,7 @@ Cohort $h$ & Periods remaining ($A-h$) & Savings rate $\beta_h$\\
 The plotted points are the \emphc{exact closed form} from the finger-exercise solution slide.  The DEQN should reproduce this curve cohort-by-cohort.
 
 \vspace{2pt}
-The actual training run, DEQN-vs-analytic comparison, and Euler-error histogram are produced by \texttt{05\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb} (\S 8).  Production target in AGS (2022): mean relative Euler error $\lesssim 10^{-3}$.
+The actual training run, DEQN-vs-analytic comparison, and Euler-error histogram are produced by \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb} (\S 8).  Production target in AGS (2022): mean relative Euler error $\lesssim 10^{-3}$.
 \end{block}
 \end{frame}
 
@@ -721,7 +721,7 @@ The actual training run, DEQN-vs-analytic comparison, and Euler-error histogram 
 \end{block}
 
 \begin{block}{Hands-on}
-Open \texttt{05\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Set \texttt{RUN\_MODE = "teaching"} ($\sim 5$ min) for the classroom run; \texttt{"smoke"} (the default) is a $\sim$30-s sanity check; \texttt{"production"} chases AGS Table~3 accuracy.  Both notebooks expose a \texttt{SAMPLING\_MODE = "simulation" / "exogenous"} switch (the persistent primary uses \texttt{"simulation"}, the companion \texttt{05\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb} uses \texttt{"exogenous"}); the model and loss are identical -- only the training cloud differs.
+Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Set \texttt{RUN\_MODE = "teaching"} ($\sim 5$ min) for the classroom run; \texttt{"smoke"} (the default) is a $\sim$30-s sanity check; \texttt{"production"} chases AGS Table~3 accuracy.  Both notebooks expose a \texttt{SAMPLING\_MODE = "simulation" / "exogenous"} switch (the persistent primary uses \texttt{"simulation"}, the companion \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb} uses \texttt{"exogenous"}); the model and loss are identical -- only the training cloud differs.
 \end{block}
 \end{frame}
 
@@ -970,7 +970,7 @@ $\N_\theta:\;\R^{240} \to \R^{221}$
 \end{center}
 \vspace{-4pt}
 
-\begin{block}{Sizes from \texttt{05\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}}
+\begin{block}{Sizes from \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}}
 \centering
 \begin{tabular}{ll}
 \toprule
@@ -1072,7 +1072,7 @@ Same MLP template as Part II, plus a bond-price head; collateral formed as $\hat
 \footnotesize
 \begin{block}{State-conditioned slices of the trained policy}
 \vspace{-3pt}
-For each aggregate state $z \in \{1,2,3,4\}$ the trained policy yields a lifecycle consumption profile $c^s(z)$ over ages $s=25,\ldots,80$, read off a long ergodic simulation from \texttt{05\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}.  (The notebook ships pooled lifecycle bands and residual diagnostics; the per-shock breakdown is a small add.)
+For each aggregate state $z \in \{1,2,3,4\}$ the trained policy yields a lifecycle consumption profile $c^s(z)$ over ages $s=25,\ldots,80$, read off a long ergodic simulation from \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}.  (The notebook ships pooled lifecycle bands and residual diagnostics; the per-shock breakdown is a small add.)
 \end{block}
 
 \begin{block}{The four aggregate states}
@@ -1112,7 +1112,7 @@ Four distinct profiles, ordered as in the table; exact magnitudes and crossover 
 \end{block}
 
 \vspace{-2pt}
-\textbf{Hands-on: \texttt{05\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}} (persistent-simulation primary; \texttt{05\_05\_OLG\_Benchmark\_DEQN\_exogenous.ipynb} is the feedback-free ablation, same model and loss, different training cloud).  \S 1--4 match III.1--III.5; \S 5--7 = training and policy stability; \S 8 = plots/diagnostics of III.10--III.12.  Teaching runtime ($\sim$200 segments, 128-wide): a few minutes.
+\textbf{Hands-on: \texttt{04\_02\_OLG\_Benchmark\_DEQN\_persistent.ipynb}} (persistent-simulation primary; \texttt{04\_05\_OLG\_Benchmark\_DEQN\_exogenous.ipynb} is the feedback-free ablation, same model and loss, different training cloud).  \S 1--4 match III.1--III.5; \S 5--7 = training and policy stability; \S 8 = plots/diagnostics of III.10--III.12.  Teaching runtime ($\sim$200 segments, 128-wide): a few minutes.
 \end{frame}
 
 
@@ -1158,12 +1158,22 @@ Four distinct profiles, ordered as in the table; exact magnitudes and crossover 
 
 
 % --- Bridge to the Agentic-Programming Lecture ---
-\begin{frame}{Optional Next: Agentic-Programming Workshop}
+\begin{frame}{Bridge: one more dimension to add}
 \footnotesize
-\textbf{What's next (optional, no lecture-script chapter).}  A hands-on workshop in which an LLM-driven coding agent (Claude Code, Cursor, Codex) acts as a pair programmer on a fresh DEQN model.
+\textbf{What we just did.}  Cohort structure changed the \emph{size} of the residual system --- one
+Euler equation per generation, stacked into a single Lagrangian primitive --- but not the training
+principle. Borrowing and collateral constraints entered through product-form KKT residuals, and
+two-tape automatic differentiation meant no residual was ever derived by hand.
 
-\vspace{0.4em}
-\textbf{Coming up: Lecture 09 (heterogeneous agents \& Young's method) and Lecture 10 (sequence-space DEQNs).}  Heterogeneous agents on a histogram (Young's method), continuum-of-agents DEQN, Krusell--Smith with deep learning, and the sequence-space reformulation -- the rest of the discrete-time block before the PINN material.
+\vspace{0.5em}
+\textbf{Next (Session 5): the international real business cycle model.}  OLG stacked equations along
+the \emph{age} dimension. IRBC stacks them along a \emph{country} dimension instead: $N$ Euler
+equations plus a world resource constraint on a $2N$-dimensional state. Same loss, same training
+loop --- and the point where a tensor-product grid is no longer an option at all.
+
+\vspace{0.5em}
+\textbf{Bring with you.}  The architecture search and loss balancing from Session 3: IRBC is the
+first model in this course whose residual components genuinely live on different scales.
 \end{frame}
 
 

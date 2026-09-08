@@ -64,10 +64,10 @@ epochs and sample sizes.
 | 10:30 – 10:45 | *Coffee break* | | |
 | 10:45 – 12:00 | **2.** Deep Equilibrium Nets: the method and the Brock–Mirman benchmark | [slides](day1/slides/02_DeepEquilibriumNets.pdf) | [code](day1/code/02_deep_equilibrium_nets) |
 | 12:00 – 13:30 | *Lunch break* | | |
-| 13:30 – 14:25 | **3.** Scaling up: the international real business cycle model | [slides](day1/slides/03_IRBC.pdf) | [code](day1/code/03_irbc) |
-| 14:25 – 15:20 | **4.** Neural architecture search and loss balancing | [NAS](day1/slides/04a_Neural_Architecture_Search.pdf) · [loss balancing](day1/slides/04b_Loss_Balancing.pdf) | [code](day1/code/04_nas_loss_balancing) |
-| 15:20 – 15:35 | *Coffee break* | | |
-| 15:35 – 16:30 | **5.** Overlapping generations with DEQNs | [slides](day1/slides/05_OLG_Models_DEQNs.pdf) | [code](day1/code/05_olg) |
+| 13:30 – 14:25 | **3.** Neural architecture search and loss balancing | [NAS](day1/slides/03a_Neural_Architecture_Search.pdf) · [loss balancing](day1/slides/03b_Loss_Balancing.pdf) | [code](day1/code/03_nas_loss_balancing) |
+| 14:25 – 15:15 | **4.** Overlapping generations with DEQNs | [slides](day1/slides/04_OLG_Models_DEQNs.pdf) | [code](day1/code/04_olg) |
+| 15:15 – 15:30 | *Coffee break* | | |
+| 15:30 – 16:30 | **5.** Scaling up: the international real business cycle model | [slides](day1/slides/05_IRBC.pdf) | [code](day1/code/05_irbc) |
 
 ### [Day 2](day2) — Thursday, 24 September 2026
 
@@ -96,21 +96,23 @@ Brock–Mirman with a closed-form check, then stochastic Brock–Mirman with Gau
 the conditional expectation. Occasionally binding constraints via Fischer–Burmeister complementarity,
 and a deliberate choice of loss kernel.
 
-**3. Scaling up: IRBC.** N symmetric countries, N Euler equations and a world resource constraint on a
-2N-dimensional state. Why DEQNs scale here and tensor grids do not. Training on the ergodic set,
-Euler-residual validation, irreversible investment, and comparative statics read straight off the
-trained policy.
+**3. Architecture search and loss balancing.** The engineering session, and it comes early because
+everything after it depends on it. Grid versus random search versus Hyperband, implemented in pure
+Python; a 10-D search over depth, width, activation and learning-rate decay. Why multi-equation
+residual losses on different scales silently kill training, and how non-dimensionalisation,
+inverse-loss weighting and ReLoBRaLo fix it.
 
-**4. Architecture search and loss balancing.** The engineering session. Grid versus random search
-versus Hyperband, implemented in pure Python; a 10-D search over depth, width, activation and
-learning-rate decay. Why multi-equation residual losses on different scales silently kill training,
-and how non-dimensionalisation, inverse-loss weighting and ReLoBRaLo fix it.
-
-**5. Overlapping generations.** One Euler equation per cohort, stacked into a single Lagrangian
+**4. Overlapping generations.** One Euler equation per cohort, stacked into a single Lagrangian
 primitive — the training principle does not change. Two-tape automatic differentiation so residuals
 are never hand-derived. An analytic 6-generation model validated against the Krueger–Kübler closed
 form, then the 56-cohort benchmark with borrowing and collateral constraints via product-form KKT
 residuals.
+
+**5. Scaling up: IRBC.** The finale of Day 1. N symmetric countries, N Euler equations and a world
+resource constraint on a 2N-dimensional state — residuals stacked along a country dimension rather
+than an age one. Why DEQNs scale here and tensor grids do not. Training on the ergodic set,
+Euler-residual validation, irreversible investment, and comparative statics read straight off the
+trained policy. The loss balancing from Session 3 earns its keep here.
 
 **6. Deep surrogates and Gaussian processes.** Solve once, then reuse: structural parameters as
 pseudo-states. A deep surrogate of Black–Scholes with implied-volatility inversion as a controlled
@@ -143,8 +145,8 @@ Each day carries hands-on notebooks marked as exercises, with full solutions pro
 |---|---|---|
 | 1 | [Genz approximation and loss functions](day1/code/01_deep_learning_intro/01_06_Genz_Approximation_and_Loss_Functions.ipynb) | in-notebook |
 | 2 | [DEQN exercises](day1/code/02_deep_equilibrium_nets/02_03_DEQN_Exercises_Blanks.ipynb) | [solutions](day1/code/02_deep_equilibrium_nets/02_04_DEQN_Exercises_Solutions.ipynb) |
-| 4 | [IRBC: comparative statics and loss weighting](day1/code/04_nas_loss_balancing/04_04_IRBC_Exercise.ipynb) | in-notebook |
-| 5 | [OLG savings rates and lifecycle profiles](day1/code/05_olg/05_03_OLG_Exercise.ipynb) | in-notebook |
+| 4 | [OLG savings rates and lifecycle profiles](day1/code/04_olg/04_03_OLG_Exercise.ipynb) | in-notebook |
+| 5 | [IRBC: comparative statics and loss weighting](day1/code/05_irbc/05_03_IRBC_Exercise.ipynb) | in-notebook |
 | 7 | [Surrogate-based SMM](day2/slides/07b_SMM_Exercise.pdf) (five finger exercises) | [notebooks](day2/code/07_structural_estimation) |
 | 8 | [Build a PINN from scratch](day2/code/08_pinns/08_04_PINN_Exercise.ipynb) | in-notebook |
 

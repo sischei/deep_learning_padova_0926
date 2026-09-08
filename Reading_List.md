@@ -26,16 +26,16 @@ derivations, worked examples and exercise solutions. Everything below is supplem
   Gentler; good on the bias–variance trade-off.
 * Companion script, Chapter 1.
 
-## Sessions 2–3 — Deep Equilibrium Nets, and IRBC
+## Sessions 2, 5 — Deep Equilibrium Nets, and IRBC
 
 * **Azinovic, Gaegauf & Scheidegger (2022)**, *Deep Equilibrium Nets*, *International Economic Review*
   63(4), 1471–1525 — [`day1/readings`](day1/readings/Azinovic_Gaegauf_Scheidegger_2022_Deep_Equilibrium_Nets.pdf).
-  The core paper for the whole of Day 1.
+  The core paper for the whole of Day 1 (Sessions 2, 4 and 5).
 * Scheidegger & Bilionis (2019), *Machine Learning for High-Dimensional Dynamic Stochastic Economies* —
   [`day1/readings`](day1/readings/Scheidegger_Bilionis_2019_ML_for_HighDim_Dynamic_Stochastic_Economies.pdf).
 * Companion script, Chapters 2 and 3.
 
-## Session 4 — Architecture search and loss balancing
+## Session 3 — Architecture search and loss balancing
 
 * Elsken, Metzen & Hutter (2019), *Neural Architecture Search: A Survey*, JMLR 20(55) —
   [`day1/readings`](day1/readings/Elsken_Metzen_Hutter_2019_NAS_Survey.pdf).
@@ -44,7 +44,7 @@ derivations, worked examples and exercise solutions. Everything below is supplem
   (ReLoBRaLo), arXiv:2110.09813.
 * Companion script, Chapter 4.
 
-## Session 5 — Overlapping generations
+## Session 4 — Overlapping generations
 
 * Krueger & Kübler (2004), *Computing Equilibrium in OLG Models with Stochastic Production*,
   *Journal of Economic Dynamics and Control* 28(7), 1411–1436. The closed form used for validation.
