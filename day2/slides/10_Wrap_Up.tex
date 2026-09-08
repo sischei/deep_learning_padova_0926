@@ -119,7 +119,7 @@ but share the same core optimization logic.
 5 & Cohort structure and constraints (OLG, 56 generations) \\
 6 & Amortizing the solve: deep surrogates and Gaussian processes \\
 7 & Structural estimation via SMM on top of a surrogate \\
-8--9 & Continuous time: PINNs, then the HJB--KFE system \\
+8--9 & Continuous time: PINNs for ODEs, PDEs, HJB and option pricing \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -143,7 +143,7 @@ each layer reuses the one below it.
 \node[phasebox, fill=softblue!25]   (s2) at (2.7,0)  {S2--S3\\DEQN solvers};
 \node[phasebox, fill=softblue!25]   (s4) at (5.4,0)  {S4--S5\\Tuning, OLG};
 \node[phasebox, fill=softorange!25] (s6) at (8.1,0)  {S6--S7\\Surrogates, SMM};
-\node[phasebox, fill=softgreen!25]  (s8) at (10.8,0) {S8--S9\\PINNs, CT-HA};
+\node[phasebox, fill=softgreen!25]  (s8) at (10.8,0) {S8--S9\\PINNs};
 
 \draw[arr] (s1.east) -- (s2.west);
 \draw[arr] (s2.east) -- (s4.west);
@@ -223,8 +223,9 @@ Each of these is a natural next step from where we stopped:
         a distribution as a state variable.
   \item \textbf{Climate economics and IAMs} --- DICE with DEQNs, deep uncertainty
         quantification, constrained Pareto-improving carbon taxes.
-  \item \textbf{The master equation and EMINNs} --- aggregate shocks in
-        continuous-time heterogeneous-agent models.
+  \item \textbf{Continuous-time heterogeneous agents} --- the coupled HJB--KFE system,
+        continuous-time Aiyagari, and the master equation.  Slides and a runnable notebook are in
+        \texttt{day2/optional\_continuous\_time\_ha/}, as optional self-study.
   \item \textbf{Agentic programming} --- AI coding agents as research partners.
 \end{itemize}
 \end{frame}

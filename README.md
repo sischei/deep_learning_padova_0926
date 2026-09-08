@@ -77,9 +77,11 @@ epochs and sample sizes.
 | 09:50 – 10:05 | *Coffee break* | | |
 | 10:05 – 11:00 | **7.** Structural estimation via simulated method of moments | [slides](day2/slides/07a_Structural_Estimation_SMM.pdf) · [exercise](day2/slides/07b_SMM_Exercise.pdf) | [code](day2/code/07_structural_estimation) |
 | 11:00 – 14:00 | *Break* | | |
-| 14:00 – 14:55 | **8.** Economics-informed neural networks (PINNs) | [slides](day2/slides/08_PINNs.pdf) | [code](day2/code/08_pinns) |
+| 14:00 – 14:55 | **8.** Economics-informed neural networks: foundations | [slides](day2/slides/08_PINNs_Foundations.pdf) | [code](day2/code/08_pinns) |
 | 14:55 – 15:10 | *Coffee break* | | |
-| 15:10 – 16:00 | **9.** Continuous-time heterogeneous agents, and wrap-up | [slides](day2/slides/09_Continuous_Time_HA.pdf) · [wrap-up](day2/slides/10_Wrap_Up.pdf) | [code](day2/code/09_continuous_time_ha) |
+| 15:10 – 15:40 | **9.** PINNs: economic and financial applications | [slides](day2/slides/09_PINNs_Applications.pdf) | [code](day2/code/09_pinns_applications) |
+| 15:40 – 15:52 | *Hands-on:* build a PINN from scratch | | [exercise](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) |
+| 15:52 – 16:00 | Course wrap-up | [slides](day2/slides/10_Wrap_Up.pdf) | |
 
 ---
 
@@ -124,16 +126,19 @@ distribution of the estimator. Why the inner-loop re-solve is the binding constr
 surrogate removes it. Scalar SMM for the persistence ϱ on Brock–Mirman, then joint (β, ϱ) estimation
 with identification diagnostics and the partial-identification ridge.
 
-**8. Economics-informed neural networks.** From equilibrium residuals to PDE residuals — the same idea
-with a different operator. The PINN loss on collocation points; soft versus hard boundary conditions;
-a 2-D Poisson PDE end to end; the cake-eating HJB with a hard-BC trial solution; Adam → L-BFGS
-schedules and FP64; the failure modes and how to spot them.
+**8. Economics-informed neural networks: foundations.** From equilibrium residuals to PDE residuals
+— the same idea with a different operator. The PINN loss on collocation points; automatic
+differentiation for PDEs and the second derivatives it has to produce; the training loop, Adam →
+L-BFGS schedules in FP64, and why tanh. A 1-D ODE warm-up, then the central design choice: soft
+penalties versus hard trial solutions that satisfy the boundary conditions by construction, and how
+to build one in 2-D. The 2-D Poisson equation end to end.
 
-**9. Continuous-time heterogeneous agents, and wrap-up.** The HJB and Kolmogorov-forward system; Itô
-essentials; Aiyagari in continuous time mapped operator by operator to its discrete-time analog; the
-master equation named and placed. Upwind finite differences (Achdou–Han–Lasry–Lions–Moll) against a
-PINN on the identical problem, and when finite differences stop being viable. Closing: a
-method-selection guide and open problems.
+**9. PINNs: economic and financial applications.** The cake-eating HJB with a scaled hard-BC trial
+solution, checked against its closed form; the Deep Galerkin Method as an optional architecture when
+the state space grows. Black–Scholes option pricing, with the Greeks for free by automatic
+differentiation. The other half of the method — inverse problems, recovering parameters from data.
+When PINNs fail, how to tell, and the multi-component loss problem returning from Session 3. Then
+twelve minutes at the keyboard building a PINN from scratch, and the course wrap-up.
 
 ---
 
@@ -148,7 +153,7 @@ Each day carries hands-on notebooks marked as exercises, with full solutions pro
 | 4 | [OLG savings rates and lifecycle profiles](day1/code/04_olg/04_03_OLG_Exercise.ipynb) | in-notebook |
 | 5 | [IRBC: comparative statics and loss weighting](day1/code/05_irbc/05_03_IRBC_Exercise.ipynb) | in-notebook |
 | 7 | [Surrogate-based SMM](day2/slides/07b_SMM_Exercise.pdf) (five finger exercises) | [notebooks](day2/code/07_structural_estimation) |
-| 8 | [Build a PINN from scratch](day2/code/08_pinns/08_04_PINN_Exercise.ipynb) | in-notebook |
+| 9 | [Build a PINN from scratch](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) — run in class | in-notebook |
 
 ## Further reading
 
@@ -166,7 +171,9 @@ Topics adjacent to this course that ten hours could not fit:
 * **Heterogeneous agents with a continuum** — Krusell–Smith and Young's method.
 * **Climate economics and integrated assessment models** — DICE with DEQNs, deep uncertainty
   quantification, and constrained Pareto-improving carbon taxes.
-* **The master equation and EMINNs** — aggregate shocks in continuous-time heterogeneous-agent models.
+* **Continuous-time heterogeneous agents** — the HJB–KFE system, continuous-time Aiyagari, and the
+  master equation. Slides and a runnable notebook are included in
+  [`day2/optional_continuous_time_ha`](day2/optional_continuous_time_ha), as optional self-study.
 * **Agentic programming** — AI coding agents as research partners.
 
 All of these are covered in the companion script and in the full-length version of this course.

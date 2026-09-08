@@ -126,9 +126,9 @@
 \DeclareMathOperator*{\argmax}{arg\,max}
 
 % ---------- Title ----------
-\title[PINNs -- Padova 2026]%
+\title[PINNs I -- Padova 2026]%
 {Deep Learning for Solving Dynamic Models}
-\subtitle{Session 8 --- Economics-informed neural networks}
+\subtitle{Session 8 --- Economics-informed neural networks: foundations}
 \author{Simon Scheidegger}
 \institute[HEC Lausanne]{HEC, University of Lausanne\\[4pt]
 {\footnotesize Based on Raissi, Perdikaris \& Karniadakis (2019), \emph{Journal of Computational Physics} 378, 686--707}}
@@ -153,7 +153,7 @@
 \begin{center}
 \begingroup\sloppy\hbadness=10000
 {\scriptsize Further: Sirignano \& Spiliopoulos (2018), Deep Galerkin Method for PDEs in high dimensions.}\\[1pt]
-{\scriptsize Al-Aradi, Correia, Naez, Hoshisashi \& Schwab (2018), DGM PDE solver.}\\[2pt]
+{\scriptsize Al-Aradi, Correia, Naez, Hoshisashi \& Schwab (2018), DGM PDE solver.}
 \endgroup
 \end{center}
 \end{frame}
@@ -167,43 +167,30 @@
                     minimum width=8.6cm, minimum height=0.82cm, align=left, font=\small,
                     inner xsep=10pt, anchor=west},
     now/.style={session, fill=uzhblue!85, draw=uzhblue, text=white, font=\small\bfseries},
-    guest/.style={session, fill=softgreen!15, draw=softgreen!70!black},
     pause/.style={font=\scriptsize\itshape, text=uzhgreydark, anchor=west},
     time/.style={font=\small\bfseries, text=uzhgreydark, anchor=east}
 ]
-    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-4.9);
-
-    \node[time] at (-0.35, 0) {09:00 -- 10:30};
-    \node[now]  at (0.25, 0) {Physics-Informed Neural Networks for PDEs};
-    \fill[uzhblue] (0,0) circle (3.5pt);
-    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,0.45) {you are here $\blacktriangledown$};
-
+    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-4.6);
+    \node[time] at (-0.35,0.0) {09:00 -- 09:50};
+    \node[session] at (0.25,0.0) {Deep surrogates and Gaussian processes};
+    \fill[uzhblue] (0,0.0) circle (3.5pt);
     \node[pause] at (0.25,-0.7) {coffee break};
     \fill[uzhblue!30] (0,-0.7) circle (2pt);
-
-    \node[time] at (-0.35,-1.4) {11:00 -- 12:30};
-    \node[guest] at (0.25,-1.4) {Deep learning for continuous-time models~~{\footnotesize\itshape (Yang)}};
-    \fill[softgreen!70!black] (0,-1.4) circle (3.5pt);
-
+    \node[time] at (-0.35,-1.4) {10:05 -- 11:00};
+    \node[session] at (0.25,-1.4) {Structural estimation via SMM};
+    \fill[uzhblue] (0,-1.4) circle (3.5pt);
     \node[pause] at (0.25,-2.1) {lunch break};
     \fill[uzhblue!30] (0,-2.1) circle (2pt);
-
-    \node[time] at (-0.35,-2.8) {13:30 -- 15:00};
-    \node[guest] at (0.25,-2.8) {Gaussian processes for portfolio optimization~~{\footnotesize\itshape (Trojani)}};
-    \fill[softgreen!70!black] (0,-2.8) circle (3.5pt);
-
+    \node[time] at (-0.35,-2.8) {14:00 -- 14:55};
+    \node[now] at (0.25,-2.8) {PINNs I: foundations};
+    \fill[uzhblue] (0,-2.8) circle (3.5pt);
+    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-2.35) {you are here $\blacktriangledown$};
     \node[pause] at (0.25,-3.5) {coffee break};
     \fill[uzhblue!30] (0,-3.5) circle (2pt);
-
-    \node[time] at (-0.35,-4.2) {15:30 -- 17:00};
-    \node[guest] at (0.25,-4.2) {From RNNs to transformers~~{\footnotesize\itshape (Leippold)}};
-    \fill[softgreen!70!black] (0,-4.2) circle (3.5pt);
-\end{tikzpicture}
-\end{center}
-
-\vspace{0.1cm}
-\begin{center}
-{\footnotesize \textbf{Materials:}~\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}~~$\cdot$~~\textbf{Cloud:}~\href{https://nuvolos.cloud}{nuvolos.cloud}}
+    \node[time] at (-0.35,-4.2) {15:10 -- 16:00};
+    \node[session] at (0.25,-4.2) {PINNs II: applications, hands-on, wrap-up};
+    \fill[uzhblue] (0,-4.2) circle (3.5pt);
+    \end{tikzpicture}
 \end{center}
 \end{frame}
 
@@ -236,49 +223,30 @@
 \end{frame}
 
 % --- Slide 4: Roadmap ---
-\begin{frame}{Roadmap of This Lecture (90 min)}
-\begin{columns}[T]
-\column{0.48\textwidth}
-\textbf{I.\ From DEQNs to PINNs}~~\mbox{\small (11 min)}
+\begin{frame}{Roadmap of This Session (55 min)}
+\textbf{Part I of two.}  This session builds the method; Session 9 after the break applies it to
+economic and financial models.
+
+\vspace{0.6em}
+\textbf{I.\ From DEQNs to PINNs}~~\mbox{\small (12 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item Discrete vs.\ continuous time, the PINN loss
     \item Finger exercise
 \end{itemize}
 
-\vspace{0.4em}
+\vspace{0.5em}
 \textbf{II.\ PINN fundamentals}~~\mbox{\small (20 min)}
 \begin{itemize}\setlength\itemsep{1pt}
-    \item Autograd for PDEs, collocation, training loop
+    \item Autograd for PDEs, collocation, the training loop
     \item Adam $\to$ L-BFGS in FP64; warm-up 1D ODE
 \end{itemize}
 
-\vspace{0.4em}
-\textbf{III.\ Boundary conditions}~~\mbox{\small (17 min)}
+\vspace{0.5em}
+\textbf{III.\ Boundary conditions}~~\mbox{\small (23 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item Soft penalties vs.\ hard trial solutions
-    \item 2D Poisson; finger exercise
+    \item Hard BCs in 2D; the Poisson equation; finger exercise
 \end{itemize}
-
-\column{0.48\textwidth}
-\textbf{IV.\ HJB equations}~~\mbox{\small (18 min)}
-\begin{itemize}\setlength\itemsep{1pt}
-    \item Cake-eating, scaled trial solution, hard BCs
-    \item DGM as an optional high-dimensional architecture
-\end{itemize}
-
-\vspace{0.4em}
-\textbf{V.\ Finance: Black--Scholes}~~\mbox{\small (8 min)}
-\begin{itemize}\setlength\itemsep{1pt}
-    \item Option pricing against the closed form
-\end{itemize}
-
-\vspace{0.4em}
-\textbf{VI.\ When to use one}~~\mbox{\small (16 min)}
-\begin{itemize}\setlength\itemsep{1pt}
-    \item PINNs vs.\ grid solvers; inverse problems
-    \item Failure modes; what to run
-\end{itemize}
-\end{columns}
 \end{frame}
 
 % ============================================================================
@@ -299,7 +267,7 @@
 
 % --- Slide 5: Recall the DEQN Loss ---
 \begin{frame}{Recall: The DEQN Loss from Day 1}
-\textbf{Yesterday morning} (\texttt{02\_DeepEquilibriumNets.pdf}) \textbf{we trained} a neural network $\mathcal{N}_\theta$ to satisfy
+\textbf{Yesterday morning} (\texttt{02\_DEQN.pdf}) \textbf{we trained} a neural network $\mathcal{N}_\theta$ to satisfy
 economic equilibrium conditions in \emphc{discrete time}:
 \[
 \boxed{
@@ -1319,524 +1287,7 @@ Fall back to \emphc{soft BCs} for complex geometries or mixed boundary types.
 % ============================================================================
 
 % --- Slide 26: Section Divider ---
-\section{Economic Applications: the HJB Equation}
-
-\begin{frame}{}
-\vfill
-\begin{center}
-{\Huge \textcolor{uzhblue}{\textbf{Part IV}}}\\[12pt]
-{\LARGE Economic Applications: The HJB Equation}
-\end{center}
-\vfill
-\end{frame}
-
-% --- Slide 27: HJB Equation ---
-\begin{frame}{The Hamilton--Jacobi--Bellman Equation}
-\textbf{Generic continuous-time optimization:}
-\[
-\rho\, V(\x) = \max_{c}\;\bigl\{u(c) + V_{\x}\cdot f(\x, c)\bigr\}
-\]
-
-\vspace{0.3em}
-\begin{itemize}
-    \item $V(\x)$: \emphc{value function} (unknown)
-    \item $\rho$: discount rate
-    \item $u(c)$: flow utility
-    \item $f(\x,c)$: law of motion for state $\x$
-    \item $V_{\x} = \nabla V$: gradient of the value function
-\end{itemize}
-
-\vspace{0.4em}
-\textbf{This is a PDE!} First-order (or second-order with diffusion).
-
-\vspace{0.3em}
-$\Rightarrow$ \emphc{Perfect fit for PINNs:} the network approximates $V$, autograd gives $V_{\x}$, and the HJB residual is the loss.
-\end{frame}
-
-% --- Slide 28: Cake-Eating Setup ---
-\begin{frame}{Cake-Eating Problem: Setup}
-\textbf{A household} with wealth $a(t)$ chooses consumption $c(t)$ to maximize lifetime utility:
-\[
-\max_{\{c(t)\}} \int_0^\infty e^{-\rho t}\,\frac{c(t)^{1-\gamma}}{1-\gamma}\,\mathrm{d}t
-\qquad\text{s.t.}\quad \dot{a} = r\,a - c
-\]
-
-\textbf{HJB equation:}\quad
-$\rho\,V(a) = \max_c\;\bigl\{\frac{c^{1-\gamma}}{1-\gamma} + V'(a)\,(r\,a - c)\bigr\}$
-
-\vspace{0.2em}
-\textbf{FOC:} $c^{-\gamma} = V'(a)$ $\;\Rightarrow\;$ $c^\star = \bigl(V'(a)\bigr)^{-1/\gamma}$.
-
-\vspace{0.2em}
-\textbf{Analytical solution} (with $\kappa = \frac{\rho - (1-\gamma)r}{\gamma} > 0$):
-\[
-V^\star(a) = \frac{\kappa^{-\gamma}}{1-\gamma}\,a^{1-\gamma}, \qquad c^\star(a) = \kappa\,a
-\]
-
-{\small Parameters: $\gamma = 2$, $\rho = 0.05$, $r = 0.03$ $\;\Rightarrow\;$ $\kappa = 0.04$.}
-\end{frame}
-
-% --- Slide 29: PINN for HJB (trial solution, hard BCs) ---
-\begin{frame}{PINN for the HJB Equation: Hard-BC Trial Solution}
-\textbf{Anchor + mask + scaled MLP.}  Let $x(a) = (a-a_{\min})/(a_{\max}-a_{\min}) \in [0,1]$ and $S$ a value-scale constant:
-\[
-\hat V(a) \;=\; V^\star(a_{\min}) + x(a)\bigl[V^\star(a_{\max}) - V^\star(a_{\min})\bigr] \;+\; x(a)\bigl(1-x(a)\bigr)\,S\,f_\theta\bigl(x(a)\bigr).
-\]
-Endpoints are exact \emph{by construction}, so the boundary loss is identically zero and the optimizer focuses on the HJB residual only.
-
-\vspace{0.3em}
-\textbf{Consumption} via FOC, $\hat c(a) = (\hat V'(a))^{-1/\gamma}$, with softplus safeguard on $\hat V'$.
-
-\vspace{0.3em}
-\textbf{Loss}: only the interior HJB residual remains,
-\[
-\ell \;=\; \frac{1}{N}\sum_{i}\mathcal{R}(a_i)^2,
-\qquad
-\mathcal{R}(a) = \rho\hat V - \Bigl[\tfrac{\hat c^{1-\gamma}}{1-\gamma} + \hat V'(ra - \hat c)\Bigr].
-\]
-
-\vspace{0.2em}
-{\small \emphc{Pedagogical point:} a small MLP plus hard BCs beats a large gated net with a soft-BC penalty, because the boundary term no longer dominates the objective.}
-\end{frame}
-
-% --- Slide 30: DGM Architecture (optional / high-D) ---
-\begin{frame}{Optional Architecture for High-D PDEs: DGM}
-\begin{columns}[T]
-\column{0.44\textwidth}
-\begin{center}
-\begin{tikzpicture}[
-    block/.style={rectangle, draw=uzhblue, thick, fill=uzhgreylight,
-        minimum width=2.4cm, minimum height=0.45cm, font=\footnotesize,
-        rounded corners=3pt},
-    layer/.style={rectangle, draw=darkred, thick, fill=red!5,
-        minimum width=2.4cm, minimum height=0.45cm, font=\footnotesize,
-        rounded corners=3pt},
-    arr/.style={-{Stealth[length=2mm]}, thick, uzhblue},
-    skip/.style={-{Stealth[length=2mm]}, thick, darkred, dashed}
-]
-    % Input
-    \node[block] (inp) {$x$};
-
-    % Initial transform
-    \node[block, below=0.25cm of inp] (S0) {$S_0 = \tanh(Wx\!+\!b)$};
-
-    % DGM Layers — stacked to show repetition
-    \node[layer, below=0.25cm of S0] (L1) {DGM Layer 1};
-    \node[layer, below=0.2cm of L1] (L2) {DGM Layer 2};
-    \node[font=\small, text=gray] at ($(L2.south)+(0,-0.18)$) {$\vdots$};
-    \node[layer, below=0.35cm of L2] (LL) {DGM Layer $L$};
-
-    % Output
-    \node[block, below=0.25cm of LL] (out) {$\hat{V} = W_{\text{out}} S_L$};
-
-    % Vertical arrows
-    \draw[arr] (inp) -- (S0);
-    \draw[arr] (S0) -- (L1);
-    \draw[arr] (L1) -- (L2);
-    \draw[arr] (L2) -- (LL);
-    \draw[arr] (LL) -- (out);
-
-    % Skip connections from x to every layer
-    \draw[skip] (inp.west) -- ++(-0.6,0) |- (L1.west);
-    \draw[skip] ([xshift=-0.6cm]inp.west) |- (L2.west);
-    \draw[skip] ([xshift=-0.6cm]inp.west) |- (LL.west);
-
-    % Label for skip connections
-    \node[font=\tiny, text=darkred, align=center, rotate=90]
-        at ([xshift=-1.0cm]L2.west) {$x$ feeds every layer};
-\end{tikzpicture}
-\end{center}
-
-\column{0.54\textwidth}
-\textbf{Deep Galerkin Method}\\
-{\small (Sirignano \& Spiliopoulos, 2018)}
-
-\vspace{0.4em}
-\begin{itemize}\setlength\itemsep{3pt}
-    \item Pays off only in \emphc{higher dimensions}, or where the PDE has sharp features.
-    \item The input $x$ enters \emphc{every} layer, not just the first --- that is what resolves steep gradients.
-    \item Each layer is \emphc{gated}, LSTM-style; the $x$-skips recall Highway Networks.
-\end{itemize}
-
-\vspace{0.4em}
-\begin{alertblock}{Not the default choice}
-\footnotesize
-For the 1D cake problem, the trial-solution MLP of the previous slide is simpler \emph{and} more accurate.
-\end{alertblock}
-\end{columns}
-\end{frame}
-
-% --- Slide 31b: Inside a DGM layer ---
-\begin{frame}{Inside a DGM Layer}
-\begin{columns}[T]
-\column{0.56\textwidth}
-{\small $S_\ell\in\R^U$ is the depth-$\ell$ hidden state, initialised as $S_0=\tanh(Wx+b)$; $\odot$ is the Hadamard product; and $Z,G,R$ are sigmoid gates valued in $[0,1]$:}
-\vspace{0.2em}
-{\small\begin{align*}
-Z_\ell &= \sigma(U^z x + W^z S_\ell + b^z)\\
-G_\ell &= \sigma(U^g x + W^g S_\ell + b^g)\\
-R_\ell &= \sigma(U^r x + W^r S_\ell + b^r)\\
-H_\ell &= \tanh(U^h x + W^h (S_\ell \odot R_\ell) + b^h)\\
-S_{\ell+1} &= (1 - G_\ell)\odot H_\ell + Z_\ell \odot S_\ell
-\end{align*}}
-
-\column{0.42\textwidth}
-\begin{block}{Reading the gates}
-\footnotesize
-$R_\ell$ decides how much of the current state enters the candidate $H_\ell$.\\[4pt]
-$G_\ell$ and $Z_\ell$ then blend that candidate against the state being carried forward.\\[4pt]
-Every one of them sees $x$ directly.
-\end{block}
-
-\vspace{0.4em}
-{\footnotesize \textbf{Cost:} four weight matrices per layer instead of one, so roughly $4\times$ the parameters of a plain MLP of the same width.}
-\end{columns}
-\end{frame}
-
-% --- Slide 31: DGM Code ---
-\begin{frame}[fragile]{DGM Implementation (PyTorch)}
-\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
-class DGMNet(nn.Module):
-    def __init__(self, dim, layers=4, units=64):
-        super().__init__()
-        self.input = nn.Linear(dim, units)
-        self.z  = nn.ModuleList(nn.Linear(dim, units) for _ in range(layers))
-        self.wz = nn.ModuleList(nn.Linear(units, units) for _ in range(layers))
-        # ... similar for g, r, h gates
-        self.out = nn.Linear(units, 1)
-
-    def forward(self, x):
-        s = torch.tanh(self.input(x))
-        for l in range(len(self.z)):
-            z = torch.sigmoid(self.z[l](x) + self.wz[l](s))
-            g = torch.sigmoid(self.g[l](x) + self.wg[l](s))
-            r = torch.sigmoid(self.r[l](x) + self.wr[l](s))
-            h = torch.tanh(self.h[l](x) + self.wh[l](s * r))
-            s = (1 - g) * h + z * s
-        return self.out(s)
-\end{lstlisting}
-\end{frame}
-
-% --- Slide 32: HJB Residual Code ---
-\begin{frame}[fragile]{HJB Residual Implementation}
-\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-def pde_residual(model, a):
-    a.requires_grad_(True)
-    V = model(a)                        # value function
-    V_a = torch.autograd.grad(          # V'(a) via autograd
-        V.sum(), a, create_graph=True)[0].squeeze(-1)
-
-    safe_Va = F.softplus(V_a) + 1e-6   # positivity guard
-    c = safe_Va.pow(-1.0 / gamma)       # FOC: optimal c
-    u_c = c.pow(1-gamma) / (1-gamma)    # flow utility
-
-    R = rho*V - (u_c + safe_Va*(r*a.squeeze(-1) - c))
-    return R                            # HJB residual
-\end{lstlisting}
-
-\vspace{0.1em}
-{\footnotesize The \texttt{softplus} safeguard prevents $V'(a)^{-1/\gamma}$ from blowing up if $V'(a) \leq 0$ during early training.}
-\end{frame}
-
-% --- Slide 33: Cake-Eating Results ---
-\begin{frame}{Cake-Eating: the Closed-Form Benchmark}
-\begin{columns}[T]
-\column{0.48\textwidth}
-\begin{center}
-\begin{tikzpicture}
-\begin{axis}[
-    width=5.8cm, height=4.5cm,
-    xlabel={Wealth $a$}, ylabel={$V(a)$},
-    xlabel style={font=\small}, ylabel style={font=\small},
-    tick label style={font=\tiny},
-    xmin=0.5, xmax=4, ymin=-1300, ymax=-100,
-    grid=major, grid style={gray!15},
-    legend style={font=\tiny, at={(0.98,0.02)}, anchor=south east},
-    axis lines=left,
-]
-    \addplot[thick, softblue, domain=0.5:4, samples=80] {-625/x};
-    \addlegendentry{Analytical $V^\star(a) = -625/a$}
-\end{axis}
-\end{tikzpicture}\\
-{\small Value function $V(a)$ (closed form)}
-\end{center}
-
-\column{0.48\textwidth}
-\begin{center}
-\begin{tikzpicture}
-\begin{axis}[
-    width=5.8cm, height=4.5cm,
-    xlabel={Wealth $a$}, ylabel={$c(a)$},
-    xlabel style={font=\small}, ylabel style={font=\small},
-    tick label style={font=\tiny},
-    xmin=0.1, xmax=4, ymin=0, ymax=0.18,
-    grid=major, grid style={gray!15},
-    legend style={font=\tiny, at={(0.02,0.98)}, anchor=north west},
-    axis lines=left,
-]
-    \addplot[thick, softblue, domain=0.1:4, samples=80] {0.04*x};
-    \addlegendentry{Analytical $c^\star(a) = \kappa\, a$}
-\end{axis}
-\end{tikzpicture}\\
-{\small Consumption policy $c(a)$ (closed form)}
-\end{center}
-\end{columns}
-
-\vspace{0.1em}
-\begin{center}
-{\footnotesize These are the \emph{exact} solutions, the target the PINN is scored against. Classroom run: HJB loss $\approx 3\!\times\!10^{-4}$, consumption relative $L^2$ error $\approx 6\!\times\!10^{-3}$. The notebook overlays the fitted $\hat V$ and $\hat c$.}
-\end{center}
-
-{\small\hfill\textbf{Notebook:} \texttt{04\_Cake\_Eating\_HJB\_PINN}}
-\end{frame}
-
-% --- Slide 34: Extensions ---
-\begin{frame}{Extensions: From Cake-Eating to Frontier Models}
-\textbf{The PINN/DGM framework scales naturally:}
-
-\vspace{0.3em}
-\begin{enumerate}
-    \item \textbf{Income risk:} add diffusion $\mathrm{d}a = (ra - c + y)\,\mathrm{d}t + \sigma\,\mathrm{d}W$
-    \quad$\Rightarrow$ second-order HJB
-
-    \vspace{0.2em}
-    \item \textbf{Aiyagari-type models:} HJB + Kolmogorov Forward Equation
-    \quad$\Rightarrow$ coupled PDE system
-
-    \vspace{0.2em}
-    \item \textbf{General equilibrium:} prices clear markets
-    \quad$\Rightarrow$ hybrid DEQN + PINN
-
-    \vspace{0.2em}
-    \item \textbf{High dimensions:} multiple assets, heterogeneous agents
-    \quad$\Rightarrow$ no grid needed!
-\end{enumerate}
-
-\vspace{0.3em}
-{\small See: Achdou et al.\ (2022), Fernandez-Villaverde et al.\ (2024), Gopalakrishna (2024).}
-\end{frame}
-
-% ============================================================================
-% PART V: BLACK-SCHOLES
-% ============================================================================
-
-% --- Slide 35: Section Divider ---
+% --- Padova cut: section 4 "Economic Applications: the HJB Equation" (302 lines) dropped ---
 % --- Padova cut: section 5 "Financial Applications: Black--Scholes" (128 lines) dropped ---
-\section{When to Use One, and What Goes Wrong}
-
-% --- Slide 38b: Section Divider ---
-\begin{frame}{}
-\vfill
-\begin{center}
-{\Huge \textcolor{uzhblue}{\textbf{Part VI}}}\\[12pt]
-{\LARGE When to Use One, and What Goes Wrong}
-\end{center}
-\vfill
-\end{frame}
-
-% --- Slide 38b2: Honest comparison against a classical solver ---
-\begin{frame}{Should You Use a PINN at All?}
-\textbf{On a 1D problem, finite differences win. Outright.}
-
-\vspace{0.4em}
-\begin{columns}[T]
-\column{0.52\textwidth}
-{\small Notebook \texttt{07} solves the same partial-equilibrium HJB both ways:}
-\begin{itemize}\setlength\itemsep{2pt}
-    \item \emphc{Upwind implicit FD}: 13 iterations on a 500-point grid, then the error is whatever the discretization gives you --- and you can shrink it by refining.
-    \item \emphc{PINN}: thousands of epochs to reach $10^{-3}$--$10^{-2}$, with no comparable knob.
-\end{itemize}
-
-\vspace{0.5em}
-{\small Anyone selling you PINNs as a universal replacement for a grid solver is overselling.}
-
-\vspace{0.3em}
-
-\column{0.45\textwidth}
-\begin{block}{Where the trade flips}
-\footnotesize
-A tensor grid needs $n^d$ points. At $n=50$:\\[3pt]
-\begin{tabular}{@{}rl@{}}
-$d=1$ & $50$ \\
-$d=2$ & $2{,}500$ \\
-$d=4$ & $6.3$ million \\
-$d=6$ & $1.6\times10^{10}$ \\
-\end{tabular}\\[4pt]
-Collocation cost is set by the \emph{sample size you choose}, not by $d$.
-\end{block}
-\end{columns}
-
-\vspace{0.4em}
-{\footnotesize \emphc{Use a PINN when} the state space is high-dimensional, the domain is irregular, there are many discrete states, or you need the solution \emph{and} its derivatives as a differentiable object. Otherwise, use the grid.}
-\end{frame}
-
-% --- Slide 38b3: The other half of Raissi et al. ---
-\begin{frame}{The Other Half: Inverse Problems}
-\textbf{So far the PDE was known and we solved it.} Raissi et al.\ (2019) also treat the reverse.
-
-\vspace{0.4em}
-\begin{columns}[T]
-\column{0.48\textwidth}
-\begin{block}{Forward problem}
-\small
-Parameters $\mu$ given, solve for $u$.\\[4pt]
-$\ell(\theta) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \text{BCs}$
-\end{block}
-
-\column{0.48\textwidth}
-\begin{alertblock}{Inverse problem}
-\small
-Some data on $u$ observed, solve for $u$ \emph{and} $\mu$.\\[4pt]
-$\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\theta - u^{\text{obs}}\|^2$
-\end{alertblock}
-\end{columns}
-
-\vspace{0.5em}
-\begin{itemize}\setlength\itemsep{3pt}
-    \item $\mu$ is just \emphc{another set of trainable parameters}: one extra tensor, same optimizer, same loop.
-    \item In economics $\mu$ is a \emphc{structural parameter} --- risk aversion, a discount rate, an adjustment cost --- and the data term is a moment condition.
-    \item This is estimation and solution in \emphc{one} optimization, rather than a solver nested inside an estimation loop.
-\end{itemize}
-
-\vspace{0.3em}
-{\footnotesize Connects directly to the deep-surrogate approach to structural estimation from Day 1.}
-\end{frame}
-
-% --- Slide 38c: When PINNs fail — the multi-component loss again ---
-\begin{frame}{When PINNs Fail: the Multi-Component Loss, Again}
-\textbf{The soft-BC loss is a weighted sum of residuals that live at different scales:}
-\[
-\ell_\theta = \underbrace{\lambda_{\text{pde}}\,\ell_{\text{pde}}}_{\text{interior}}
-\;+\; \underbrace{\lambda_{\text{bc}}\,\ell_{\text{bc}}}_{\text{boundary}}
-\;+\; \underbrace{\lambda_{\text{ic}}\,\ell_{\text{ic}}}_{\text{initial}}
-\]
-
-\vspace{0.5em}
-\begin{columns}[T]
-\column{0.50\textwidth}
-\textbf{This is exactly the Day 1 pathology.}
-\begin{itemize}\setlength\itemsep{2pt}
-    \item A residual carrying $S^2\partial_{SS}V$ is not in the same units as one carrying $V$ itself.
-    \item The largest-scale component captures the gradient; the others are effectively ignored.
-    \item Adaptive weights cannot close a gap of several orders of magnitude.
-\end{itemize}
-
-\column{0.47\textwidth}
-\begin{block}{What to do, in order}
-\small
-\textbf{1.}~\emphc{Non-dimensionalize} first --- rescale so every residual is $O(1)$.\\[3pt]
-\textbf{2.}~Enforce \emphc{structurally} where you can: a hard-BC trial solution deletes $\ell_{\text{bc}}$ from the sum.\\[3pt]
-\textbf{3.}~Only then reach for adaptive weights.
-\end{block}
-\end{columns}
-
-\vspace{0.3em}
-{\footnotesize On Day 1 this bought $\approx 110\times$ over equal weighting, where the best adaptive scheme managed $2\times$ (\texttt{02\_DeepEquilibriumNets.pdf}, Part IV). See Wang, Teng \& Perdikaris (2021).}
-\end{frame}
-
-% --- Slide 38d: Hands-on ---
-\begin{frame}{Hands-On: What to Run}
-\textbf{All seven notebooks are PyTorch, CPU-only, and self-contained.}\\[2pt]
-{\footnotesize Run them on \href{https://nuvolos.cloud}{nuvolos.cloud} --- no local setup needed.}
-
-\vspace{0.4em}
-\textbf{Start here, in this order:}
-\begin{itemize}\setlength\itemsep{1pt}
-    \item The simplest possible PINN: $y''=-1$ with zero BCs \hfill{\footnotesize\texttt{01}}
-    \item Soft penalty vs.\ hard trial solution --- the core choice \hfill{\footnotesize\texttt{02}}
-    \item The first economic application: the cake-eating HJB \hfill{\footnotesize\texttt{04}}
-\end{itemize}
-
-\vspace{0.3em}
-\textbf{Then, at your own pace:}
-\begin{itemize}\setlength\itemsep{1pt}
-    \item 2D Poisson: hard BCs by transfinite interpolation \hfill{\footnotesize\texttt{03}}
-    \item Black--Scholes, Greeks for free by autodiff \hfill{\footnotesize\texttt{05}}
-    \item PE HJB with discrete income, against an FD benchmark \hfill{\footnotesize\texttt{07}}
-\end{itemize}
-
-\vspace{0.1em}
-\begin{exampleblock}{Build one yourself (\textasciitilde30 min)}
-\footnotesize
-Notebook \texttt{06} is a fill-in-the-blank exercise: a PINN for $u''+u=0$ on $[0,\pi]$, solution $\sin(x)$. Solutions follow each task in the same file.
-\end{exampleblock}
-\end{frame}
-
-% --- Slide 39: Summary ---
-\begin{frame}{Summary and Key Takeaways}
-\begin{columns}[T]
-\column{0.32\textwidth}
-\begin{block}{Method}
-\centering\small
-\vspace{0.2em}
-PINNs embed \emphc{differential equations} directly into the neural network loss function via \emphc{automatic differentiation}.
-\vspace{0.2em}
-\end{block}
-
-\column{0.32\textwidth}
-\begin{block}{Boundary Conditions}
-\centering\small
-\vspace{0.2em}
-\emphc{Hard BCs} (trial solutions) eliminate tuning and ensure exact satisfaction. Use \emphc{soft BCs} for complex domains.
-\vspace{0.2em}
-\end{block}
-
-\column{0.32\textwidth}
-\begin{block}{Applications}
-\centering\small
-\vspace{0.2em}
-HJB equations, Black--Scholes, and any continuous-time model. Scales to \emphc{high dimensions} without grids.
-\vspace{0.2em}
-\end{block}
-\end{columns}
-
-\vspace{0.6em}
-\textbf{From DEQNs to PINNs:}
-\begin{itemize}
-    \item \emphc{Same philosophy:} economic/financial equations \emph{are} the loss
-    \item \emphc{New ingredient:} \texttt{torch.autograd.grad} for derivatives of $\mathcal{N}_\theta$
-    \item \emphc{Broader scope:} any PDE, not just algebraic equilibrium conditions
-\end{itemize}
-\end{frame}
-
-% --- Slide 40: Questions ---
-\begin{frame}{}
-\begin{columns}[c]
-\column{0.45\textwidth}
-\begin{center}
-{\Huge \textcolor{uzhblue}{\textbf{Questions?}}}
-
-\vspace{1.0cm}
-{\large Simon Scheidegger}\\[4pt]
-{\small HEC, University of Lausanne}\\[4pt]
-\url{https://sischei.github.io}
-
-\vspace{0.6cm}
-{\small Materials:~~\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}}
-\end{center}
-
-\column{0.45\textwidth}
-\begin{center}
-\textbf{Companion Notebooks:}\\[8pt]
-{\small
-\begin{tabular}{rl}
-01 & ODE PINN (zero BCs) \\
-02 & Soft vs.\ hard BCs \\
-03 & 2D Poisson \\
-04 & Cake-eating HJB \\
-05 & Black--Scholes \\
-06 & Exercise: build a PINN \\
-07 & PE HJB: FD vs.\ PINN \\
-\end{tabular}
-}
-
-\vspace{0.7cm}
-\textbf{Next up:}\\[6pt]
-{\large Deep Learning for}\\
-{\large Continuous-Time Models}\\[6pt]
-{\small 11:00--12:30~~$\cdot$~~Yucheng Yang}
-\end{center}
-\end{columns}
-\end{frame}
-
+% --- Padova cut: section 6 "When to Use One, and What Goes Wrong" (217 lines) dropped ---
 \end{document}

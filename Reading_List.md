@@ -63,7 +63,7 @@ derivations, worked examples and exercise solutions. Everything below is supplem
   [`day2/readings`](day2/readings/Scheidegger_etal_Machine_Learning_Dynamic_Programming.pdf).
 * Companion script, Chapters 9 and 10.
 
-## Session 8 — Physics-informed neural networks
+## Sessions 8–9 — Physics-informed neural networks
 
 * **Raissi, Perdikaris & Karniadakis (2019)**, *Physics-Informed Neural Networks*, *Journal of
   Computational Physics* 378, 686–707 —
@@ -72,7 +72,9 @@ derivations, worked examples and exercise solutions. Everything below is supplem
   Equations*, arXiv:1708.07469.
 * Companion script, Chapter 7.
 
-## Session 9 — Continuous-time heterogeneous agents
+## Optional — continuous-time heterogeneous agents
+
+Not covered in the two days; see [`day2/optional_continuous_time_ha`](day2/optional_continuous_time_ha).
 
 * **Achdou, Han, Lasry, Lions & Moll (2022)**, *Income and Wealth Distribution in Macroeconomics: A
   Continuous-Time Approach*, *Review of Economic Studies* 89(1), 45–86. The finite-difference benchmark.
