@@ -2,30 +2,43 @@
 
 Day 1, 14:25–15:25. Slides: [`04_OLG_Models_DEQNs.pdf`](../../slides/04_OLG_Models_DEQNs.pdf)
 
-| Notebook | What it does | Runtime |
+| Notebook | What it does | Teaching preset |
 |---|---|---|
-| [`04_00_OLG_Diamond_Warmup.ipynb`](04_00_OLG_Diamond_Warmup.ipynb) | **Warm-up.** Diamond's two-period OLG: two cohorts alive at once, one policy, one Euler equation, closed form $s = \beta w/(1+\beta)$. The entire DEQN in sixty lines, validated to four decimals. | ~1 min, CPU |
-| [`04_01_OLG_Analytic_DEQN_persistent.ipynb`](04_01_OLG_Analytic_DEQN_persistent.ipynb) | **Start here.** Analytic 6-generation OLG (Krueger & Kübler, 2004), trained on the ergodic set and validated against the closed-form age-specific savings rates. | smoke ~30 s; **teaching ~45 min**, CPU |
-| [`04_03_OLG_Exercise.ipynb`](04_03_OLG_Exercise.ipynb) | **Exercise.** Closed-form savings rates; simulate the economy under them to get its ergodic prices; lifecycle profiles at those prices, and the discount factor in general equilibrium. Pure NumPy, no network. | ~25 min to work through |
-| [`04_04_OLG_Analytic_DEQN_exogenous.ipynb`](04_04_OLG_Analytic_DEQN_exogenous.ipynb) | Ablation: the same analytic model trained on a broad exogenous box instead of the ergodic set. | smoke ~30 s; **teaching ~45 min**, CPU |
+| [`04_00_OLG_Diamond_Warmup.ipynb`](04_00_OLG_Diamond_Warmup.ipynb) | **Warm-up.** Diamond's two-period OLG: two cohorts alive at once, one policy, one Euler equation, closed form $s=\beta w/(1+\beta)$. The whole DEQN in sixty lines. | **69 s** |
+| [`04_01_OLG_Analytic_DEQN_persistent.ipynb`](04_01_OLG_Analytic_DEQN_persistent.ipynb) | **Start here.** Analytic 6-generation OLG (Krueger & Kübler, 2004), trained on its own ergodic set and validated against the closed-form savings rates. | **11 min** (smoke 2.5 min) |
+| [`04_03_OLG_Exercise.ipynb`](04_03_OLG_Exercise.ipynb) | **Exercise.** Closed-form savings rates; simulate to get the model's own ergodic prices; lifecycle profiles at those prices; the discount factor in general equilibrium. Pure NumPy, no network. | seconds to run, ~25 min to work through |
+| [`04_04_OLG_Analytic_DEQN_exogenous.ipynb`](04_04_OLG_Analytic_DEQN_exogenous.ipynb) | Ablation: the same model trained on a broad exogenous box instead of the ergodic set. | **3.5 min** |
 
-**Stored outputs are `teaching`-preset runs**, so the numbers and figures you see without running
-anything are the converged ones: `04_01` reproduces the closed-form savings rates to $1.4\times10^{-4}$.
-`RUN_MODE = "teaching"` is also the committed default. **In class, set it to `"smoke"` first**: a
-~30-second sanity check whose numbers are deliberately not converged, and the only preset that fits the
-hands-on slot.
+All timings measured on a laptop CPU, not estimated.
+
+## The shipped outputs are converged runs
+
+`RUN_MODE = "teaching"` is the committed default and the preset the stored outputs came from, so the
+numbers and figures you see without running anything are the good ones:
+
+| | loss | mean rel. Euler error | vs the closed form |
+|---|---|---|---|
+| `04_00` | 1e-06.2 | — | savings fraction within 4.6e-04 on the visited states |
+| `04_01` | 1.2e-07 | **0.026%** | savings rates to **1.0e-05**, capital path to 2.0e-04 |
+| `04_04` | 2.8e-07 | 0.037% | savings rates to 2.7e-05, capital path to 2.4e-04 |
+
+Both DEQN notebooks report `PASS: policy drift is small`.
+
+**In class, set `RUN_MODE = "smoke"` first.** That is a deliberately unconverged sanity check, and it is
+the preset that fits the hands-on slot. Note that smoke is ~2.5 min rather than seconds: the diagnostics
+and the 200k-period ergodic-price simulation at the end cost the same at any preset.
 
 The `persistent` / `exogenous` pair is the point: where you draw the training cloud changes the solution
-you get. Compare `04_01` against `04_04` directly.
+you get. Compare `04_01` against `04_04`, and see [`optional/`](optional/) for the same comparison at
+56 cohorts, where the gap is a factor of 1180.
 
 ## The 56-cohort benchmark
 
-Part III of the slides covers the 56-cohort, two-asset benchmark of Azinovic, Gaegauf & Scheidegger
-(2022), but there is no notebook for it here. The reference implementation, including **the trained
-network weights from the paper**, is upstream:
+Part III of the slides covers the two-asset, 56-cohort benchmark of Azinovic, Gaegauf & Scheidegger
+(2022). There is no hands-on for it. The reference implementation, including **the paper's trained
+network weights**, is upstream:
 
 **<https://github.com/sischei/DeepEquilibriumNets>** → `code/python-scripts/benchmark`
 
 `python benchmark.py` loads those weights and regenerates the paper's figures in seconds. The local
-re-cuts that would not train at a classroom preset are kept in [`optional/`](optional/), together with
-the measurements behind slide III.5.
+re-cuts are in [`optional/`](optional/), together with the guard bug behind slides III.5 and III.6.

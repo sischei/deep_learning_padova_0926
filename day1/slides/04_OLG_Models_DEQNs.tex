@@ -343,8 +343,8 @@ the code carries over to the six-cohort case unchanged.}
           fraction of $w_t$? Would they ever want to borrow?
 \end{enumerate}
 \vspace{0.4em}
-{\footnotesize 3 minutes. Then open \texttt{04\_00\_OLG\_Diamond\_Warmup.ipynb}: about one minute on a
-laptop. The network should report $\hat\sigma = 0.4118$ at every state the economy visits, and drift away from it \emph{outside} that set, because the loss is only ever evaluated where the policy goes (Session 2, ``Residual training only tests states the policy visits'').  That is why training uses a simulated cloud.}
+{\footnotesize 3 minutes. Then open \texttt{04\_00\_OLG\_Diamond\_Warmup.ipynb}: 69 seconds on a
+laptop CPU. The network should report $\hat\sigma = 0.4118$ at every state the economy visits, and drift away from it \emph{outside} that set, because the loss is only ever evaluated where the policy goes (Session 2, ``Residual training only tests states the policy visits'').  That is why training uses a simulated cloud.}
 \end{frame}
 
 
@@ -828,10 +828,10 @@ II.10--II.13 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
 \vspace{0.1em}
 \begin{block}{Reading the plots}
 \emphc{Left:} monitor loss and mean train-step loss per segment, $\log_{10}$ scale; the cloud is re-simulated each segment.\\
-\emphc{Right:} mean savings fraction by cohort against the closed form $\beta_h$; the DEQN matches it to $1.4\times 10^{-4}$.
+\emphc{Right:} mean savings fraction by cohort against the closed form $\beta_h$; the DEQN matches it to $1.0\times 10^{-5}$, cohort by cohort.
 \end{block}
 \vspace{-4pt}
-{\scriptsize From \texttt{04\_01}, \texttt{RUN\_MODE = "teaching"}: about 45 minutes on a laptop CPU, so the stored outputs are that run; use \texttt{"smoke"} ($\sim$30 s) in class.}
+{\scriptsize From \texttt{04\_01}, \texttt{RUN\_MODE = "teaching"}: about eleven minutes on a laptop CPU, and the stored outputs are that run. Mean relative Euler error on the ergodic set $2.6\times10^{-4}$; use \texttt{"smoke"} ($\sim$2.5 min, most of it the diagnostics) in class.}
 \end{frame}
 
 
@@ -942,7 +942,7 @@ The points are the exact closed form. The DEQN should reproduce them cohort by c
 \end{block}
 
 \begin{block}{Hands-on}
-Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Run \texttt{RUN\_MODE = "smoke"} ($\sim$30 s) now; the stored outputs are already the converged \texttt{"teaching"} run ($\sim$45 min on a laptop CPU), and \texttt{"production"} chases AGS Table~3 accuracy.  Both notebooks expose a \texttt{SAMPLING\_MODE = "simulation" / "exogenous"} switch (the persistent primary uses \texttt{"simulation"}, the companion \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb} uses \texttt{"exogenous"}); the model and loss are identical, only the training cloud differs.
+Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Run \texttt{RUN\_MODE = "smoke"} ($\sim$2.5 min) now; the stored outputs are already the converged \texttt{"teaching"} run ($\sim$11 min on a laptop CPU), and \texttt{"production"} chases AGS Table~3 accuracy.  Both notebooks expose a \texttt{SAMPLING\_MODE = "simulation" / "exogenous"} switch (the persistent primary uses \texttt{"simulation"}, the companion \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb} uses \texttt{"exogenous"}); the model and loss are identical, only the training cloud differs.
 \end{block}
 \end{frame}
 
@@ -1079,17 +1079,20 @@ optimisation is, and that turns out to matter a great deal.
 
 
 % --- III.4 Results + where the working code lives ------------------------
-\begin{frame}{III.4 Solved: Lifecycle Profiles from the Paper's Network}
+\begin{frame}{III.4 Solved at Teaching Scale: Lifecycle Profiles}
 \footnotesize
 \centering
-\includegraphics[height=2.8cm]{figures/olg56_lifecycle_a.pdf}\hfill
-\includegraphics[height=2.8cm]{figures/olg56_lifecycle_consumption_by_shock.pdf}
+\includegraphics[height=2.75cm]{figures/olg56_lifecycle_a.pdf}\hfill
+\includegraphics[height=2.75cm]{figures/olg56_lifecycle_consumption_by_shock.pdf}
 
 \vspace{-0.1em}
 \raggedright
 {\scriptsize \emphc{Left:} capital by age on the ergodic set, mean and 10/90 percentiles: the hump a
 representative-agent model cannot produce.  \emphc{Right:} mean lifecycle consumption, one curve per
-aggregate state $z=(\eta,\delta)$.}
+aggregate state.  Measured ranking $z_2 > z_1 > z_4 > z_3$, i.e.\ \emphc{both low-depreciation states beat
+both high-depreciation states}, and TFP only orders within each pair: with $\delta\in\{8\%,11\%\}$ and
+$\eta\in\{0.978,1.022\}$, three points of depreciation on a capital stock of $25$--$70$ outweigh a
+$2.2\%$ TFP gap.}
 
 \vspace{0.2em}
 \begin{exampleblock}{Run it yourself, on the paper's trained weights}
@@ -1099,50 +1102,90 @@ aggregate state $z=(\eta,\delta)$.}
 \begin{itemize}\itemsep0pt
     \item \texttt{python benchmark.py} loads the \emphc{final network weights of AGS (2022)} and regenerates
           the paper's plots in seconds, no training needed.
-    \item \texttt{-\,-train\_from\_scratch} reproduces the two-stage schedule: a GPU job, not a laptop one,
-          which is the point of the next slide.
+    \item These panels are \emph{not} that: they are a 49-minute laptop run, accurate enough for the shapes
+          and nowhere near the paper's residuals.  Why, on the next two slides.
 \end{itemize}}
 \vspace{-3pt}
 \end{exampleblock}
 \end{frame}
 
 
-% --- III.5 what a failed run looks like ---------------------------------
+% --- III.5 + III.6: the failure, and what it actually was ---------------
 \begin{frame}{III.5 What a \emphc{Failed} Run Looks Like}
 \footnotesize
-Preparing this lecture, I tried to shrink the benchmark to a laptop-sized preset so you could train it
-in class.  It does not work, and the way it fails is worth more than the run would have been.
-Four attempts, three diverged:
+Preparing this lecture I tried to shrink the benchmark to a preset you could train in class.
+Three of the first four attempts blew up.  This is what that looked like:
 
 \vspace{0.2em}
 \begin{center}\renewcommand{\arraystretch}{0.98}
 {\scriptsize
 \begin{tabular}{lrr}
 \toprule
-Diagnostic & healthy (Part II) & the runs that failed \\
+Diagnostic & a healthy run & the runs that failed \\
 \midrule
-$\log_{10}\Loss$                          & $-5.1$                & $+7$ to $+11$ \\
-aggregate $K$ across the cloud            & a spread of states    & runs off to $130$, then a single point \\
-share of the cloud with $c \le 0$          & $0\%$                 & $70\text{--}82\%$ \\
-policy drift                              & below tolerance       & still moving after 400 segments \\
+$\log_{10}\Loss$                       & $-2.1$              & $+7$ to $+10$ \\
+aggregate $K$ on the cloud             & $[9,\;70]$          & runs off past $130$, then one point \\
+share of the cloud with $c \le 0$      & $0\%$               & $70\text{--}82\%$ \\
+policy drift                           & below tolerance     & still moving after 400 segments \\
 \bottomrule
 \end{tabular}}
 \end{center}
+\vspace{-2pt}
+\begin{block}{The shape of it}
 \vspace{-3pt}
-\begin{alertblock}{How to read it}
+The loss fell for about twenty segments.  Then aggregate capital split away from the ergodic range and
+never came back, and the loss went with it.  \emphc{Two runs with identical settings gave different
+outcomes}, one converged, one diverged.
+\vspace{-3pt}
+\end{block}
+\vspace{-2pt}
+\begin{alertblock}{The tempting diagnosis, which was wrong}
+\vspace{-3pt}
+``CPU arithmetic is not bit-reproducible, the problem sits on a knife edge, lower the learning rate.''
+Halving the step and doubling the segments did not fix it: the next run diverged again.  When a plausible
+story does not survive the obvious test, it is the wrong story.
+\vspace{-3pt}
+\end{alertblock}
+\end{frame}
+
+
+\begin{frame}{III.6 \ldots and What It Actually Was}
+\footnotesize
+\begin{block}{The training set \emph{is} the simulation}
+\vspace{-3pt}
+A DEQN samples its own ergodic set.  If that cloud leaves the region where the model makes sense, the
+residual is still driven to zero, just somewhere the economy never goes.  Hence the guard: any
+trajectory leaving the feasible region is resampled.
+\vspace{-3pt}
+\end{block}
+\vspace{-6pt}
+\[
+\texttt{SIM\_REPAIR\_AGG\_K\_MAX} \;=\; \underbrace{10\times A \;=\; 560}_{\text{what it was set to}}
+\qquad\text{vs}\qquad
+\underbrace{K \approx 25}_{\text{ergodic}},\quad
+\underbrace{1.25\times A = 70}_{\text{the sampling box}}
+\]
+\vspace{-6pt}
+\begin{center}
+\emphc{Twenty times the ergodic capital stock.  It never fired once, in any run.}
+\end{center}
+\vspace{-2pt}
+Tie it to the sampling box and training is stable: no divergence, no negative consumption, drift passes.
+The same guard in the six-cohort notebooks was a \emph{thousand} times too loose; there it never needs
+to fire, and still does not.
+
+\vspace{-3pt}
+\begin{alertblock}{Three things to take home}
 \vspace{-3pt}\begin{itemize}\itemsep0pt
-    \item It looked \emph{fine} for twenty segments, then $K$ split away and never came back.  A loss
-          that is falling tells you nothing on its own.
-    \item \emphc{Watch the state distribution, not the loss.}  The simulated cloud is the training set;
-          once it runs away, the residual is being minimised somewhere the economy never goes.
-    \item Identical settings gave both a converged run and a diverged one: on CPU the arithmetic is not
-          bit-reproducible, and this problem sits close enough to the edge for that to decide the outcome.
+    \item \emphc{Watch the state distribution, not the loss.}  A falling loss on a runaway cloud is not progress.
+    \item \emphc{Know what your safety rails are set to.}  A guard at twenty times the plausible range is
+          no guard at all, and its \texttt{repairs=0} counter looks exactly like a healthy run.
+    \item \emphc{Stable is not solved.}  $\approx 4\%$ mean Euler errors, and the guard resamples
+          \emphc{13\% of the cloud every segment}: the policy is \emph{held} inside the feasible set,
+          not settling there.
 \end{itemize}
 \vspace{-3pt}
 \end{alertblock}
-\vspace{-2pt}
-{\scriptsize This is what Session 3's architecture search and loss balancing are for, and why AGS (2022)
-runs a two-stage schedule on a GPU.}
 \end{frame}
 
 
@@ -1160,7 +1203,7 @@ runs a two-stage schedule on a GPU.}
     \item Applied the DEQN recipe \emphc{three times}:
     \begin{itemize}\itemsep0pt
         \item \emphc{Part I\textonehalf:} Diamond's two-period model, one Euler equation, solved by hand and by the network.
-        \item \emphc{Part II:} the 6-agent Krueger--K\"ubler (2004) analytic model, validated against the closed form ($\lesssim 10^{-3}$ mean Euler error).
+        \item \emphc{Part II:} the 6-agent Krueger--K\"ubler (2004) analytic model, validated against the closed form: savings rates to $10^{-5}$, mean relative Euler error $2.6\times 10^{-4}$.
         \item \emphc{Part III:} the 56-cohort benchmark of AGS (2022) read off the slides: CRRA, hump-shaped labor, persistent shocks, two assets, two constraints, adjustment costs, and an honest look at what happens when its optimisation fails.
     \end{itemize}
     \item \emphc{Same recipe} every time: model, equilibrium conditions, cost, recursive equilibrium, network, training, validation.

@@ -141,8 +141,10 @@ wages, two assets and two occasionally binding constraints handled by product-fo
 model is presented on the slides rather than run in class: the reference implementation, with the
 paper's trained weights, is the
 [`DeepEquilibriumNets`](https://github.com/sischei/DeepEquilibriumNets/tree/master/code/python-scripts/benchmark)
-repository. The last slide is an honest account of what happened when it was shrunk to a laptop
-preset, which is the most useful thing in the session for anyone who goes home and tries this.
+repository. The session then closes on two slides that are an honest account of what happened when it
+was shrunk to a laptop preset: it diverged, the plausible diagnosis was wrong, and the cause turned out
+to be a safety rail set twenty times too loose to ever fire. That is the most useful thing in the
+session for anyone who goes home and tries this.
 
 **5. Scaling up: IRBC.** The finale of Day 1. N symmetric countries, N Euler equations and a world
 resource constraint on a 2N-dimensional state, residuals stacked along a country dimension rather
