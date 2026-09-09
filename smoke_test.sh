@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Execute the CPU-light notebooks in a scratch copy and report pass/fail.
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")"
 OUT=/tmp/padova_smoke; rm -rf $OUT; mkdir -p $OUT
 NBS="
 day1/code/01_deep_learning_intro/01_01_BasicML_intro.ipynb

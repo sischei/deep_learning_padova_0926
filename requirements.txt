@@ -7,9 +7,9 @@
 # On the Nuvolos Cloud this environment is pre-installed; you only need this
 # file if you want to run the notebooks on your own machine.
 #
-# Python 3.10-3.12. No GPU required: every notebook runs on CPU, and the three
-# heavier ones (IRBC, the 56-cohort OLG benchmark, continuous-time Aiyagari)
-# expose a RUN_MODE = "smoke" switch that bounds epochs and sample sizes.
+# Python 3.10-3.12. No GPU required: every notebook runs on CPU, and the heavier
+# ones (the DEQN sessions, the architecture-search sweeps, the surrogate and SMM
+# notebooks) expose a RUN_MODE = "smoke" switch that bounds epochs and sample sizes.
 
 # --- scientific core (every session) ---
 numpy>=1.26
@@ -26,7 +26,7 @@ scikit-learn>=1.3
 tensorflow>=2.16
 
 # --- PyTorch ---
-# Sessions 1 (01_05), 6, 7, 8 and 9: surrogates, PINNs and continuous-time HA.
+# Sessions 1 (01_05), 6, 7, 8 and 9: surrogates, SMM and PINNs.
 torch>=2.2
 
 # --- notebooks ---

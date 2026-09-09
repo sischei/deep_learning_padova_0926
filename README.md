@@ -22,8 +22,10 @@ A two-day lecture suite held at the **University of Padova**, **23–24 Septembe
   deep surrogate or Gaussian process then learns.
 * Each method is built from scratch on a benchmark where the answer is known, Brock–Mirman,
   cake-eating, Black–Scholes, before being applied to models where it is not: IRBC, 56-cohort OLG,
-  continuous-time Aiyagari. Where a model does not solve at classroom scale, the notes say so and
-  point at the code that does.
+  a borrowing-constrained household with discrete income. Every notebook measures its result against
+  a reference, a closed form, a sparse-grid or finite-difference solution, and says so when the
+  method loses. Where a model does not solve at classroom scale, the notes say so and point at the
+  code that does.
 * The format is interactive and workshop-like, combining theory with hands-on coding in Python.
 
 ## Prerequisites
@@ -195,8 +197,26 @@ Each day carries hands-on notebooks marked as exercises, with full solutions pro
 | 4 | [Two-period OLG: finger exercise + warm-up notebook](day1/code/04_olg/04_00_OLG_Diamond_Warmup.ipynb) | in-slides |
 | 4 | [OLG savings rates, ergodic prices and lifecycle profiles](day1/code/04_olg/04_03_OLG_Exercise.ipynb) | in-notebook |
 | 5 | [IRBC: steady state, loss weighting, one re-weighted run](day1/code/05_irbc/05_03_IRBC_Exercise.ipynb) | in-notebook |
+| 6 | [Surrogate finger exercise](day2/slides/06_Deep_Surrogates_and_GPs.pdf) (in the deck) | in-slides |
 | 7 | [SMM finger exercise](day2/slides/07_Structural_Estimation_SMM.pdf) (in the deck) | [notebooks](day2/code/07_structural_estimation) |
+| 8 | [PINN finger exercises: the loss, hard boundary conditions](day2/slides/08_PINNs_Foundations.pdf) (in the deck) | in-slides |
 | 9 | [Build a PINN from scratch](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb), run in class | in-notebook |
+
+## Repository layout
+
+| Path | Content |
+|---|---|
+| [`day1/slides`](day1/slides), [`day2/slides`](day2/slides) | The decks as PDF, with their LaTeX sources and figures. Figures that show results are written by the notebooks. |
+| [`day1/code`](day1/code), [`day2/code`](day2/code) | One folder per session with a README, the notebooks, and their stored outputs, which are the converged runs the slides quote. |
+| [`day1/readings`](day1/readings), [`day2/readings`](day2/readings) | The papers on the reading list that can be redistributed. |
+| [`python_refresher`](python_refresher) | Eleven short Python notebooks and a Jupyter introduction, for before the course. |
+| [`companion_script.pdf`](companion_script.pdf) | The textbook-length companion. |
+| [`Reading_List.md`](Reading_List.md) | Session-by-session references. |
+| [`requirements.txt`](requirements.txt) | The Python environment for a local install. |
+| [`smoke_test.sh`](smoke_test.sh) | Executes the CPU-light notebooks end to end in a scratch copy and reports pass or fail. |
+
+Every stored notebook output comes from the committed `RUN_MODE` (`"teaching"` where the switch
+exists); in class, `"smoke"` is the preset that fits the hands-on slots.
 
 ## Further reading
 

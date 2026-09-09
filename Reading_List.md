@@ -31,13 +31,13 @@ derivations, worked examples and exercise solutions. Everything below is supplem
 * **Azinovic, Gaegauf & Scheidegger (2022)**, *Deep Equilibrium Nets*, *International Economic Review*
   63(4), 1471–1525, [`day1/readings`](day1/readings/Azinovic_Gaegauf_Scheidegger_2022_Deep_Equilibrium_Nets.pdf).
   The core paper for the whole of Day 1 (Sessions 2, 4 and 5).
-* Scheidegger & Bilionis (2019), *Machine Learning for High-Dimensional Dynamic Stochastic Economies* , 
+* Scheidegger & Bilionis (2019), *Machine Learning for High-Dimensional Dynamic Stochastic Economies*,
   [`day1/readings`](day1/readings/Scheidegger_Bilionis_2019_ML_for_HighDim_Dynamic_Stochastic_Economies.pdf).
 * Companion script, Chapters 2 and 3.
 
 ## Session 3, Architecture search and loss balancing
 
-* Elsken, Metzen & Hutter (2019), *Neural Architecture Search: A Survey*, JMLR 20(55) , 
+* Elsken, Metzen & Hutter (2019), *Neural Architecture Search: A Survey*, JMLR 20(55),
   [`day1/readings`](day1/readings/Elsken_Metzen_Hutter_2019_NAS_Survey.pdf).
 * Bergstra & Bengio (2012), *Random Search for Hyper-Parameter Optimization*, JMLR 13, 281–305.
 * Li, Jamieson, DeSalvo, Rostamizadeh & Talwalkar (2018), *Hyperband: A Novel Bandit-Based Approach to
@@ -64,22 +64,22 @@ derivations, worked examples and exercise solutions. Everything below is supplem
 ## Sessions 6–7, Deep surrogates, Gaussian processes, and structural estimation
 
 * **Chen, Didisheim & Scheidegger (2026)**, *Deep Surrogates for Finance: With an Application to Option
-  Pricing*, *Journal of Financial Economics* 177, 104222 , 
+  Pricing*, *Journal of Financial Economics* 177, 104222,
   [`day2/readings`](day2/readings/Chen_Didisheim_Scheidegger_2026_Deep_Surrogates_for_Finance_JFE.pdf).
-* Rasmussen & Williams (2006), *Gaussian Processes for Machine Learning* , 
+* Rasmussen & Williams (2006), *Gaussian Processes for Machine Learning*,
   [`day2/readings`](day2/readings/Rasmussen_Williams_2006_Gaussian_Processes_for_ML.pdf).
+  Chapters 2 and 5 are what the session uses.
 * Carroll (2006), *The Method of Endogenous Gridpoints for Solving Dynamic Stochastic Optimization
   Problems*, Economics Letters 91(3), 312–320. The method behind `day2/code/brock_mirman_reference.py`,
   the reference solver that Sessions 6 and 7 validate their surrogates against.
-  Chapters 2 and 5 are what the session uses.
-* Scheidegger et al., *Machine Learning for Dynamic Programming* , 
+* Scheidegger et al., *Machine Learning for Dynamic Programming*,
   [`day2/readings`](day2/readings/Scheidegger_etal_Machine_Learning_Dynamic_Programming.pdf).
 * Companion script, Chapters 9 and 10.
 
 ## Sessions 8–9, Physics-informed neural networks
 
 * **Raissi, Perdikaris & Karniadakis (2019)**, *Physics-Informed Neural Networks*, *Journal of
-  Computational Physics* 378, 686–707 , 
+  Computational Physics* 378, 686–707,
   [`day2/readings`](day2/readings/Raissi_Perdikaris_Karniadakis_2019_PINNs.pdf). The founding paper.
 * Sirignano & Spiliopoulos (2018), *DGM: A Deep Learning Algorithm for Solving Partial Differential
   Equations*, arXiv:1708.07469.
