@@ -172,7 +172,7 @@ Brumm, Krause, Schaab \& Scheidegger (2022), ``Sparse Grids for Dynamic Economic
 
 % --- Slide 5: Why International Models? ---
 \begin{frame}{Why International Models, and Why IRBC as a Testbed?}
-\footnotesize
+\scriptsize
 \begin{columns}[T]
 \column{0.50\textwidth}
 \textbf{The economics.}  Capital flows, international risk sharing and trade imbalances all need
@@ -184,10 +184,10 @@ $N$ heterogeneous countries linked through a world capital market. The IRBC mode
     \item Macro-financial transmission through adjustment costs, constraints, Pareto weights.
 \end{itemize}
 
-\vspace{0.3em}
-\textbf{The computation.}  State dimension is \emphc{linear in $N$}: $2N$ (capital and TFP per
-country). Smooth but highly nonlinear; the planner's problem gives a clean target; the standard
-benchmark for projection methods (Krueger \& Kubler 2004; Brumm \& Scheidegger 2017).
+\vspace{0.2em}
+\textbf{The computation.}  State dimension is \emphc{linear in $N$}: $2N$, capital and TFP per country.
+Smooth but highly nonlinear; the planner's problem gives a clean target; the standard benchmark for
+projection methods (Krueger \& K\"ubler 2004; Brumm \& Scheidegger 2017).
 
 \column{0.46\textwidth}
 \begin{center}
@@ -340,7 +340,7 @@ z^{j\prime} = \rho_z \, z^j + \sigma_e \bigl(\varepsilon^j + \varepsilon^{\text{
 {\small $\rho_z = 0.95$, $\sigma_e = 0.01$}
 
 \vspace{0.2em}
-{\footnotesize $\sigma_e$ is the \emph{per-component} std., so the per-country innovation std.\ is $\sigma_e\sqrt{2}$ and the cross-country innovation correlation is $1/2$.}
+{\scriptsize $\sigma_e$ is the \emph{per-component} std., so the per-country innovation std.\ is $\sigma_e\sqrt{2}$ and the cross-country innovation correlation is $1/2$.}
 
 \column{0.48\textwidth}
 \begin{center}
@@ -385,7 +385,7 @@ Changing the capital stock is \emphc{costly} ($\kappa = 0.5$):
 \frac{\partial \Gamma}{\partial k} &= -\frac{\kappa}{2}\left(\frac{k'}{k} - 1\right)\!\left(\frac{k'}{k} + 1\right)
 \end{align*}
 
-{\footnotesize\textbf{Role:} smooth investment, break Tobin's $q\!=\!1$, and dampen cross-country \emphc{capital flows}.}
+{\scriptsize\textbf{Role:} smooth investment, break Tobin's $q\!=\!1$, and dampen cross-country \emphc{capital flows}.}
 
 \column{0.48\textwidth}
 \begin{center}
@@ -743,12 +743,12 @@ Consider the 2-country IRBC model. Suppose we \emphc{double} the capital depreci
 \end{tikzpicture}
 \end{center}
 
-\vspace{0.3em}
-\begin{itemize}
+\vspace{0.1em}
+{\footnotesize\begin{itemize}\itemsep1pt
     \item The neural network maps the \emphc{full state} to \emphc{all policy variables simultaneously}
     \item For $N=2$: input dimension 4, output dimension 5
     \item Outputs must satisfy economic constraints: a \emphc{linear} output layer is mapped through custom per-policy transforms
-\end{itemize}
+\end{itemize}}
 \end{frame}
 
 % --- Slide 22: NN Architecture ---
@@ -1053,7 +1053,7 @@ $\Rightarrow$ \textbf{Next:} implementation in TensorFlow/Keras and results.
 
 % --- Slide 33: Notebook Overview ---
 \begin{frame}{Notebook Overview}
-\footnotesize
+\scriptsize
 \textbf{Three notebooks accompany this lecture} (two in the L04 \texttt{code/} folder, one in the L05 folder; self-contained, all equations inline):
 
 \vspace{0.2em}
@@ -1252,6 +1252,7 @@ def compute_cost(states, nn):
 
 % --- Slide 41: Persistent-Simulation Training ---
 \begin{frame}{Persistent-Simulation Training}
+\vspace{-2pt}
 The companion notebooks train on \emphc{one continuing trajectory ensemble}, no Phase~1 / Phase~2 switch, no resets to steady state.
 
 \vspace{0.15em}
@@ -1452,6 +1453,7 @@ FB (country 2) & $\sim 10^{-5}$ & $\sim 10^{-4}$ \\
 
 % --- Bridge frame ---
 \begin{frame}{Bridge: from solving to estimating}
+\footnotesize
 \textbf{What we leave with today.}  An IRBC DEQN trained with a single persistent-simulation
 pipeline and equal loss weights: the same recipe scales from $N=2$ to $N=10$ countries with no
 architectural change.  NAS-tuned width and ReLoBRaLo-balanced loss components, from Session 3 this

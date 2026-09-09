@@ -100,8 +100,9 @@ the cross-section at negative consumption and aggregate capital past 130. The te
 CPU non-determinism plus a knife-edge problem; halving the learning rate to test it did not help.
 
 The actual cause was `SIM_REPAIR_AGG_K_MAX`, the guard that resamples simulated trajectories leaving
-the feasible region. It was set to `10 * N_AGES` = 560 against an ergodic aggregate capital of about 25
-and a sampling box topping out at 70. It never fired once, in any run, and a dead guard's `repairs=0`
+the feasible region. It was set to `10 * N_AGES` = 560 against a sampling box topping out at 70 and a
+healthy simulated cloud of roughly 10 to 27, so eight times the widest state the notebook itself calls
+feasible. It never fired once, in any run, and a dead guard's `repairs=0`
 looks exactly like a healthy one. Tied to the sampling box, training is stable: drift PASS, zero
 negative consumption, loss 8.0e-03. **The same bug, a thousand times too loose rather than twenty, was
 in the taught `04_01` and `04_04`** (`1.0e3` against an ergodic K of 0.93). It never fired there either

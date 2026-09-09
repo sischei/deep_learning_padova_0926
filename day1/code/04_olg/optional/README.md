@@ -40,11 +40,11 @@ The cause was not the learning rate and not CPU non-determinism. It was this lin
 SIM_REPAIR_AGG_K_MAX = 10.0 * N_AGES      # = 560
 ```
 
-That is the guard which resamples simulated trajectories leaving the feasible region. Ergodic aggregate
-capital here is about 25, and the notebook's own sampling box tops out at `EXOGENOUS_K_HIGH * N_AGES` =
-70. A guard at 560 is twenty times the ergodic level: it never fired once, in any run, and its
-`repairs=0` counter was indistinguishable from a healthy run. Tied to the sampling box, training is
-stable.
+That is the guard which resamples simulated trajectories leaving the feasible region. The notebook's own
+sampling box tops out at `EXOGENOUS_K_HIGH * N_AGES` = 70, and a healthy simulated cloud sits at
+aggregate capital of roughly 10 to 27. A guard at 560 is eight times the widest state the notebook is
+willing to call feasible: it never fired once, in any run, and its `repairs=0` counter was
+indistinguishable from a healthy run. Tied to the sampling box, training is stable.
 
 The same bug, a thousand times too loose rather than twenty, was in the taught notebooks `04_01` and
 `04_04` (`SIM_REPAIR_AGG_K_MAX = 1.0e3` against an ergodic aggregate capital of 0.93). It never fired

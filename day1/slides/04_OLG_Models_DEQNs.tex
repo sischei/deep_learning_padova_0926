@@ -256,7 +256,7 @@ The \emphc{equilibrium conditions $G$}.  Everything else, the network, the SGD l
 \textbf{Firm.}  Same technology as later: $\eta(z)K^\alpha L^{1-\alpha} + (1-\delta(z))K$, $L=1$.
 The old hold all the capital: $K_t = s_{t-1}$.
 \[
-r_t = \alpha\,\eta(z_t)K_t^{\alpha-1} + 1 - \delta(z_t),\qquad w_t = (1-\alpha)\,\eta(z_t)K_t^{\alpha}.
+r_t = \alpha\eta(z_t)K_t^{\alpha-1} + 1 - \delta(z_t),\quad w_t = (1-\alpha)\eta(z_t)K_t^{\alpha}.
 \]
 
 \column{0.42\textwidth}
@@ -349,8 +349,8 @@ laptop CPU. The network should report $\hat\sigma = 0.4118$ at every state the e
 
 
 \begin{frame}{\emphc{Solution:} Two Periods}
-\small
-\begin{enumerate}\itemsep6pt
+\footnotesize
+\begin{enumerate}\itemsep2pt
     \item $\beta_1 = \beta\,(1-\beta)/(1-\beta^2) = \beta/(1+\beta)$: the two-period result is the
           $A=2$ case of the general formula.
     \item Nothing changes. $\mathbb{E}\ln(r's) = \mathbb{E}\ln r' + \ln s$, so the spread of $r'$ only
@@ -360,12 +360,12 @@ laptop CPU. The network should report $\hat\sigma = 0.4118$ at every state the e
           against it when $w_t$ is low, and saving would depend on $(w_t, w_{t+1}, r_{t+1})$ jointly.
           This is the 56-cohort benchmark of Part III in miniature.
 \end{enumerate}
-\vspace{0.3em}
-\begin{center}
-\includegraphics[height=2.7cm]{figures/olg2_savings_fraction.pdf}
-\end{center}
 \vspace{-0.2em}
-{\scriptsize Left: training loss. Right: learned savings fraction against the capital state for each shock; closed form dashed; the shaded band is the ergodic set.}
+\begin{center}
+\includegraphics[height=2.35cm]{figures/olg2_savings_fraction.pdf}
+\end{center}
+\vspace{-0.5em}
+{\scriptsize Left: training loss. Right: learned savings fraction against capital for each shock; closed form dashed, ergodic set shaded.}
 \end{frame}
 
 
@@ -511,10 +511,10 @@ Given initial conditions $z_0,\,\{k_0^{\,h}\}_{h=1}^{A-1}$, a competitive equili
 Cohort $h$ at date $t$ chooses $\{c,a\}$ for its remaining $A-h+1$ periods.  Attach $\nu$ to the
 budget constraint (4) and $\lambda\ge 0$ to the borrowing limit (3):
 \[
-\mathcal{L} \;=\; \mathbb{E}_t\sum_{i=0}^{A-h}\beta^i\Bigl[\ln c_{t+i}^{\,h+i}
+\mathcal{L} = \mathbb{E}_t\sum_{i=0}^{A-h}\beta^i\Bigl[\ln c_{t+i}^{\,h+i}
  + \nu_{t+i}^{\,h+i}\bigl(r_{t+i}k_{t+i}^{\,h+i} + \ell^{h+i}w_{t+i} - c_{t+i}^{\,h+i} - a_{t+i}^{\,h+i}\bigr)
- + \lambda_{t+i}^{\,h+i}\,a_{t+i}^{\,h+i}\Bigr],
-\qquad k_{t+i+1}^{\,h+i+1} = a_{t+i}^{\,h+i}.
+ + \lambda_{t+i}^{\,h+i}a_{t+i}^{\,h+i}\Bigr],
+\quad k_{t+i+1}^{\,h+i+1} = a_{t+i}^{\,h+i}.
 \]
 \vspace{-6pt}
 \begin{itemize}\itemsep1pt
@@ -523,19 +523,21 @@ budget constraint (4) and $\lambda\ge 0$ to the borrowing limit (3):
           since $a_t^{\,h}$ becomes $k_{t+1}^{\,h+1}$ and earns $r_{t+1}$.
     \item Complementary slackness: $\lambda_t^{\,h}\ge 0$, $a_t^{\,h}\ge 0$, $\lambda_t^{\,h}a_t^{\,h}=0$.
 \end{itemize}
-\vspace{-6pt}
+\vspace{-8pt}
 \[
 \boxed{\;\frac{1}{c_t^{\,h}} \;=\; \beta\,\mathbb{E}_t\!\left[\frac{r_{t+1}}{c_{t+1}^{\,h+1}}\right] + \lambda_t^{\,h}\;}
 \qquad\text{terminal cohort: } a_t^{\,A}=0,\quad c_t^{\,A} = r_t k_t^{\,A}.
 \]
-\vspace{-8pt}
-{\scriptsize \emphc{Here $\lambda_t^{\,h}\equiv 0$.}  No cohort has future labor income (only the newborn works, once), so there is nothing to borrow against and $a_t^{\,h}\ge 0$ never binds: what remains is the \emphc{interior} Euler equation.  Part III keeps $\lambda$ and adds a second multiplier, because a hump-shaped wage profile gives the young a reason to borrow.}
+\vspace{-6pt}
+{\scriptsize \emphc{Here $\lambda_t^{\,h}\equiv 0$}: no cohort has future labor income, only the newborn works
+and only once, so there is nothing to borrow against and $a_t^{\,h}\ge 0$ never binds.  What remains is the
+\emphc{interior} Euler equation.  Part III keeps $\lambda$ and adds a second multiplier.}
 \end{frame}
 
 
 % --- II.6a why a closed form ---------------------------------------------
 \begin{frame}{II.6a Why This Model Has a Closed Form, and Why the Benchmark Does Not}
-\small
+\footnotesize
 \begin{columns}[T]
 \column{0.55\textwidth}
 \begin{block}{Two assumptions}
@@ -659,7 +661,7 @@ has to be empirical (Session 2, Algorithm 1).
 
 % --- II.8 From a sequence to a function, and the FREE it defines --------
 \begin{frame}{II.8 From a Sequence to a Function (FREE)}
-\footnotesize
+\scriptsize
 Definition 1 describes an equilibrium as \emph{sequences} $\{c_t^{\,h}, a_t^{\,h}, r_t, w_t\}_{t\ge 0}$.
 A network represents a \emph{function}.  The link is a sufficient state.
 
@@ -822,16 +824,18 @@ II.10--II.13 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
 \begin{frame}{II.11 Training Results: Analytic Model (teaching-mode run)}
 \footnotesize
 \centering
-\includegraphics[height=3.3cm]{figures/olg6_loss.pdf}\hfill
-\includegraphics[height=3.3cm]{figures/olg6_savings_bars.pdf}
+\includegraphics[height=3.0cm]{figures/olg6_loss.pdf}\hfill
+\includegraphics[height=3.0cm]{figures/olg6_savings_bars.pdf}
 
-\vspace{0.1em}
+\vspace{-0.1em}
 \begin{block}{Reading the plots}
-\emphc{Left:} monitor loss and mean train-step loss per segment, $\log_{10}$ scale; the cloud is re-simulated each segment.\\
-\emphc{Right:} mean savings fraction by cohort against the closed form $\beta_h$; the DEQN matches it to $1.0\times 10^{-5}$, cohort by cohort.
+\vspace{-2pt}
+{\scriptsize\emphc{Left:} monitor loss and mean train-step loss per segment, $\log_{10}$ scale; the cloud is re-simulated each segment.\\
+\emphc{Right:} mean savings fraction by cohort against the closed form $\beta_h$, matched to $1.0\times 10^{-5}$.}
+\vspace{-2pt}
 \end{block}
-\vspace{-4pt}
-{\scriptsize From \texttt{04\_01}, \texttt{RUN\_MODE = "teaching"}: about eleven minutes on a laptop CPU, and the stored outputs are that run. Mean relative Euler error on the ergodic set $2.6\times10^{-4}$; use \texttt{"smoke"} ($\sim$2.5 min, most of it the diagnostics) in class.}
+\vspace{-5pt}
+{\scriptsize \texttt{04\_01} at \texttt{RUN\_MODE = "teaching"}, eleven minutes on a laptop CPU; mean relative Euler error $2.6\times10^{-4}$.  Use \texttt{"smoke"} ($\sim$2.5 min) in class.}
 \end{frame}
 
 
@@ -955,7 +959,7 @@ Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Run \texttt{RUN\_M
 
 % --- III.1 What changes at research scale ------------------------------
 \begin{frame}{III.1 What Changes at Research Scale: AGS (2022), \S 3}
-\footnotesize
+\scriptsize
 \begin{columns}[T]
 \column{0.56\textwidth}
 \emphc{Same recipe as Part II.  Seven things change:}
@@ -1003,7 +1007,7 @@ future wages give the young a reason to borrow, so the constraints bind and mult
 
 % --- III.2 Equilibrium conditions and the multipliers --------------------
 \begin{frame}{III.2 Equilibrium Conditions, and Where Each Multiplier Lands}
-\footnotesize
+\scriptsize
 Same Lagrangian as II.6, with $\lambda_b\ge 0$ on $k'\ge 0$ and $\mu\ge 0$ on $k'+\kappa b'\ge 0$.
 Write $\mathcal{A}_t^h := 1 + \zeta\,(k'^h_t - r_t k_t^h)$ for the marginal adjustment-cost wedge.
 \vspace{-2pt}
@@ -1082,8 +1086,8 @@ optimisation is, and that turns out to matter a great deal.
 \begin{frame}{III.4 Solved at Teaching Scale: Lifecycle Profiles}
 \footnotesize
 \centering
-\includegraphics[height=2.75cm]{figures/olg56_lifecycle_a.pdf}\hfill
-\includegraphics[height=2.75cm]{figures/olg56_lifecycle_consumption_by_shock.pdf}
+\includegraphics[height=2.35cm]{figures/olg56_lifecycle_a.pdf}\hfill
+\includegraphics[height=2.35cm]{figures/olg56_lifecycle_consumption_by_shock.pdf}
 
 \vspace{-0.1em}
 \raggedright
@@ -1150,7 +1154,7 @@ story does not survive the obvious test, it is the wrong story.
 
 
 \begin{frame}{III.6 \ldots and What It Actually Was}
-\footnotesize
+\scriptsize
 \begin{block}{The training set \emph{is} the simulation}
 \vspace{-3pt}
 A DEQN samples its own ergodic set.  If that cloud leaves the region where the model makes sense, the
@@ -1162,12 +1166,12 @@ trajectory leaving the feasible region is resampled.
 \[
 \texttt{SIM\_REPAIR\_AGG\_K\_MAX} \;=\; \underbrace{10\times A \;=\; 560}_{\text{what it was set to}}
 \qquad\text{vs}\qquad
-\underbrace{K \approx 25}_{\text{ergodic}},\quad
-\underbrace{1.25\times A = 70}_{\text{the sampling box}}
+\underbrace{1.25\times A = 70}_{\text{the sampling box}},\quad
+\underbrace{K \in [10,\,27]}_{\text{a healthy cloud}}
 \]
 \vspace{-6pt}
 \begin{center}
-\emphc{Twenty times the ergodic capital stock.  It never fired once, in any run.}
+\emphc{Eight times the widest state the notebook itself calls feasible.  It never fired once, in any run.}
 \end{center}
 \vspace{-2pt}
 Tie it to the sampling box and training is stable: no divergence, no negative consumption, drift passes.
@@ -1196,9 +1200,9 @@ to fire, and still does not.
 \section{Part IV: Wrap-up}
 
 \begin{frame}{Summary}
-\footnotesize
+\scriptsize
 \begin{block}{What we accomplished}
-\vspace{-2pt}\begin{enumerate}\itemsep1pt
+\vspace{-2pt}\begin{enumerate}\itemsep0pt
     \item OLG models: a finite-dimensional family of heterogeneous-agent models, suited to DEQNs.
     \item Applied the DEQN recipe \emphc{three times}:
     \begin{itemize}\itemsep0pt
