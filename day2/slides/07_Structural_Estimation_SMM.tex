@@ -184,7 +184,7 @@
 \end{frame}
 
 \begin{frame}{Roadmap of This Lecture (55 min)}
-\small
+\footnotesize
 \begin{columns}[T]
 \column{0.48\textwidth}
 \textbf{I.\ The idea}~~\mbox{\small (12 min)}
@@ -200,14 +200,16 @@
     \item A policy network with $\varrho$ as an input
     \item Its accuracy against the reference solution
     \item Moments, criterion, estimate (\texttt{07\_01})
+    \item The other route: a GP of the moment map
 \end{itemize}
 
 \column{0.48\textwidth}
 \textbf{III.\ Two parameters}~~\mbox{\small (15 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item $(\beta, \varrho)$ jointly (\texttt{07\_02})
-    \item The valley and the basin: which moments identify
+    \item How sharply each moment set pins down $\beta$
     \item The moment Jacobian in one number
+    \item The GP route with two parameters
 \end{itemize}
 
 \vspace{0.4em}
@@ -225,8 +227,8 @@
 \begin{itemize}\itemsep4pt
   \item Write down the simulated-method-of-moments criterion and say why every evaluation of it used to require solving the model
   \item Train a policy network with structural parameters as inputs, and validate it against a reference solution across the parameter range
-  \item Simulate moments under common random numbers and minimize the criterion on the fly, for one parameter and for two
-  \item Read a criterion surface: tell an identified basin from a flat valley, and confirm it with the moment Jacobian
+  \item Simulate moments under common random numbers and minimize the criterion on the fly, for one parameter and for two, and do the same with Gaussian processes of the moment map fit to a handful of solves
+  \item Read a criterion surface: say how sharply a moment set pins down each parameter, and confirm it with the moment Jacobian
 \end{itemize}
 \end{frame}
 
@@ -301,8 +303,8 @@ Use the \emphc{same} shock sequence for every candidate $\str$. Then $m(\str)$ i
 \end{frame}
 
 \begin{frame}{The Model: Brock--Mirman with Stochastic TFP}
-\small
-\vspace{-0.2cm}
+\footnotesize
+\vspace{-0.3cm}
 The economy of Session 2, with $\delta = 0.10$ so that no closed form exists and the Euler equation has to be solved:
 \begin{gather*}
 \max_{\{C_t\}} \sum_{t=0}^{\infty} \beta^t\, \E{\ln C_t},
@@ -314,9 +316,9 @@ Y_t = z_t K_t^{\alpha}, \qquad
 
 \vspace{0.1cm}
 \begin{columns}[T]
-\column{0.42\textwidth}
+\column{0.40\textwidth}
 \textbf{Calibration}
-\begin{center}\small
+\begin{center}\footnotesize
 \begin{tabular}{cccc}
 \toprule
 $\alpha$ & $\delta$ & $\sigma$ & $\beta$ (Part II) \\
@@ -328,20 +330,22 @@ $0.36$ & $0.10$ & $0.04$ & $0.96$ \\
 \vspace{0.1cm}
 \textbf{Truth for the synthetic data:} $\varrho = 0.90$, and in Part III $\beta = 0.96$.
 
-\column{0.55\textwidth}
-\textbf{Moments, and what moves them}
+\column{0.58\textwidth}
+\textbf{Four moments, and which parameter each responds to}
 \begin{center}\footnotesize
-\begin{tabular}{ll}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lll}
 \toprule
-$\mathrm{Std}(\Delta \log C_t)$ & persistence, weakly \\
-$\mathrm{Corr}(\Delta \log C_t, \Delta \log C_{t-1})$ & persistence \\
-$\mathrm{Corr}(\log Y_t, \log Y_{t-1})$ & persistence, directly \\
-$\mathrm{mean}(I_t / Y_t)$ & the level of capital: $\beta$ \\
+moment & in $\varrho$ & in $\beta$ \\
+\midrule
+$\mathrm{Std}(\Delta \log C_t)$ & rises above $0.8$ & weak \\
+$\mathrm{Corr}(\Delta \log C_t, \Delta \log C_{t-1})$ & rises to $0.9$, falls after & weak \\
+$\mathrm{Corr}(\log Y_t, \log Y_{t-1})$ & rises throughout & none \\
+$\mathrm{mean}(I_t / Y_t)$ & none & rises \\
 \bottomrule
 \end{tabular}
 \end{center}
-\vspace{0.1cm}
-{\footnotesize $\varrho$ sets how long shocks last, so autocorrelations identify it. $\beta$ sets the steady-state capital stock, $k^\star = \big(\alpha / (1/\beta - 1 + \delta)\big)^{1/(1-\alpha)}$, so a level moment identifies it and the dynamic ones barely do.}
+{\scriptsize $\varrho$ sets how long shocks last, so the autocorrelations respond to it. $\beta$ sets the steady-state capital stock, $k^\star = \big(\alpha / (1/\beta - 1 + \delta)\big)^{1/(1-\alpha)}$, so only a level moment responds to it. Measured in \texttt{07\_01} and \texttt{07\_02}.}
 \end{columns}
 \end{frame}
 
@@ -395,20 +399,28 @@ e(z, K, \varrho) = 1 - \frac{1}{\beta\, C_t\, \mathbb{E}_t\!\left[\dfrac{1 - \de
 {\scriptsize Notebook \texttt{07\_01}, stored teaching run. On 2{,}000 ergodic states per $\varrho$: $\varrho=0.5$: mean Euler error $1.6\cdot10^{-4}$, mean consumption error $8.3\cdot10^{-4}$, max $1.3\cdot10^{-3}$; $\varrho=0.7$: mean Euler error $5.5\cdot10^{-5}$, mean consumption error $2.1\cdot10^{-4}$, max $4.9\cdot10^{-4}$; $\varrho=0.9$: mean Euler error $1.1\cdot10^{-4}$, mean consumption error $5.7\cdot10^{-4}$, max $7.1\cdot10^{-4}$; $\varrho=0.99$: mean Euler error $2.5\cdot10^{-4}$, mean consumption error $1.1\cdot10^{-3}$, max $2.1\cdot10^{-2}$.. The consumption error is the number that matters for estimation; the Euler residual is only the training loss.}
 \end{frame}
 
-\begin{frame}{Step 2: Moments Under Common Random Numbers}
+\begin{frame}{Step 2: $\varrho$ Moves the Simulated Moments}
 \begin{center}
 \includegraphics[width=0.98\linewidth]{figures/smm1_moments.pdf}
 \end{center}
-\vspace{-0.2cm}
-{\footnotesize Notebook \texttt{07\_01}: 99 candidates from $0.50$ to $0.99$, each simulated for 2,000 periods from the same initial state under the same shocks, in 2 s. The dashed lines are the data moments. The output autocorrelation rises monotonically in $\varrho$ and identifies it on its own; the consumption-growth autocorrelation rises up to $\varrho \approx 0.9$ and falls beyond it, so near the truth it adds curvature but not sign; the standard deviation rises steeply only above $0.8$; the mean investment share is flat, as it should be, and is not used.}
+\vspace{-0.1cm}
+{\small 99 candidates from $0.50$ to $0.99$, each simulated for 2,000 periods from the same state under the \emphc{same} shocks, in 1 s. Every moment used moves with $\varrho$, so the data moments (dashed) pin it down; the mean investment share does not move with $\varrho$ and is left out. Notebook \texttt{07\_01}, stored teaching run.}
 \end{frame}
 
 \begin{frame}{Step 3: The Criterion and the Estimate}
 \begin{center}
-\includegraphics[width=0.56\linewidth]{figures/smm1_criterion.pdf}
+\includegraphics[width=0.52\linewidth]{figures/smm1_criterion.pdf}
 \end{center}
 \vspace{-0.2cm}
-{\footnotesize Notebook \texttt{07\_01}. The surrogate's criterion on 99 candidates, and the reference solver's on 8 candidates, one solve each. Grid minimum, then a bounded scalar minimizer: $\hat\varrho = $ 0.8793 against $0.90$. Two things keep the estimate off the truth, and the figure separates them: the 500-period sample (the reference criterion is not zero at $0.90$ either) and the surrogate's error (the gap between the two curves).}
+{\footnotesize Notebook \texttt{07\_01}. The surrogate's criterion on 99 candidates, and the reference solver's on 8 candidates, one solve each. Grid minimum, then a bounded scalar minimizer: $\hat\varrho = $ 0.8793. \textbf{The surrogate's curve lies on the reference solver's points}: the surrogate adds no visible error. \textbf{The minimum is at 0.8793, not $0.90$, for both}: that is the sampling error of a 500-period sample (its output autocorrelation is 0.941 against a population value of 0.947; across 200 such samples the sampling standard deviation is 0.0127).}
+\end{frame}
+
+\begin{frame}{The Other Route: a GP of the Moment Map}
+\begin{center}
+\includegraphics[width=0.9\linewidth]{figures/smm1_gp_route.pdf}
+\end{center}
+\vspace{-0.2cm}
+{\small The network is a surrogate of the \emph{policy}, simulated at every candidate. The other kind of surrogate from Session 6 fits the \emph{moment map} $m_j(\varrho)$ directly: one GP per moment on 8 reference solves (dots), Matérn 5/2, hyperparameters by marginal likelihood. Its posterior mean replaces the simulation in $Q$; the band is its own error bar. Estimate: 0.8784 by the GP route against 0.8793 by the network route, truth $0.90$. Notebook \texttt{07\_01}, Section 6.}
 \end{frame}
 
 % ============================================================================
@@ -439,12 +451,34 @@ A criterion that is flat in $\beta$ has two possible causes: the moments do not 
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Two Criterion Surfaces: the Valley and the Basin}
+\begin{frame}{How Sharply Each Moment Set Pins Down $\beta$}
+\vspace{-0.25cm}
+\begin{columns}[T]
+\column{0.66\textwidth}
 \begin{center}
-\includegraphics[width=0.96\linewidth]{figures/smm2_criterion_surfaces.pdf}
+\includegraphics[width=\linewidth]{figures/smm2_criterion_surfaces.pdf}
 \end{center}
+\column{0.32\textwidth}
+\vspace{0.3cm}
+\footnotesize
+\textbf{Floor of each surface}, $\min_\varrho Q(\beta, \varrho)$:
+\begin{center}
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4pt}
+{\scriptsize
+\begin{tabular}{lrr}
+\toprule
+$\beta$ & dynamic only & all four \\
+\midrule
+0.920 & $3.4\cdot10^{-4}$ & $4.2\cdot10^{-3}$ \\
+0.960 & $5.6\cdot10^{-6}$ & $6.2\cdot10^{-6}$ \\
+0.990 & $1.4\cdot10^{-4}$ & $5.3\cdot10^{-3}$ \\
+\bottomrule
+\end{tabular}}
+\end{center}
+\end{columns}
 \vspace{-0.2cm}
-{\footnotesize Notebook \texttt{07\_02}, 1,450 candidates under common random numbers. Left: the three dynamic moments only. A long valley along $\beta$: many pairs fit about equally well, and the minimizer's answer along it is arbitrary. Right: with the mean investment share added, the valley closes into a basin. \emphc{Identification is fixed by information, not by a better optimizer.}}
+{\footnotesize 1,450 candidates under common random numbers, $\log_{10} Q$; left the three dynamic moments, right with the mean investment share added. Both find the same minimum. Moving $\beta$ from $0.96$ to the edge of the box raises the criterion by a factor 25 to 60 with the dynamic moments, by 700 to 850 with the level moment added: \textbf{the dynamic moments identify $\beta$, but 12 to 37 times more weakly}, so a small error in the moments moves $\hat\beta$ far along the left surface and little along the right one. \emphc{Identification is fixed by information, not by a better optimizer.} Notebook \texttt{07\_02}.}
 \end{frame}
 
 \begin{frame}{The Moment Jacobian in One Number}
@@ -453,7 +487,7 @@ At the estimate, by central differences on the surrogate, with the parameters sc
 \[
 M = \frac{\partial m}{\partial u} \in \R^{q \times 2}, \qquad M = U\,\mathrm{diag}(s_1, s_2)\,V^\top .
 \]
-Near the minimum $Q \approx \delta u^\top M^\top M\, \delta u$, so $s_2^2$ is the criterion's curvature in its flattest direction and the last column of $V$ names that direction.
+Near the minimum $Q \approx \delta u^\top M^\top M\, \delta u$, so $s_2^2$ is the criterion's curvature in its flattest direction and the last column of $V$ names that direction. This is the previous frame in one number.
 
 \vspace{0.1cm}
 \begin{center}
@@ -473,6 +507,14 @@ Estimates: dynamic moments only $(\hat\beta, \hat\varrho) = (0.9641, 0.8786)$; a
 
 \vspace{0.05cm}
 {\scriptsize With an efficient $W$ and the covariance of the data moments, $(M^\top W M)^{-1}$ scaled by $1/T$ is the asymptotic variance of $\hat u$; a small $s_2$ is a large standard error along $V_{\cdot 2}$. The notebooks stop at $M$; the covariance is one more simulation away.}
+\end{frame}
+
+\begin{frame}{The GP Route With Two Parameters}
+\begin{center}
+\includegraphics[width=0.82\linewidth]{figures/smm2_gp_route.pdf}
+\end{center}
+\vspace{-0.2cm}
+{\small Left: the criterion from the policy network, simulated at every grid point. Right: the criterion from four GPs of the moment map fit to 24 reference solves on a Latin-hypercube design (dots). Estimates $(0.9604, 0.8785)$ by the GP route, $(0.9605, 0.8782)$ by the network route, truth $(0.96, 0.90)$. The two routes agree; what differs is the cost curve: the network adds one input per parameter and trains once, the GP needs a design that fills one more dimension per parameter and carries an error bar for it. Notebook \texttt{07\_02}, Section 6.}
 \end{frame}
 
 \begin{frame}{The Surrogate Is Not Free}
@@ -551,17 +593,19 @@ None of these are faster versions of old results. They are questions whose \emph
 \end{frame}
 
 \begin{frame}{Summary, and What to Run}
-\small
-\begin{enumerate}\itemsep3pt
+\footnotesize
+\vspace{-0.2cm}
+\begin{enumerate}\itemsep1pt
   \item The expensive step in SMM is the model solve inside the loop. A policy network with the parameters as inputs is trained once and removes it.
   \item Validate the surrogate against a reference solution across the parameter range before estimating with it; the Euler residual is not that validation.
   \item Common random numbers make the simulated moments smooth; then a grid shows the criterion and a standard minimizer finishes it.
-  \item Identification is a property of the moments. A flat valley in the criterion is either the moments or the surrogate; the reference check tells which, and the moment Jacobian puts a number on it.
+  \item Identification is a property of the moments. A criterion that is flat along a parameter is either the moments or the surrogate; the reference check tells which, and the moment Jacobian puts a number on it.
+  \item Two surrogates, one estimate: a policy network simulated on the fly, or Gaussian processes of the moment map fit to a few solves. Both replace the solve in the loop; the label budget and the number of parameters decide between them.
 \end{enumerate}
 
-\vspace{0.2cm}
+\vspace{0.1cm}
 \begin{block}{Hands-on, \texttt{day2/code/07\_structural\_estimation/}}
-\texttt{07\_01\_SMM\_One\_Parameter.ipynb} (4 min) and \texttt{07\_02\_SMM\_Two\_Parameters.ipynb} (6 min), teaching presets stored; set \texttt{RUN\_MODE = "smoke"} in class. Try: change the true $\varrho$; drop a moment; shorten the observed sample to $T = 100$ and watch the criterion's minimum move.
+\texttt{07\_01\_SMM\_One\_Parameter.ipynb} (3 min) and \texttt{07\_02\_SMM\_Two\_Parameters.ipynb} (8 min), teaching presets stored; set \texttt{RUN\_MODE = "smoke"} in class. Try: change the true $\varrho$; drop a moment; shorten the observed sample to $T = 100$ and watch the criterion's minimum move.
 \end{block}
 \end{frame}
 

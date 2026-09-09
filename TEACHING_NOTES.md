@@ -266,7 +266,7 @@ No notebook needs a GPU. Measured on the laptop CPU: Session 4, `04_00` 69 s, `0
 and 2.5 min at smoke, `04_04` 3.5 min, `04_02` 49 min (not taught); Session 5, `05_01` 3 min at the
 teaching preset and under a minute at smoke, `05_02` 3 min, `05_01` with ten countries 8 min; Session 3, `03_01` 10 min, `03_02` 29 min from scratch and 2 min from
 its committed caches, `03_03` 12 min, all at the teaching preset. Sessions 6 and 7: `06_01` 6 min (220 reference solves at
-about 1.7 s each), `06_02` 30 s, `07_01` 4 min, `07_02` 6 min. The stored outputs are the teaching runs,
+about 1.7 s each), `06_02` 30 s, `07_01` 3 min, `07_02` 8 min (the GP route adds 24 reference solves). The stored outputs are the teaching runs,
 so nobody has to reproduce them; in class students run `"smoke"`.
 
 ## Open items

@@ -327,10 +327,10 @@ Do not build one surrogate per parameter vector. Put the parameters $\str$ into 
 
 \vspace{0.1cm}
 \begin{center}
-\includegraphics[width=0.98\linewidth]{figures/surrogate_primer_surface.pdf}
+\includegraphics[width=0.74\linewidth]{figures/surrogate_primer_surface.pdf}
 \end{center}
-\vspace{-0.2cm}
-{\footnotesize Notebook \texttt{06\_01}, stored teaching run. Left: the GP surrogate's mean capital over the box from \emphc{40 solves} (white dots), where a $30 \times 30$ grid would have cost 25 minutes. Middle: the GP's posterior standard deviation, largest away from the design. Right: on 60 fresh solves, the GP's error against the network's, both fit to the same 40 labels.}
+\vspace{-0.25cm}
+{\footnotesize Notebook \texttt{06\_01}. Left: the GP surrogate's mean capital from \emphc{40 solves} (white dots); a $30 \times 30$ grid would have cost 25 minutes. Right: its posterior standard deviation, largest away from the design. On 60 fresh solves the GP's mean error is $1.1\cdot10^{-3}$ of the quantity's range, the network's $3.9\cdot10^{-3}$, both fit to the same 40 labels.}
 \end{frame}
 
 \begin{frame}{Two Kinds of Surrogate}
@@ -356,7 +356,7 @@ Do not build one surrogate per parameter vector. Put the parameters $\str$ into 
   \item Cost $=$ training once
 \end{itemize}
 \vspace{0.1cm}
-{\footnotesize Session 7: \texttt{07\_01}, \texttt{07\_02}, where the surrogate is simulated inside the estimator.}
+{\footnotesize Session 7: \texttt{07\_01}, \texttt{07\_02}; then compared with GPs of the moment map.}
 \end{columns}
 
 \vspace{0.3cm}
