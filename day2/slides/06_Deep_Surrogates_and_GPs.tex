@@ -748,12 +748,20 @@ var = kernel(X_te, X_te) - Ks.T @ v         # posterior variance
 \end{center}
 \end{frame}
 
-\begin{frame}{The Same Task, Both Surrogates}
-\begin{center}
-\includegraphics[width=0.9\linewidth]{figures/surrogate_primer_error_vs_n.pdf}
-\end{center}
+\begin{frame}{Few Labels: the GP Is Better, and Calibrated}
 \vspace{-0.2cm}
-{\footnotesize Notebook \texttt{06\_01}: the same labels, the same 60 test solves, error relative to the range of the quantity. GP: Matérn 5/2, one length scale per input, hyperparameters by marginal likelihood. Network: $2\times32$ tanh, Adam, 3{,}000 epochs. For the mean capital stock the GP's mean error is $6.4\cdot10^{-3}$ at $N=10$ and $9.9\cdot10^{-5}$ at $N=160$, the network's $7.4\cdot10^{-3}$ and $3.0\cdot10^{-3}$; the GP is ahead at every budget from $N=10$ on. The GP's 95\% band covered the truth at 97\% and 98\% (mean capital, investment share) at $N=160$ of the test points.}
+\begin{center}
+\includegraphics[height=0.40\textheight]{figures/surrogate_primer_error_vs_n.pdf}
+\end{center}
+\vspace{-0.4cm}
+\footnotesize
+\begin{enumerate}\itemsep2pt
+  \item \textbf{Accuracy.} Same labels, same 60 test solves. At 40 labels the GP's mean error is $1.1\cdot10^{-3}$ of the range, the network's $3.9\cdot10^{-3}$; at 160 the GP is at $1.0\cdot10^{-4}$, the network still at $3.0\cdot10^{-3}$.
+  \item \textbf{Calibration.} From 40 labels on, the GP's 95\% band contains the truth at 92 to 98\% of the test points: the error bar can be trusted, and it says where the surrogate is unsure.
+  \item \textbf{Why.} The GP passes through the labels exactly under a smoothness prior; with few labels that prior beats the network's flexibility, which is limited here by its training, not its size. With thousands of labels and many inputs the balance flips (Part I, Session 7).
+\end{enumerate}
+\vspace{-0.1cm}
+{\scriptsize Notebook \texttt{06\_01}. GP: Matérn 5/2, one length scale per input, marginal likelihood. Network: $2\times32$ tanh, Adam, 3{,}000 epochs.}
 \end{frame}
 
 \begin{frame}{The Decision Rule Is the Cost of a Label}
@@ -786,16 +794,21 @@ Few labels ($N < 100$) & \yes & \no \\
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Active Learning, in One Frame}
+\begin{frame}{Active Learning: Let the Band Choose the Next Label}
 \small
-The posterior variance depends on the design, not on the labels, so it can be consulted \emph{before} paying for the next label: query where it is largest, refit, repeat.
-
-\vspace{0.1cm}
+\vspace{-0.15cm}
+With the kernel fixed, the posterior variance depends on the design alone, so it can be consulted \emph{before} the next label is paid for: \textbf{query where the band is widest, refit, repeat.}
+\vspace{-0.1cm}
 \begin{center}
-\includegraphics[width=0.9\linewidth]{figures/gp_active_learning.pdf}
+\includegraphics[width=0.78\linewidth]{figures/gp_active_learning.pdf}
 \end{center}
-\vspace{-0.2cm}
-{\footnotesize Notebook \texttt{06\_02}, $|\sin(\pi x/2)|$ from two endpoints; the dotted line is the next query. On an interval this ends level with or behind a uniform design (mean absolute error 0.0923 against 0.0673 with 10 points), and it should: spreading out the variance and spreading out the points are the same thing there, and the uniform design does it in one step. It earns its keep where no space-filling design exists: irregular domains, unequal length scales, many dimensions. Scheidegger \& Bilionis (2019), in \texttt{../readings}, run this loop on economic models.}
+\vspace{-0.35cm}
+{\scriptsize Notebook \texttt{06\_02}: $f(x) = 1/(1+25x^2)$ on $[-1,1]$, squared-exponential kernel with $\ell = 0.3$ fixed, starting from the two endpoints; the dotted line is the next query.}
+\vspace{0.05cm}
+\begin{itemize}\itemsep1pt
+  \item \textbf{What it does.} After the endpoints it takes the centre, then the quarter points: the widest band is always the largest gap in the design. After 8 points: $\{-1, -0.76, -0.5, 0, 0.23, 0.51, 0.76, 1\}$.
+  \item \textbf{What it does not do on an interval.} A uniform design with 8 points is already that, and does slightly better (mean absolute error $0.043$ against $0.072$). The loop pays where no uniform design exists: irregular domains, unequal length scales, many inputs (Scheidegger \& Bilionis, 2019).
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Finger Exercise: How Many Labels?}
