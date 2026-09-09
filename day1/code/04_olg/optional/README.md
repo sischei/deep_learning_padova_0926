@@ -29,7 +29,7 @@ they do not reach the paper's accuracy and are not worth a classroom slot.
 `04_02`, trained on its own simulation, scores the same on both clouds. Where you draw the training
 cloud is not a detail.
 
-## The bug behind slide III.5, and why it matters here
+## The bug that made this look unsolvable
 
 Earlier attempts at a classroom-sized preset diverged: three runs out of four reached losses of 1e+07 to
 1e+10 with 70–82% of the cross-section at negative consumption, aggregate capital running past 130.

@@ -41,4 +41,4 @@ network weights**, is upstream:
 **<https://github.com/sischei/DeepEquilibriumNets>** → `code/python-scripts/benchmark`
 
 `python benchmark.py` loads those weights and regenerates the paper's figures in seconds. The local
-re-cuts are in [`optional/`](optional/), together with the guard bug behind slides III.5 and III.6.
+re-cuts are in [`optional/`](optional/), together with the guard bug that made them look unsolvable.

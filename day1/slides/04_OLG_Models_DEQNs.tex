@@ -130,7 +130,7 @@ with the paper's trained weights, is the \texttt{DeepEquilibriumNets} repository
   \item Derive equilibrium conditions and build the mean-squared Euler-residual loss for a multi-cohort OLG model
   \item Implement the DEQN recipe: model specification, equilibrium definition, cost function, network training, and validation
   \item Validate a learned solution against the closed-form equilibrium in the analytic Krueger--Kuebler model
-  \item Read a research-scale benchmark (56 cohorts, two assets, two constraints, adjustment costs) as the same recipe with a larger $G$, and recognise when its optimisation, not its economics, is what fails
+  \item Read a research-scale benchmark (56 cohorts, two assets, two constraints, adjustment costs) as the same recipe with a larger $G$
 \end{itemize}
 \end{frame}
 
@@ -1082,117 +1082,6 @@ optimisation is, and that turns out to matter a great deal.
 \end{frame}
 
 
-% --- III.4 Results + where the working code lives ------------------------
-\begin{frame}{III.4 Solved at Teaching Scale: Lifecycle Profiles}
-\footnotesize
-\centering
-\includegraphics[height=2.35cm]{figures/olg56_lifecycle_a.pdf}\hfill
-\includegraphics[height=2.35cm]{figures/olg56_lifecycle_consumption_by_shock.pdf}
-
-\vspace{-0.1em}
-\raggedright
-{\scriptsize \emphc{Left:} capital by age on the ergodic set, mean and 10/90 percentiles: the hump a
-representative-agent model cannot produce.  \emphc{Right:} mean lifecycle consumption, one curve per
-aggregate state.  Measured ranking $z_2 > z_1 > z_4 > z_3$, i.e.\ \emphc{both low-depreciation states beat
-both high-depreciation states}, and TFP only orders within each pair: with $\delta\in\{8\%,11\%\}$ and
-$\eta\in\{0.978,1.022\}$, three points of depreciation on a capital stock of $25$--$70$ outweigh a
-$2.2\%$ TFP gap.}
-
-\vspace{0.2em}
-\begin{exampleblock}{Run it yourself, on the paper's trained weights}
-\vspace{-3pt}
-{\scriptsize
-\url{https://github.com/sischei/DeepEquilibriumNets} $\to$ \texttt{code/python-scripts/benchmark}
-\begin{itemize}\itemsep0pt
-    \item \texttt{python benchmark.py} loads the \emphc{final network weights of AGS (2022)} and regenerates
-          the paper's plots in seconds, no training needed.
-    \item These panels are \emph{not} that: they are a 49-minute laptop run, accurate enough for the shapes
-          and nowhere near the paper's residuals.  Why, on the next two slides.
-\end{itemize}}
-\vspace{-3pt}
-\end{exampleblock}
-\end{frame}
-
-
-% --- III.5 + III.6: the failure, and what it actually was ---------------
-\begin{frame}{III.5 What a \emphc{Failed} Run Looks Like}
-\footnotesize
-Preparing this lecture I tried to shrink the benchmark to a preset you could train in class.
-Three of the first four attempts blew up.  This is what that looked like:
-
-\vspace{0.2em}
-\begin{center}\renewcommand{\arraystretch}{0.98}
-{\scriptsize
-\begin{tabular}{lrr}
-\toprule
-Diagnostic & a healthy run & the runs that failed \\
-\midrule
-$\log_{10}\Loss$                       & $-2.1$              & $+7$ to $+10$ \\
-aggregate $K$ on the cloud             & $[9,\;70]$          & runs off past $130$, then one point \\
-share of the cloud with $c \le 0$      & $0\%$               & $70\text{--}82\%$ \\
-policy drift                           & below tolerance     & still moving after 400 segments \\
-\bottomrule
-\end{tabular}}
-\end{center}
-\vspace{-2pt}
-\begin{block}{The shape of it}
-\vspace{-3pt}
-The loss fell for about twenty segments.  Then aggregate capital split away from the ergodic range and
-never came back, and the loss went with it.  \emphc{Two runs with identical settings gave different
-outcomes}, one converged, one diverged.
-\vspace{-3pt}
-\end{block}
-\vspace{-2pt}
-\begin{alertblock}{The tempting diagnosis, which was wrong}
-\vspace{-3pt}
-``CPU arithmetic is not bit-reproducible, the problem sits on a knife edge, lower the learning rate.''
-Halving the step and doubling the segments did not fix it: the next run diverged again.  When a plausible
-story does not survive the obvious test, it is the wrong story.
-\vspace{-3pt}
-\end{alertblock}
-\end{frame}
-
-
-\begin{frame}{III.6 \ldots and What It Actually Was}
-\scriptsize
-\begin{block}{The training set \emph{is} the simulation}
-\vspace{-3pt}
-A DEQN samples its own ergodic set.  If that cloud leaves the region where the model makes sense, the
-residual is still driven to zero, just somewhere the economy never goes.  Hence the guard: any
-trajectory leaving the feasible region is resampled.
-\vspace{-3pt}
-\end{block}
-\vspace{-6pt}
-\[
-\texttt{SIM\_REPAIR\_AGG\_K\_MAX} \;=\; \underbrace{10\times A \;=\; 560}_{\text{what it was set to}}
-\qquad\text{vs}\qquad
-\underbrace{1.25\times A = 70}_{\text{the sampling box}},\quad
-\underbrace{K \in [10,\,27]}_{\text{a healthy cloud}}
-\]
-\vspace{-6pt}
-\begin{center}
-\emphc{Eight times the widest state the notebook itself calls feasible.  It never fired once, in any run.}
-\end{center}
-\vspace{-2pt}
-Tie it to the sampling box and training is stable: no divergence, no negative consumption, drift passes.
-The same guard in the six-cohort notebooks was a \emph{thousand} times too loose; there it never needs
-to fire, and still does not.
-
-\vspace{-3pt}
-\begin{alertblock}{Three things to take home}
-\vspace{-3pt}\begin{itemize}\itemsep0pt
-    \item \emphc{Watch the state distribution, not the loss.}  A falling loss on a runaway cloud is not progress.
-    \item \emphc{Know what your safety rails are set to.}  A guard at twenty times the plausible range is
-          no guard at all, and its \texttt{repairs=0} counter looks exactly like a healthy run.
-    \item \emphc{Stable is not solved.}  $\approx 4\%$ mean Euler errors, and the guard resamples
-          \emphc{13\% of the cloud every segment}: the policy is \emph{held} inside the feasible set,
-          not settling there.
-\end{itemize}
-\vspace{-3pt}
-\end{alertblock}
-\end{frame}
-
-
 % =====================================================================
 % Part IV -- Wrap-up
 % =====================================================================
@@ -1208,7 +1097,7 @@ to fire, and still does not.
     \begin{itemize}\itemsep0pt
         \item \emphc{Part I\textonehalf:} Diamond's two-period model, one Euler equation, solved by hand and by the network.
         \item \emphc{Part II:} the 6-agent Krueger--K\"ubler (2004) analytic model, validated against the closed form: savings rates to $10^{-5}$, mean relative Euler error $2.6\times 10^{-4}$.
-        \item \emphc{Part III:} the 56-cohort benchmark of AGS (2022) read off the slides: CRRA, hump-shaped labor, persistent shocks, two assets, two constraints, adjustment costs, and an honest look at what happens when its optimisation fails.
+        \item \emphc{Part III:} the 56-cohort benchmark of AGS (2022) read off the slides: CRRA, hump-shaped labor, persistent shocks, two assets, two constraints, adjustment costs.  Working code and trained weights: the \texttt{DeepEquilibriumNets} repository.
     \end{itemize}
     \item \emphc{Same recipe} every time: model, equilibrium conditions, cost, recursive equilibrium, network, training, validation.
 \end{enumerate}

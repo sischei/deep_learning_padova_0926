@@ -25,14 +25,14 @@ Re-cuts applied:
 
 ## Timing
 
-408 frames across 540 minutes, about 1.32 minutes per frame overall, before hands-on time.
+405 frames across 540 minutes, about 1.33 minutes per frame overall, before hands-on time.
 
 | Session | Frames | Minutes | Pace |
 |---|---:|---:|---|
 | 1 Intro to DL | 57 | 90 | 1.58 comfortable |
 | 2 DEQNs | 54 | 75 | 1.39 comfortable |
 | 3 NAS + loss balancing | 56 | 55 | **0.98 tightest** |
-| 4 OLG | 40 | 60 | **1.50 the most slack** |
+| 4 OLG | 37 | 60 | **1.62 the most slack** |
 | 5 IRBC | 49 | 50 | 1.02 tight |
 | 6 Surrogates + GPs | 39 | 50 | 1.28 comfortable |
 | 7 SMM | 42 | 55 | 1.31 comfortable |
@@ -113,14 +113,15 @@ Stability is not accuracy, and the slides say so: `04_02` still has ~4% mean Eul
 paper's 0.1%, and the guard resamples ~13% of the training cloud in every segment from segment 30 to
 segment 3000, with aggregate capital pinned at the bound (69.999 against 70.0). The policy is held
 inside the feasible set rather than settling there, so the cloud it trains on is partly an artifact of
-the repair mechanism. Part III therefore stays five slides plus the two
-failure slides, with students pointed at `sischei/DeepEquilibriumNets`, `code/python-scripts/benchmark`,
-which ships the paper's **trained weights**: `python benchmark.py` regenerates the paper's figures in
-seconds. The re-cuts live in `day1/code/04_olg/optional/`.
+the repair mechanism. Part III is therefore three slides, model, multipliers and loss at scale, with
+students pointed at `sischei/DeepEquilibriumNets`, `code/python-scripts/benchmark`, which ships the
+paper's **trained weights**: `python benchmark.py` regenerates the paper's figures in seconds. The
+re-cuts live in `day1/code/04_olg/optional/`.
 
-III.5 and III.6 are worth teaching deliberately: a real failure, a plausible wrong diagnosis that failed
-its own test, and a cause that was a safety rail nobody had checked. It makes the case for Session 3
-better than any argument, and the lesson generalises: watch the state distribution, not the loss.
+Three further Part III slides were written and then cut on Simon's call: lifecycle profiles from the
+laptop run, and two on the failed run and its diagnosis. The diagnosis is recorded here and in
+`optional/README.md` instead. The lesson still holds for anyone who hits it, watch the state
+distribution rather than the loss, but it does not earn class time in a sixty-minute session.
 
 **Still open elsewhere, not touched in this pass.** IRBC (`05_01`, `05_02`) has the same shape of
 looseness at ~5x rather than 1000x, so it would still catch a genuine runaway, but its segment logs
