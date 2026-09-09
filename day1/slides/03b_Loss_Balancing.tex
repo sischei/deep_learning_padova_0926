@@ -77,7 +77,7 @@
 % ---------- Title ----------
 \title[Loss balancing -- Padova 2026]%
 {Deep Learning for Solving Dynamic Models}
-\subtitle{Session 3b: Loss balancing, ReLoBRaLo and gradient-conflict mitigation}
+\subtitle{Session 3b: Loss balancing for multi-component residuals}
 \author{Simon Scheidegger}
 \institute[HEC Lausanne]{HEC, University of Lausanne}
 \date{University of Padova\\September 23, 2026}
@@ -107,33 +107,32 @@
 \textbf{I. Motivation}
 \begin{itemize}
     \item Multi-component losses in PINNs and DEQNs
-    \item The scale problem
-    \item Multi-output architectures
+    \item The scale problem, and what it does to the gradient
 \end{itemize}
 
-\vspace{0.4em}
+\vspace{0.2em}
 \textbf{II. Balancing Methods}
 \begin{itemize}
-    \item Equal / manual weighting
-    \item Inverse-loss weighting
-    \item SoftAdapt
-    \item \textbf{ReLoBRaLo} (+ finger exercise)
-    \item GradNorm (brief)
+    \item Equal weighting
+    \item \textbf{Natural units} (the fix to do first)
+    \item Inverse-loss weighting (+ finger exercise)
+    \item SoftAdapt, \textbf{ReLoBRaLo}, GradNorm
 \end{itemize}
 
 \column{0.48\textwidth}
 \textbf{III. Experiments \& Wrap-up}
 \begin{itemize}
-    \item Setup and results
+    \item Setup and results, three seeds
     \item Sensitivity to temperature $T$
+    \item The same measurement on a DEQN
     \item Connection to PINNs \& DSGE
     \item Summary and references
 \end{itemize}
 \end{columns}
 
-\vspace{0.2em}
+\vspace{-0.3em}
 \begin{center}
-{\scriptsize Hands-on: \texttt{04\_Loss\_Normalization.ipynb}}
+{\scriptsize Hands-on: \texttt{03\_03\_Loss\_Normalization.ipynb} in \texttt{day1/code/03\_nas\_loss\_balancing/}}
 \end{center}
 \end{frame}
 
@@ -141,11 +140,11 @@
 \begin{frame}{Learning objectives}
 \textbf{By the end of this lecture you should be able to:}
 \begin{itemize}
-  \item Identify scale problems in multi-component losses (PINNs, DEQNs, multi-task) and diagnose gradient dominance
-  \item Implement adaptive loss-balancing strategies: inverse-loss weighting, SoftAdapt, and ReLoBRaLo
-  \item Derive and apply the ReLoBRaLo relative-ratio update rule with baseline mixing and exponential smoothing
-  \item Compare GradNorm (gradient-norm balancing) with ReLoBRaLo and select appropriate methods for constrained optimization
-  \item Tune temperature parameters and validate on multi-scale function approximation; apply to DEQN training with PINN-style residual losses
+  \item Measure gradient dominance: record the gradient norm each weighted loss component sends to the shared parameters
+  \item Write equilibrium residuals in natural units before any weighting rule is applied, and say why this comes first
+  \item Implement inverse-loss weighting and ReLoBRaLo in a few lines, and state what each one balances: levels, or progress
+  \item Read a loss-balancing result as a median over seeds with its range, on a scale-free error
+  \item Tell a transient scale gap from a permanent one on a DEQN, using the gradient-norm ratio after the transient
 \end{itemize}
 \end{frame}
 
@@ -202,15 +201,15 @@ These loss components often live at \emphc{vastly different scales}.
 \begin{frame}{The Scale Problem}
 \begin{columns}[T]
 \column{0.50\textwidth}
-\textbf{Example:} Three loss components
+\textbf{Example:} three targets of the same shape complexity, at scales $1$, $10^2$, $10^4$. Squared errors then sit at
 \begin{align*}
-    \mathcal{L}_A &\approx 10^{-2} \quad \text{(small-scale function)}\\
-    \mathcal{L}_B &\approx 10^{2} \quad \text{(medium-scale)}\\
-    \mathcal{L}_C &\approx 10^{4} \quad \text{(large-scale)}
+    \mathcal{L}_A &\sim 10^{0} \\
+    \mathcal{L}_B &\sim 10^{4} \\
+    \mathcal{L}_C &\sim 10^{8}
 \end{align*}
 
-\vspace{0.2cm}
-With equal weights: $\mathcal{L}_C$ contributes \emphc{$10^6\times$} more gradient signal than $\mathcal{L}_A$.
+\vspace{0.1cm}
+With equal weights $\mathcal{L}_C$ sends a gradient about \emphc{$10^{6}\times$} the size of $\mathcal{L}_A$'s to the shared parameters (the notebook measures $7.0\cdot10^{3}$).
 
 \vspace{0.2cm}
 $\Rightarrow$ The network \emph{ignores} the small-scale component.
@@ -226,15 +225,15 @@ $\Rightarrow$ The network \emph{ignores} the small-scale component.
         symbolic x coords={LA, LB, LC},
         xtick=data,
         xticklabels={$\mathcal{L}_A$, $\mathcal{L}_B$, $\mathcal{L}_C$},
-        ymin=0.005, ymax=50000,
+        ymin=0.1, ymax=5e9,
         bar width=20pt,
     ]
     \addplot[fill=softblue, draw=softblue!70!black] coordinates {
-        (LA, 0.01) (LB, 100) (LC, 10000)
+        (LA, 1) (LB, 10000) (LC, 100000000)
     };
-    \node[font=\scriptsize, above] at (axis cs:LA,0.01) {$10^{-2}$};
-    \node[font=\scriptsize, above] at (axis cs:LB,100) {$10^{2}$};
-    \node[font=\scriptsize, above] at (axis cs:LC,10000) {$10^{4}$};
+    \node[font=\scriptsize, above] at (axis cs:LA,1) {$10^{0}$};
+    \node[font=\scriptsize, above] at (axis cs:LB,10000) {$10^{4}$};
+    \node[font=\scriptsize, above] at (axis cs:LC,100000000) {$10^{8}$};
     \end{axis}
 \end{tikzpicture}
 \end{center}
@@ -349,11 +348,48 @@ The network effectively solves a \emph{single-task} problem.
 \end{center}
 
 \vspace{-0.3em}
-{\footnotesize Generated by \texttt{04\_Loss\_Normalization.ipynb} (Section 3, equal-weight training).  Left: per-component MSE on a log axis; right: the (constant) component weights.  $\mathcal{L}_C$ (scale $10^4$) drives the gradient and converges quickly; $\mathcal{L}_B$ (scale $10^2$) follows; $\mathcal{L}_A$ (scale $10^0$) is \emphc{essentially not learned}, exactly as the analytical scale argument predicts.}
+{\footnotesize Stored teaching run of \texttt{03\_03}, Section 3. Left: component MSE on a log axis. Middle: the constant weights. Right, the panel to read: the norm of the gradient each component sends to the shared parameters, $2.2\cdot10^{1}$, $1.9\cdot10^{3}$, $1.6\cdot10^{5}$ at the end. The update is their sum, so the trunk serves $f_C$ and the other two get what is left. Which of them ends up worst is not the smaller one by default: here it is $f_B$, at 54\% relative error, against 18\% for $f_A$.}
+\end{frame}
+
+% --- Slide 7b: Fix 0, natural units ---
+\begin{frame}{Fix 0: Write Each Residual in Its Natural Units}
+\small
+Every equilibrium residual has a scale of its own: a consumption, an output, a marginal utility.
+Dividing the residual by that scale \emphc{before} it enters the loss costs nothing, adds no
+hyperparameter, and removes the problem at the source.
+
+\vspace{0.15cm}
+\begin{columns}[T]
+\column{0.52\textwidth}
+\textbf{As coded in Session 5 (\texttt{05\_01}, \texttt{05\_02}):}
+\begin{itemize}\itemsep2pt
+  \item Euler equation: divided by $\lambda_t$, so the residual is relative to the marginal value of resources
+  \item Resource constraint: divided by total resources $\sum_j [Y_t^j + (1-\delta)k_t^j]$
+  \item Complementarity: Fischer--Burmeister on the unit-free pair $(\mu_t^j/\lambda_t,\; I_t^j/k_t^j)$
+\end{itemize}
+Then the three components are weighted \textbf{equally}.
+\column{0.45\textwidth}
+\textbf{On the toy problem} (\texttt{03\_03}, Section 4):
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+{\scriptsize
+\begin{tabular}{@{}lr@{}}
+\toprule
+ & total rel.\ error \\
+\midrule
+equal weights, scales $1, 10^2, 10^4$ & 0.861 \\
+residuals divided by their scale & 0.011 \\
+\bottomrule
+\end{tabular}}
+\end{center}
+{\scriptsize A factor 75$\times$ from a change of units. Every adaptive rule in this deck is judged against this line.}
+\end{columns}
 \end{frame}
 
 % --- Slide 8: Manual Weighting ---
 \begin{frame}{Manual Weighting}
+\small
+\vspace{-0.1cm}
 \textbf{Idea:} Choose weights to approximately equalize the loss magnitudes:
 \[
     \mathcal{L} = w_A \cdot \mathcal{L}_A + w_B \cdot \mathcal{L}_B + w_C \cdot \mathcal{L}_C
@@ -379,7 +415,7 @@ e.g., $w_A = 10^4,\; w_B = 10^0,\; w_C = 10^{-2}$.
 \end{columns}
 
 \vspace{0.2cm}
-\begin{alertblock}{Use adaptive methods that adjust weights during training.}
+\begin{alertblock}{Natural units first; then, for what remains, a rule that adapts during training.}
 \end{alertblock}
 \end{frame}
 
@@ -406,102 +442,56 @@ This automatically up-weights small losses and down-weights large ones.
 \column{0.42\textwidth}
 \textbf{Pros:}
 \begin{itemize}
-    \item Simple, no hyperparameters (besides $\beta_{\mathrm{ema}}$)
-    \item Adaptive to changing scales
+    \item Simple, one hyperparameter ($\beta_{\mathrm{ema}}$)
+    \item Adapts to scales it does not know in advance
 \end{itemize}
 
 \vspace{0.3cm}
 \textbf{Cons:}
 \begin{itemize}
-    \item \emphc{Unstable} when $\mathcal{L}_i \to 0$
-    \item Weights can \emphc{oscillate} wildly
-    \item No notion of \emph{relative progress}
+    \item It equalizes the \emph{weighted losses} $w_i\mathcal{L}_i$, not the gradients
+    \item The gradient of $w_i\mathcal{L}_i$ then scales like $1/e_i$: the component fit \emphc{best} pushes hardest
+    \item Unstable as $\mathcal{L}_i \to 0$
 \end{itemize}
 \end{columns}
 \end{frame}
 
-% --- Slide 10: Inverse-Loss Formula ---
-\begin{frame}{Inverse-Loss Weighting: Summary}
-\begin{block}{Algorithm}
-At each epoch $t$:
-\begin{enumerate}
-    \item Compute current losses $\mathcal{L}_1^{(t)}, \ldots, \mathcal{L}_K^{(t)}$
-    \item Update exponential averages: $\bar{\mathcal{L}}_i^{(t)} = \beta_{\mathrm{ema}} \, \bar{\mathcal{L}}_i^{(t-1)} + (1-\beta_{\mathrm{ema}})\, \mathcal{L}_i^{(t)}$
-    \item Set weights: $w_i^{(t)} = \dfrac{1}{\bar{\mathcal{L}}_i^{(t)} + \epsilon}$
-    \item Normalize: $\tilde{w}_i^{(t)} = K \cdot \dfrac{w_i^{(t)}}{\sum_{j=1}^K w_j^{(t)}}$
-\end{enumerate}
-\end{block}
+% --- Slide 10: Inverse-loss, what it does to the gradients ---
+\begin{frame}{Inverse-Loss Weighting: The Gradients}
+\begin{center}
+\includegraphics[width=0.95\linewidth]{figures/loss_norm_inverse_weights.pdf}
+\end{center}
 
-\vspace{0.3cm}
-The normalization ensures $\sum_i \tilde{w}_i = K$ (total weight is preserved).
-
-\vspace{0.2cm}
-Typical choices: $\beta_{\mathrm{ema}} = 0.99$, $\epsilon = 10^{-8}$.
+\vspace{-0.3em}
+{\footnotesize Stored teaching run of \texttt{03\_03}, Section 5, $\beta_{\mathrm{ema}} = 0.99$, weights normalized to $\sum_i w_i = 3$. The weights end $7.0\cdot10^{9}$$\times$ apart and the weighted losses are equal, as designed. The right panel shows the consequence: the gradient goes to whichever component is currently best fit. Total relative error 0.448 against 0.861 for equal weights and 0.011 for natural units.}
 \end{frame}
 
 % --- Slide 11: SoftAdapt ---
 \begin{frame}{SoftAdapt}
-\begin{columns}[T]
-\column{0.55\textwidth}
-\textbf{Idea:} Weight based on \emph{relative loss changes}, components that are improving slowly get higher weight.
+\small
+\textbf{Idea} (Heydari et al., 2019): weight by \emph{relative loss change}. A component whose loss is rising, or falling slowly, gets more weight; $T$ sets how sharply.
 
-\vspace{0.2cm}
-\begin{block}{Rate of change}
+\vspace{0.1cm}
+\begin{block}{Weight update}
+\vspace{-0.15cm}
 \[
-    \Delta_i^{(t)} = \mathcal{L}_i^{(t)} - \mathcal{L}_i^{(t-1)}
+    \hat{w}_i^{(t)} = K \, \frac{\exp\!\bigl(\Delta_i^{(t)} / T\bigr)}{\sum_{j} \exp\!\bigl(\Delta_j^{(t)} / T\bigr)},
+    \qquad \Delta_i^{(t)} = \mathcal{L}_i^{(t)} - \mathcal{L}_i^{(t-1)}
 \]
 \end{block}
 
 \vspace{0.1cm}
-\begin{itemize}
-    \item $\Delta_i > 0$: loss \emph{increased} $\Rightarrow$ needs more weight
-    \item $\Delta_i < 0$: loss \emph{decreased} $\Rightarrow$ already learning well
-\end{itemize}
-
-\column{0.42\textwidth}
-\textbf{Softmax temperature $T$:}
-\begin{itemize}
-    \item Small $T$: winner-take-all
-    \item Large $T$: nearly equal weights
-\end{itemize}
-
-\vspace{0.3cm}
-\textbf{Pros:}
-\begin{itemize}
-    \item Focuses on \emph{struggling} components
-    \item Simple to implement
-\end{itemize}
-
-\textbf{Cons:}
-\begin{itemize}
-    \item Sensitive to $T$
-    \item Noisy loss changes $\Rightarrow$ noisy weights
-\end{itemize}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\textbf{Pros:} focuses on the \emph{struggling} component; a few lines of code.
+\column{0.48\textwidth}
+\textbf{Cons:} sensitive to $T$; noisy loss changes give noisy weights. Not in the notebook; ReLoBRaLo is its successor.
 \end{columns}
-\end{frame}
 
-% --- Slide 12: SoftAdapt Formula ---
-\begin{frame}[shrink=15]{SoftAdapt: Formula}
-\begin{block}{Weight update (Heydari et al., 2019)}
-\[
-    \hat{w}_i^{(t)} = \frac{\exp\!\bigl(\Delta_i^{(t)} / T\bigr)}{\sum_{j=1}^K \exp\!\bigl(\Delta_j^{(t)} / T\bigr)} \cdot K
-\]
-where $\Delta_i^{(t)} = \mathcal{L}_i^{(t)} - \mathcal{L}_i^{(t-1)}$ and $T > 0$ is a temperature parameter.
-\end{block}
-
-\vspace{0.3cm}
-\textbf{Interpretation:}
-\begin{itemize}
-    \item The softmax converts relative loss changes into a probability-like weighting
-    \item Multiplication by $K$ ensures $\sum_i \hat{w}_i = K$ (preserves total scale)
-    \item Components with \emphc{increasing loss} (poor progress) receive more weight
-    \item Components with decreasing loss receive less weight
-\end{itemize}
-
-\vspace{0.2cm}
+\vspace{0.15cm}
 \begin{alertblock}{Scale caveat}
 \footnotesize
-Raw $\Delta_i^{(t)}$ is dimensional: a component with loss $\sim 10^3$ produces fluctuations that swamp one with loss $\sim 10^{-3}$. In practice rescale before the softmax, e.g.\ $\tilde\Delta_i^{(t)} = \Delta_i^{(t)} / (\mathcal{L}_i^{(t)} + \varepsilon)$, so the mechanism reacts to \emph{relative} progress rather than absolute magnitudes.
+Raw $\Delta_i$ carries the units of $\mathcal{L}_i$: a component at $10^{8}$ swamps one at $10^{0}$ inside the softmax. Rescale, $\tilde\Delta_i = \Delta_i / (\mathcal{L}_i + \varepsilon)$, so the rule reacts to \emph{relative} progress. ReLoBRaLo builds that in.
 \end{alertblock}
 \end{frame}
 
@@ -509,7 +499,7 @@ Raw $\Delta_i^{(t)}$ is dimensional: a component with loss $\sim 10^3$ produces 
 \begin{frame}{ReLoBRaLo: Relative Loss Balancing with Random Lookback}
 \begin{columns}[T]
 \column{0.55\textwidth}
-\textbf{Key innovations} (Bischof \& Kraus, 2025), adapted here as a deterministic classroom version:
+\textbf{Key ingredients} (Bischof \& Kraus, 2021; CMAME 2025), adapted here as a deterministic classroom version:
 
 \vspace{0.2cm}
 \begin{enumerate}
@@ -523,13 +513,8 @@ Raw $\Delta_i^{(t)}$ is dimensional: a component with loss $\sim 10^3$ produces 
 \end{enumerate}
 
 \column{0.42\textwidth}
-\begin{block}{Why random lookback?}
-\begin{itemize}
-    \item Prevents weight drift
-    \item ``Resets'' to global perspective
-    \item Stabilizes training
-    \item Stochastic regularization of the baseline-vs-step trade-off
-\end{itemize}
+\begin{block}{Why a lookback at all?}
+Step ratios $\mathcal{L}_i^{(t)}/\mathcal{L}_i^{(t-1)}$ sit near $1$ for every component and say nothing about how far each has come. With probability $\rho$ the update compares with the previous step, otherwise with the \emph{initial} loss, so the weights stay anchored to the starting point. The classroom version blends the two deterministically with weight $\rho$.
 \end{block}
 \end{columns}
 \end{frame}
@@ -577,7 +562,7 @@ A DEQN has three loss components at iteration $t$: $\mathcal{L}_1^{(t)} = 10.0$,
     \item With equal weights, $\mathcal{L}_1 = 10.0$ dominates (100$\times$ larger than $\mathcal{L}_2$). The optimizer focuses almost entirely on reducing $\mathcal{L}_1$ while ignoring $\mathcal{L}_2$. This is undesirable if all three conditions must be satisfied simultaneously.
     \item Unnormalized: $1/10.0 = 0.1$, $1/0.01 = 100$, $1/1.0 = 1$. Sum = 101.1.\\
     Normalized: $w_1 = 0.001$, $w_2 = 0.989$, $w_3 = 0.010$.
-    \item $\mathcal{L}_2$ receives the highest weight ($\approx 99\%$). Inverse-loss weighting amplifies the components that are \emph{hardest to satisfy} (smallest loss = most satisfied $\Rightarrow$ smallest weight), directing optimization effort where it is most needed.
+    \item $\mathcal{L}_2$ receives the highest weight ($\approx 99\%$), and the three weighted losses are now equal at $\approx 0.01$. That is the whole content of the rule: it equalizes levels. Whether that is what training needs is a different question; the notebook (Section 5) shows the gradient then flows to the component that is currently fit best.
 \end{enumerate}
 \end{block}
 \end{frame}
@@ -586,6 +571,7 @@ A DEQN has three loss components at iteration $t$: $\mathcal{L}_1^{(t)} = 10.0$,
 \begin{frame}{ReLoBRaLo: Hyperparameters}
 \small
 \begin{center}
+\vspace{-0.2cm}
 \footnotesize
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{@{}c l c p{6.2cm}@{}}
@@ -593,18 +579,18 @@ A DEQN has three loss components at iteration $t$: $\mathcal{L}_1^{(t)} = 10.0$,
 \textbf{Symbol} & \textbf{Name} & \textbf{Default} & \textbf{Effect} \\
 \midrule
 $T$      & Temperature   & $1.0$   & Softmax sharpness: small $T$ $\to$ winner-take-all; large $T$ $\to$ uniform weights. \\
-$\alpha$ & Smoothing     & $0.999$ & Trust in historical weights; larger $\alpha$ $\to$ slower adaptation. \\
-$\rho$   & Baseline mix  & $0.999$ & Weight on initial-loss comparison (convex blend). \\
+$\alpha$ & Smoothing     & $0.999$ & Each update moves the weight $0.1\%$ of the way to its target: a time constant of about $1000$ \emph{updates}. \\
+$\rho$   & Baseline mix  & $0.999$ & Weight on the initial-loss comparison (convex blend here, Bernoulli in the original). \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \vspace{0.25cm}
-{\footnotesize \emphc{Note.} The original algorithm uses a stochastic Bernoulli lookback of probability $\rho$; the classroom version here uses a deterministic convex blend, which is simpler to debug.}
+{\footnotesize \emphc{Two ceilings.} The softmax separates two weights by at most $e^{\Delta\kappa/T}$ per update, about $e$ at $T=1$; the smoothing needs about $1/(1-\alpha)$ updates to get there. Per \emph{epoch}, 500 updates, the weights barely move at any $T$; per \emph{optimizer step}, as the authors do, they can. \texttt{03\_03} runs both.}
 
 \vspace{0.15cm}
 \begin{block}{Practical guidance}
-Defaults work well in most cases. Only $T$ needs occasional tuning (see sensitivity analysis in Notebook 04).
+Update per step, not per epoch. Non-dimensionalize first; then $T$ hardly matters.
 \end{block}
 \end{frame}
 
@@ -615,62 +601,35 @@ Defaults work well in most cases. Only $T$ needs occasional tuning (see sensitiv
 \end{center}
 
 \vspace{-0.3em}
-{\footnotesize Generated by \texttt{04\_Loss\_Normalization.ipynb} (Section 5, ReLoBRaLo at $T=1$).  Left: per-component MSE on a log axis under ReLoBRaLo (compare with the equal-weighting plot on slide 7).  Right: the actual weight trajectories $w_A, w_B, w_C$ produced by the ReLoBRaLo update rule.  $w_A$ rises (small-scale loss now amplified), $w_C$ falls (large-scale loss attenuated), exactly as the algorithm targets.}
+{\footnotesize Stored teaching run of \texttt{03\_03}, Section 6, one update per epoch, $T=1$. The weights move by 1.29$\times$ in 500 updates, and the loss and gradient panels are indistinguishable from equal weighting: total relative error 0.861 against 0.861. Per optimizer step (7,500 updates) the weights reach 1.5$\times$ and the total is 0.871. Per step the rule has the authority it was designed with, and it still lands at 0.871, 76$\times$ above natural units: relative balancing is not what a gap in the units needs.}
 \end{frame}
 
 % --- Slide 17: GradNorm ---
-\begin{frame}{GradNorm (Brief)}
+\begin{frame}{GradNorm: Balance the Gradients Themselves}
+\small
+\textbf{Idea} (Chen et al., 2018): equalize the quantity in the right-hand panels of the last three figures, the gradient norm each weighted component sends to the shared parameters.
+
+\vspace{0.05cm}
+\begin{block}{Gradient-balance loss}
+\vspace{-0.15cm}
+\[
+    \mathcal{L}_\text{grad} = \sum_{i=1}^{K} \Bigl| \bigl\| \nabla_{\bm{\theta}}\, w_i \mathcal{L}_i \bigr\|_2 - \bar{G}\, r_i^{(t)} \Bigr|,
+    \qquad r_i^{(t)} = \Bigl(\tilde{\mathcal{L}}_i^{(t)} \big/ \text{mean}_j\, \tilde{\mathcal{L}}_j^{(t)}\Bigr)^{\alpha},
+    \quad \tilde{\mathcal{L}}_i^{(t)} = \mathcal{L}_i^{(t)}/\mathcal{L}_i^{(0)}
+\]
+\end{block}
+$\bar G$ is the mean gradient norm; $r_i$ raises the target for the component with the least relative progress ($\alpha = 1.5$ typical). The $w_i$ are trained by gradient descent on $\mathcal{L}_\text{grad}$ and renormalized to $\sum_i w_i = K$.
+
+\vspace{0.05cm}
 \begin{columns}[T]
-\column{0.55\textwidth}
-\textbf{Idea} (Chen et al., 2018): Balance the \emph{gradient norms} across tasks, not the losses.
-
-\vspace{0.2cm}
-\begin{block}{Objective}
-Adjust weights $w_i$ so that:
-\[
-    \bigl\|\nabla_{\bm{\theta}}\, w_i \, \mathcal{L}_i\bigr\|_2 \approx \bar{G} \cdot r_i^{(t)}
-\]
-where $\bar{G}$ is the average gradient norm and $r_i^{(t)}$ captures relative training rates.
-\end{block}
-
-\vspace{0.2cm}
-The weights $w_i$ are \emphc{learnable parameters} updated via gradient descent on a ``gradient balance'' loss.
-
-\column{0.42\textwidth}
-\textbf{Pros:}
-\begin{itemize}
-    \item Principled, directly addresses gradient competition
-    \item Automatic, no manual tuning
-\end{itemize}
-
-\vspace{0.3cm}
-\textbf{Cons:}
-\begin{itemize}
-    \item Requires per-task gradient computation (expensive)
-    \item More complex to implement
-    \item Hyperparameter $\alpha$ (asymmetry)
-\end{itemize}
+\column{0.48\textwidth}
+\textbf{Pros:} acts on the gradient, which is what dominance is; can balance a permanent scale gap in principle.
+\column{0.48\textwidth}
+\textbf{Cons:} one extra backward pass per component per update; a second optimizer with its own learning rate and $\alpha$.
 \end{columns}
-\end{frame}
 
-% --- Slide 18: GradNorm Formula ---
-\begin{frame}{GradNorm: Formula}
-\begin{block}{Gradient normalization loss (Chen et al., 2018)}
-\[
-    \mathcal{L}_\text{grad} = \sum_{i=1}^{K} \Bigl| \bigl\| \nabla_{\bm{\theta}}\, w_i \mathcal{L}_i \bigr\|_2 - \bar{G} \cdot r_i^{(t)} \Bigr|
-\]
-\end{block}
-
-where:
-\begin{itemize}
-    \item $\bar{G} = \frac{1}{K} \sum_{i} \|\nabla_{\bm{\theta}}\, w_i \mathcal{L}_i\|_2$, average gradient norm
-    \item $r_i^{(t)} = \bigl(\tilde{\mathcal{L}}_i^{(t)} / \bar{\tilde{\mathcal{L}}}^{(t)}\bigr)^\alpha$, relative inverse training rate
-    \item $\tilde{\mathcal{L}}_i^{(t)} = \mathcal{L}_i^{(t)} / \mathcal{L}_i^{(0)}$, loss ratio relative to initial
-    \item $\alpha$ controls asymmetry ($\alpha = 1.5$ typical)
-\end{itemize}
-
-\vspace{0.3cm}
-\textbf{Update:} $w_i \gets w_i - \eta_w \cdot \nabla_{w_i} \mathcal{L}_\text{grad}$, then renormalize to $\sum_i w_i = K$.
+\vspace{0.05cm}
+{\scriptsize Cheaper cousin for PINNs: Wang, Teng \& Perdikaris (2021) set $w_i$ from the ratio of gradient norms directly.}
 \end{frame}
 
 % ============================================================================
@@ -714,11 +673,10 @@ $f_C(\x)$ & $=$ & $10{,}000 \times \text{genz\_continuous}(\x)$ \\
 \end{itemize}
 
 \vspace{0.2cm}
-\textbf{Data:}
+\textbf{Data and budget:}
 \begin{itemize}
-    \item $n_\text{train} = 1{,}000$
-    \item $n_\text{test} = 2{,}000$
-    \item $d = 2$
+    \item $n_\text{train} = 1{,}000$, $n_\text{test} = 2{,}000$, $d = 2$
+    \item 500 epochs, batch 64; three seeds per rule
 \end{itemize}
 \end{columns}
 
@@ -729,34 +687,38 @@ $f_C(\x)$ & $=$ & $10{,}000 \times \text{genz\_continuous}(\x)$ \\
 \end{frame}
 
 % --- Slide 21: Results ---
-\begin{frame}{Results: Equal vs.\ Inverse-Loss vs.\ ReLoBRaLo}
+\begin{frame}{Results: Every Rule Against Natural Units}
 \footnotesize
+\vspace{-0.1cm}
 \begin{center}
-\renewcommand{\arraystretch}{1.05}
+\renewcommand{\arraystretch}{0.95}
+\setlength{\tabcolsep}{4pt}
 {\footnotesize
-\begin{tabular}{@{}lccc@{}}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
- & \textbf{Equal weights} & \textbf{Inverse-loss} & \textbf{ReLoBRaLo} \\
+ & \textbf{Equal} & \textbf{Inverse-loss} & \textbf{ReLoBRaLo} & \textbf{ReLoBRaLo} & \textbf{Natural units} \\
+ & & & per epoch & per step & (equal weights) \\
 \midrule
-$f_A$ mean error & $3.3 \times 10^{-1}$ & $\bm{7.1 \times 10^{-3}}$ & $1.6 \times 10^{-1}$ \\
-$f_B$ mean error & $5.4 \times 10^{1}$ & $3.4 \times 10^{1}$ & $\bm{3.1 \times 10^{1}}$ \\
-$f_C$ mean error & $1.2 \times 10^{3}$ & $4.1 \times 10^{3}$ & $\bm{6.3 \times 10^{2}}$ \\
+rel.\ error $f_A$, seed 0 & 0.177 & 0.0082 & 0.177 & 0.177 & 0.0030 \\
+rel.\ error $f_B$, seed 0 & 0.540 & 0.033 & 0.539 & 0.539 & 0.0022 \\
+rel.\ error $f_C$, seed 0 & 0.116 & 0.407 & 0.116 & 0.116 & 0.0031 \\
 \midrule
-Total rel.\ error $\sum_i \overline{|e_i|}/\text{scale}_i$ & 0.99 & 0.76 & \emphc{0.53} \\
+total, median of 3 seeds & 0.861 & 0.448 & 0.861 & 0.871 & \emphc{0.011} \\
+range & 0.833--0.924 & 0.418--0.609 & 0.833--0.933 & 0.832--0.931 & 0.0083--0.018 \\
 \bottomrule
 \end{tabular}
 }
 \end{center}
 
 \vspace{0.15cm}
-\begin{itemize}\itemsep1pt
-    \item \textbf{Equal:} $f_C$ dominates the gradient; $f_A$ is the \emphc{least accurate} run and the total error is highest.
-    \item \textbf{Inverse-loss:} sharply improves $f_A$ and roughly halves the total error, but $f_C$ gets noticeably worse.
-    \item \textbf{ReLoBRaLo:} best on $f_B$ and $f_C$ and the \emphc{lowest total relative error} ($\sim 1.9\times$ below equal weighting); $f_A$ is fit well, though less aggressively than inverse-loss.
+\begin{itemize}\itemsep0pt
+    \item \textbf{Equal:} $f_C$ owns the gradient; the total relative error is 0.861.
+    \item \textbf{Inverse-loss:} equalizes the weighted losses; total 0.448, the gradient goes to the best-fit component and $f_C$ pays (0.407 against 0.116).
+    \item \textbf{ReLoBRaLo:} per epoch, identical to equal weighting, the smoothing never lets the weights move. Per step, the weights spread 1.5$\times$ and the total is 0.871: no better.
+    \item \textbf{Natural units:} 0.011, a factor 75 below equal weighting, from a change of units.
 \end{itemize}
 
-\vspace{0.1cm}
-{\scriptsize Numbers from \texttt{04\_Loss\_Normalization.ipynb}, \texttt{RUN\_MODE = "teaching"} (500 epochs), seed 42.  Absolute values are seed-/mode-sensitive; the qualitative point is that adaptive weighting lowers the scale-weighted total.}
+{\scriptsize Stored teaching run of \texttt{03\_03}, 500 epochs, seeds 0, 1, 2. Relative error $= \overline{|e_i|}/\text{scale}_i$ on 2,000 test points; total is the sum over the three components.}
 \end{frame}
 
 % --- Slide 23: Sensitivity to T ---
@@ -766,32 +728,66 @@ Total rel.\ error $\sum_i \overline{|e_i|}/\text{scale}_i$ & 0.99 & 0.76 & \emph
 \begin{center}
 \includegraphics[width=\linewidth, height=3.5cm, keepaspectratio]{figures/loss_norm_T_sensitivity.pdf}
 \end{center}
-{\scriptsize Generated by \texttt{04\_Loss\_Normalization.ipynb} (Section 7, temperature sweep).  Bars show the total relative error $\sum_i \mathrm{MAE}_i / \text{scale}_i$ at the end of training, swept over $T \in \{0.01, 0.1, 1.0, 10.0\}$.}
+{\scriptsize Stored teaching run of \texttt{03\_03}, Section 7: ReLoBRaLo with per-step updates, three seeds per temperature, median and range of the total relative error against the equal-weighting and natural-units levels.}
 
 \column{0.42\textwidth}
 \vspace{0.1cm}
-\textbf{$T$ too small ($\ll 1$):}
+\textbf{$T$ small ($\ll 1$):}
 \begin{itemize}\itemsep0pt
-    \item Winner-take-all
-    \item Only one component trained at a time
-    \item Slow convergence
+    \item Winner-take-all softmax
+    \item Weights can separate far, if the smoothing lets them
 \end{itemize}
 
 \vspace{0.15cm}
-\textbf{$T$ too large ($\gg 1$):}
+\textbf{$T$ large ($\gg 1$):}
 \begin{itemize}\itemsep0pt
     \item Near-equal weights
     \item Reverts to the scale problem
-    \item No effective balancing
 \end{itemize}
+
+\vspace{0.05cm}
+\textbf{Measured:} medians from 0.863 ($T=10$) to 0.871 ($T=1$); the final weight spread runs from 1.0$\times$ to 4$\times$.
 \end{columns}
 
+\vspace{-0.1cm}
+{\small The gap to natural units is 75$\times$ or more at every temperature: $T$ is not the lever for a scale gap that sits in the units.}
+\end{frame}
+
+% --- Slide 23b: the same measurement on a DEQN ---
+\begin{frame}{The Same Measurement on a DEQN}
+\footnotesize
+Brock--Mirman with endogenous labour (\texttt{02\_04}, Exercise 2): two policies, two first-order
+conditions, each in \emph{levels} or in \emph{relative} form. Same $2\times64$ network, states,
+optimizer, seed, 3{,}000 episodes; the gradient norm of each condition recorded every episode.
+
+\vspace{-0.05cm}
+\begin{center}
+\renewcommand{\arraystretch}{0.95}
+{\scriptsize
+\begin{tabular}{@{}ll rrr rr@{}}
+\toprule
+ & & \multicolumn{3}{c}{gradient-norm ratio, labour / Euler} & \multicolumn{2}{c}{final mean $|$rel.\ error$|$} \\
+form & weights & episode 1 & episode 300 & last & Euler & labour \\
+\midrule
+levels   & equal        & $2.6\cdot10^{1}$ & $3.9\cdot10^{0}$ & $3.0\cdot10^{0}$ & $2.6\cdot10^{-2}$ & $1.1\cdot10^{-2}$ \\
+relative & equal        & $1.2\cdot10^{5}$ & $3.6\cdot10^{0}$ & $1.0\cdot10^{0}$ & $2.9\cdot10^{-2}$ & $6.3\cdot10^{-3}$ \\
+levels   & inverse-loss & $2.6\cdot10^{1}$ & $1.2\cdot10^{0}$ & $7.4\cdot10^{1}$ & $2.5\cdot10^{-2}$ & $2.1\cdot10^{-3}$ \\
+relative & inverse-loss & $1.2\cdot10^{5}$ & $2.7\cdot10^{-1}$ & $1.4\cdot10^{0}$ & $3.4\cdot10^{-3}$ & $1.2\cdot10^{-1}$ \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
 \vspace{0.1cm}
-{\small $T \approx 1$ is a robust default; sensitivity analysis is cheap.}
+\begin{itemize}\itemsep0pt\scriptsize
+  \item A random initial policy violates the labour condition far more than the Euler equation: a gradient-norm gap of $1.2\cdot10^{5}$ at episode 1 in relative form. It is \emphc{transient}: the intratemporal condition is easy, and by episode 300 the two send gradients of the same order. Equal weights survive it.
+  \item Inverse-loss weighting shortens the transient and then keeps acting: in levels the labour error improves to $2.1\cdot10^{-3}$ from $1.1\cdot10^{-2}$; in relative form the small labour loss gets a near-zero weight and the labour error drifts to $1.2\cdot10^{-1}$ from $6.3\cdot10^{-3}$. A rule that balances levels cannot tell a solved condition from a neglected one.
+  \item The Genz gap never closes because it is in the units. Same diagnostic in both cases: the ratio \emph{after} the transient. {\scriptsize (Stored teaching run of \texttt{03\_03}, Section 8.)}
+\end{itemize}
 \end{frame}
 
 % --- Slide 24: Connection to PINNs and DSGE ---
 \begin{frame}{Connection to PINNs and DSGE}
+\small
 \begin{columns}[T]
 \column{0.50\textwidth}
 \textbf{Physics-informed NNs:}
@@ -799,53 +795,55 @@ Total rel.\ error $\sum_i \overline{|e_i|}/\text{scale}_i$ & 0.99 & 0.76 & \emph
     \item PDE residual: $\mathcal{L}_\text{PDE} \sim \mathcal{O}(1)$
     \item Boundary conditions: $\mathcal{L}_\text{BC} \sim \mathcal{O}(10^{-2})$
     \item Initial conditions: $\mathcal{L}_\text{IC} \sim \mathcal{O}(10^{-4})$
-    \item ReLoBRaLo ensures BCs/ICs are \emphc{not ignored}
+    \item Rate-balancing rules keep BCs/ICs from being \emphc{ignored} once the units agree
 \end{itemize}
 
 \column{0.47\textwidth}
 \textbf{DSGE / Deep equilibrium nets:}
 \begin{itemize}
-    \item Euler equations at different scales
-    \item Budget constraint residuals
-    \item Market clearing conditions
-    \item Each may have different units and magnitudes
+    \item Euler equations, one per agent or country
+    \item Budget and resource constraints, in goods units
+    \item Complementarity conditions, in multiplier units
+    \item Session 5 divides each by its own scale, then weights equally
 \end{itemize}
 \end{columns}
 
-\vspace{0.4cm}
-\begin{block}{Bischof \& Kraus (2025)}
-ReLoBRaLo was originally developed for PDE-constrained optimization and has been shown to improve convergence by up to an order of magnitude on multi-physics problems.
+\vspace{0.1cm}
+\begin{block}{Where the adaptive rules belong}
+Bischof \& Kraus apply ReLoBRaLo to PINN losses that are already non-dimensionalized, to balance components that converge at different rates. That is the case in the right column after the units are fixed, and the case Session 8 returns to.
 \end{block}
 \end{frame}
 
 % --- Slide 25: Summary ---
 \begin{frame}{Summary}
-\small
+\footnotesize
+\vspace{-0.4cm}
 \begin{columns}[T]
 \column{0.55\textwidth}
 \textbf{Key takeaways:}
 \begin{enumerate}\itemsep1pt
-    \item Multi-component losses at different scales cause \emphc{gradient dominance}.
-    \item Equal weighting fails when scales differ by $>10\times$.
-    \item Inverse-loss weighting helps but can be unstable.
-    \item \textbf{ReLoBRaLo} provides robust, adaptive balancing via relative ratios + baseline mix.
-    \item Critical for PINNs, DEQNs, and multi-task learning in economics.
+    \item Gradient dominance is measurable: record $\|\nabla_\theta\, w_i \mathcal{L}_i\|$ per component.
+    \item \textbf{Natural units first.} Free, no hyperparameters, two orders of magnitude on the testbed.
+    \item Inverse-loss weighting equalizes levels, and sends the gradient to the best-fit component.
+    \item ReLoBRaLo balances progress: a ceiling of about $e^{1/T}$, reached only with per-step updates.
+    \item A transient gap closes on its own; a permanent one needs different units, not a rule.
 \end{enumerate}
 
 \column{0.42\textwidth}
 \textbf{References:}
 {\scriptsize
 \begin{itemize}\itemsep0pt
-    \item Bischof \& Kraus (2025). \emph{Multi-Objective Loss Balancing for Physics-Informed Deep Learning}, \emph{CMAME} 439, 117914.
+    \item Bischof \& Kraus (2021). \emph{Multi-Objective Loss Balancing for Physics-Informed Deep Learning}, arXiv:2110.09813; \emph{CMAME} 439, 117914 (2025).
     \item Chen et al.\ (2018). \emph{GradNorm}, ICML.
     \item Heydari et al.\ (2019). \emph{SoftAdapt}, arXiv:1912.12355.
+    \item Wang, Teng \& Perdikaris (2021). \emph{Gradient flow pathologies in PINNs}, SIAM J.\ Sci.\ Comput.\ 43(5).
 \end{itemize}
 }
 \end{columns}
 
-\vspace{0.3cm}
+\vspace{0.1cm}
 \begin{block}{Hands-on}
-$\Rightarrow$ \texttt{04\_Loss\_Normalization.ipynb}
+$\Rightarrow$ \texttt{03\_03\_Loss\_Normalization.ipynb}
 \end{block}
 \end{frame}
 

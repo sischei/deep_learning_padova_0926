@@ -40,8 +40,14 @@ derivations, worked examples and exercise solutions. Everything below is supplem
 * Elsken, Metzen & Hutter (2019), *Neural Architecture Search: A Survey*, JMLR 20(55) , 
   [`day1/readings`](day1/readings/Elsken_Metzen_Hutter_2019_NAS_Survey.pdf).
 * Bergstra & Bengio (2012), *Random Search for Hyper-Parameter Optimization*, JMLR 13, 281–305.
+* Li, Jamieson, DeSalvo, Rostamizadeh & Talwalkar (2018), *Hyperband: A Novel Bandit-Based Approach to
+  Hyperparameter Optimization*, JMLR 18(185), 1–52.
 * Bischof & Kraus (2021), *Multi-Objective Loss Balancing for Physics-Informed Deep Learning*
-  (ReLoBRaLo), arXiv:2110.09813.
+  (ReLoBRaLo), arXiv:2110.09813; published in *Computer Methods in Applied Mechanics and Engineering*
+  439, 117914 (2025).
+* Wang, Teng & Perdikaris (2021), *Understanding and Mitigating Gradient Flow Pathologies in
+  Physics-Informed Neural Networks*, SIAM Journal on Scientific Computing 43(5). The gradient-norm
+  view of loss balancing that Notebook `03_03` measures.
 * Companion script, Chapter 4.
 
 ## Session 4, Overlapping generations

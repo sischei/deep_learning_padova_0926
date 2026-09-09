@@ -118,24 +118,23 @@
 \textbf{III. Implementing the Search}
 \begin{itemize}\itemsep0pt
     \item Defining a search space
-    \item Random Search + SHA from scratch
-    \item Tool landscape (footnote)
+    \item Random search and successive halving from scratch
 \end{itemize}
 
 \vspace{0.4em}
 \textbf{IV. Example \& Wrap-up}
 \begin{itemize}\itemsep0pt
     \item Genz-function approximation
+    \item The same search on a DEQN
     \item Best practices
-    \item Connection to DEQNs
 \end{itemize}
 \end{columns}
 
-\vspace{0.2em}
+\vspace{-0.1em}
 \begin{center}
-{\scriptsize Hands-on:
-\texttt{02\_NAS\_Random\_Search\_10D.ipynb} (10-D random search)\\
-\texttt{03\_NAS\_RandomSearch\_Hyperband.ipynb} (Random Search + SHA)}
+{\scriptsize Hands-on, in \texttt{day1/code/03\_nas\_loss\_balancing/}:
+\texttt{03\_01\_Grid\_vs\_Random\_Search.ipynb} (where to put a fixed number of trials)\\
+\texttt{03\_02\_NAS\_RandomSearch\_Hyperband.ipynb} (how to spend a fixed number of epochs, and the same search on a DEQN)}
 \end{center}
 \end{frame}
 
@@ -143,11 +142,11 @@
 \begin{frame}{Learning objectives}
 \textbf{By the end of this lecture you should be able to:}
 \begin{itemize}
-  \item Diagnose architecture sensitivity and quantify how network depth and width affect approximation error
-  \item Compare grid search, random search, Bayesian optimization, and Hyperband on their computational cost and sample efficiency
-  \item Implement random search and successive halving from scratch in plain Python
-  \item Apply NAS to function approximation problems and choose appropriate search spaces for economic models
-  \item Select production tools (KerasTuner, Optuna, Ray Tune) and apply best practices to scale architecture search efficiently
+  \item Measure, rather than assume, which hyperparameters move the error on a given problem
+  \item State when random search beats grid search at a fixed budget, and when it does not
+  \item Explain what Bayesian optimization and successive halving add to random search, and at what cost
+  \item Implement random search and successive halving in plain Python, with a train / validation / test split and an exact epoch budget
+  \item Run the same search on a deep equilibrium net, where the score is an Euler-equation error
 \end{itemize}
 \end{frame}
 
@@ -159,41 +158,29 @@
 % --- Slide 3: Why Architecture Matters ---
 \begin{frame}{Why Architecture Matters}
 \begin{columns}[T]
-\column{0.52\textwidth}
-\textbf{Same data, different architectures:}
-\vspace{0.3cm}
-\begin{itemize}
-    \item 1 layer, 16 units $\;\Rightarrow\;$ MAE $= 0.08$
-    \item 2 layers, 64 units $\;\Rightarrow\;$ MAE $= 0.01$
-    \item 5 layers, 256 units $\;\Rightarrow\;$ MAE $= 0.003$
-    \item 10 layers, 512 units $\;\Rightarrow\;$ MAE $= 0.02$ (overfit)
+\column{0.55\textwidth}
+\small
+\textbf{Same data, same budget, different configuration.}
+Notebook \texttt{03\_02}, 30 random draws from a small search space, one smooth
+two-dimensional target, 50 epochs each:
+\begin{itemize}\itemsep1pt
+    \item best draw: validation loss $3.2\cdot10^{-6}$
+    \item hand-picked $3\times64$ ReLU, 100 epochs: $9.8\cdot10^{-6}$
+    \item worst draw: $4.4\cdot10^{-2}$
 \end{itemize}
-\vspace{0.3cm}
-Architecture choice can matter \emphc{more than training duration}.
+4 orders of magnitude between the best and the worst draw.
 
-\vspace{0.25cm}
-{\scriptsize\itshape Illustrative numbers from a depth/width sweep on the companion regression task; the from-scratch search in Notebook~03 reproduces the same ordering on a different testbed.}
+\vspace{0.15cm}
+\textbf{What moved it.} Notebook \texttt{03\_01}, one axis at a time: the learning rate changes
+the loss by \emphc{$142\times$} over its range, the $L_2$ penalty by $1.08\times$.
 
-\column{0.45\textwidth}
-\begin{tikzpicture}[scale=0.75, transform shape]
-    \begin{axis}[
-        ybar,
-        width=6.5cm, height=5cm,
-        ylabel={Test MAE},
-        symbolic x coords={1x16, 2x64, 5x256, 10x512},
-        xtick=data,
-        x tick label style={font=\scriptsize, rotate=30, anchor=east},
-        ymin=0, ymax=0.1,
-        bar width=12pt,
-        nodes near coords,
-        every node near coord/.append style={font=\tiny},
-        nodes near coords align={vertical},
-    ]
-    \addplot[fill=softblue, draw=softblue!70!black] coordinates {
-        (1x16, 0.08) (2x64, 0.01) (5x256, 0.003) (10x512, 0.02)
-    };
-    \end{axis}
-\end{tikzpicture}
+\column{0.42\textwidth}
+\begin{block}{The question}
+Configuration choice can matter more than training time. Which knobs, and how to search them
+without trying everything?
+\end{block}
+\vspace{0.2cm}
+{\scriptsize Numbers: stored teaching runs of \texttt{03\_01} and \texttt{03\_02}, seed 0.}
 \end{columns}
 \end{frame}
 
@@ -420,6 +407,38 @@ When only a \emph{few} dimensions matter, random search finds good configuration
 unimportant axis; random search samples the important axis more densely.}
 \end{frame}
 
+% --- Slide 8b: How big is the edge? (from 03_01) ---
+\begin{frame}{How Big Is the Edge? A Measurement}
+\small
+\vspace{-0.15cm}
+Notebook \texttt{03\_01} scores a $k^d$ grid and $k^d$ random draws on the same surface,
+$v(h) = (h_1 - h^\star)^2 + \delta \sum_{i\ge2}(h_i - h^\star)^2$, 2{,}000 repetitions.
+Entry $=$ grid median $/$ random median; $>1$ favours random.
+
+\vspace{0.15cm}
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+{\footnotesize
+\begin{tabular}{@{}r rrrrrr@{}}
+\toprule
+$\delta$ & $d{=}1$ & $d{=}2$ & $d{=}3$ & $d{=}4$ & $d{=}5$ & $d{=}8$ \\
+\midrule
+0 (spare axes inert)     & 0.6 & 13 & 140 & 386 & 3{,}305 & 8{,}408 \\
+0.01                     & 0.6 & 2.7 & 4.9 & 5.8 & 6.1 & 6.5 \\
+0.1                      & 0.7 & 1.1 & 1.0 & 1.2 & 1.2 & 1.2 \\
+1 (every axis matters)   & 0.6 & 0.6 & 0.6 & 0.7 & 0.7 & 0.8 \\
+\bottomrule
+\end{tabular}}
+\end{center}
+
+\vspace{0.15cm}
+\begin{itemize}\itemsep1pt
+  \item The edge is a statement about \emphc{dimension counting}: enormous at $d=8$, worth little at $d=2$.
+  \item It needs the spare axes to be \emphc{inert}. When every axis matters, the grid wins: on one axis a grid is a stratified sample.
+  \item It also needs them to be harmless. A harmful axis (dropout on a clean problem) hands the win to the grid, which always tries the endpoint (\texttt{03\_01}, Section 5).
+\end{itemize}
+\end{frame}
+
 % --- Slide 9: Bayesian Optimization ---
 \begin{frame}{Bayesian Optimization}
 \begin{columns}[T]
@@ -505,101 +524,63 @@ unimportant axis; random search samples the important axis more densely.}
 \small The GP posterior mean \emph{interpolates} the five observations and is \emph{wide} in unexplored gaps.  The Expected-Improvement acquisition function peaks at $h \approx 3.75$, trading off the high posterior variance there against the moderately low predicted mean.
 \end{frame}
 
-% --- Slide 11: Hyperband ---
-\begin{frame}{Hyperband}
-\footnotesize
+% --- Slide 11: Successive halving and Hyperband ---
+\begin{frame}{Successive Halving and Hyperband}
 \begin{columns}[T]
-\column{0.55\textwidth}
-\textbf{Idea:} Start many configurations cheaply; \emphc{stop the worst early} and give more resources to promising ones.
+\column{0.50\textwidth}
+\footnotesize
+\textbf{Idea:} start many configurations cheaply, \emphc{stop the worst early}, give the budget to the survivors.
 
 \vspace{0.05cm}
-\begin{block}{Successive Halving (SHA, $\eta=3$)}
+\begin{block}{Successive halving (SHA), $\eta=3$}
 \begin{enumerate}\itemsep0pt
-    \item Start $n$ random configs with budget $b$
-    \item Train each for $b$ epochs, evaluate
-    \item \emphc{Keep the top $1/\eta$} of configs (discard the rest)
-    \item Multiply the budget by $\eta$, repeat
+    \item Draw $n$ random configurations, train each for $b$ epochs
+    \item Keep the best $1/\eta$, discard the rest
+    \item Budget $\times\,\eta$; \emph{continue training} the survivors
+    \item Repeat until one is left
 \end{enumerate}
 \end{block}
 
-\textbf{Hyperband} = SHA with several brackets (different $n/b$ trade-offs), each bracket itself being a stage cascade like $9 \to 3 \to 1$ above.  The usual default is $\eta=3$.
+\vspace{0.05cm}
+\textbf{Hyperband} (Li et al., 2018): several SHA brackets with different $(n, b)$, a hedge
+against the unknown correlation between early and late performance.
 
-\textbf{Resource use:} many cheap trials; full budgets only for survivors.
-
-\column{0.42\textwidth}
-\textbf{Key insight:}
-\begin{itemize}\itemsep0pt
-    \item Bad configs identifiable \emph{early}
-    \item No need for 200 epochs to know $\eta\!=\!10$ diverges
-    \item Exploits \emphc{correlation} between early and late performance
-\end{itemize}
-
-{\scriptsize Li et al.\ (2018): large speedups when early and late performance are correlated.}
-\end{columns}
-\end{frame}
-
-% --- Slide 12: Hyperband Visual ---
-\begin{frame}{Hyperband: Successive Halving}
+\column{0.48\textwidth}
 \begin{center}
 \begin{tikzpicture}[
-    trialnode/.style={circle, draw, minimum size=8pt, inner sep=0pt},
+    trialnode/.style={circle, draw, minimum size=7pt, inner sep=0pt},
     alive/.style={trialnode, fill=softgreen},
     dead/.style={trialnode, fill=uzhgreylight, draw=uzhgreydark},
-    >=Stealth,
+    >=Stealth, scale=0.5, transform shape,
 ]
-    % Round labels (factor eta = 3 cascade: 9 -> 3 -> 1)
-    \node[font=\small\bfseries] at (-1.5, 0) {Round 1};
-    \node[font=\small\bfseries] at (-1.5,-1.5) {Round 2};
-    \node[font=\small\bfseries] at (-1.5,-3.0) {Round 3};
-
-    % Epoch labels (each round triples the budget)
-    \node[font=\small, uzhgreydark] at (10.5, 0) {10 ep};
-    \node[font=\small, uzhgreydark] at (10.5,-1.5) {30 ep};
-    \node[font=\small, uzhgreydark] at (10.5,-3.0) {90 ep};
-
-    % Round 1: 9 trials
-    \foreach \i in {0,...,8} {
-        \node[alive] (r1-\i) at (\i*1.0, 0) {};
-    }
-
-    % Round 2: 3 survive (top 1/3)
-    \foreach \i in {0,...,2} {
-        \node[alive] (r2-\i) at (\i*1.0 + 3.0, -1.5) {};
-    }
+    \node[font=\small\bfseries] at (-1.6, 0) {Rung 1};
+    \node[font=\small\bfseries] at (-1.6,-1.5) {Rung 2};
+    \node[font=\small\bfseries] at (-1.6,-3.0) {Rung 3};
+    \node[font=\small, uzhgreydark] at (9.6, 0) {10 ep};
+    \node[font=\small, uzhgreydark] at (9.6,-1.5) {30 ep};
+    \node[font=\small, uzhgreydark] at (9.6,-3.0) {90 ep};
+    \foreach \i in {0,...,8} { \node[alive] (r1-\i) at (\i*1.0, 0) {}; }
+    \foreach \i in {0,...,2} { \node[alive] (r2-\i) at (\i*1.0 + 3.0, -1.5) {}; }
     \foreach \i in {3,...,8} {
         \node[dead] (r1d-\i) at (\i*1.0, -0.6) {};
         \draw[->, darkred, thick] (r1-\i) -- (r1d-\i);
     }
-    % Arrows from survivors
     \draw[->, softgreen!70!black] (r1-0) -- (r2-0);
     \draw[->, softgreen!70!black] (r1-1) -- (r2-1);
     \draw[->, softgreen!70!black] (r1-2) -- (r2-2);
-
-    % Round 3: 1 survives (top 1/3 of 3)
-    \foreach \i in {0} {
-        \node[alive] (r3-\i) at (\i*1.2 + 3.0, -3.0) {};
-    }
-    % Round 3 (winner from 3): keep top 1/3 = 1
-    \node[alive, fill=softorange, minimum size=11pt, line width=1.2pt] (r3-0) at (4.0, -3.0) {};
+    \node[alive, fill=softorange, minimum size=10pt, line width=1.2pt] (r3-0) at (4.0, -3.0) {};
     \foreach \i in {1,2} {
         \node[dead] (r2d-\i) at (\i*1.0 + 3.0, -2.1) {};
         \draw[->, darkred, thick] (r2-\i) -- (r2d-\i);
     }
     \draw[->, softorange!70!black, line width=1.2pt] (r2-0) -- (r3-0);
     \node[font=\small\bfseries, softorange!70!black, right] at (4.6,-3.0) {Best};
-
-    % Legend
-    \node[alive, label={right:\scriptsize Surviving}] at (8.5, -2.0) {};
-    \node[dead, label={right:\scriptsize Pruned}] at (8.5, -2.6) {};
+    \node[alive, label={right:\scriptsize surviving}] at (7.0, -2.2) {};
+    \node[dead, label={right:\scriptsize pruned}] at (7.0, -2.8) {};
 \end{tikzpicture}
 \end{center}
-
-\vspace{0.1cm}
-$9 \to 3 \to 1$ (factor $\eta=3$): total cost $= 9 \times 10 + 3 \times 30 + 1 \times 90
-= \emphc{270}$ epoch-equivalents (vs.\ $9 \times 90 = 810$ for full training).
-
-\vspace{0.05cm}
-{\scriptsize \textbf{Bracket vs.\ schedule.}  This $9 \to 3 \to 1$ cascade is one SHA bracket.  Hyperband itself runs several brackets in parallel, each with a different starting $(n, b)$ trade-off, hedging across the unknown correlation between early- and late-training performance.}
+{\scriptsize One bracket, $9 \to 3 \to 1$ at $10 \to 30 \to 90$ epochs: $9\cdot10 + 3\cdot20 + 1\cdot60 = \emphc{210}$ epochs with continuation, against $810$ for training all nine to the end. The rung budgets add up only if survivors keep their weights between rungs.}
+\end{columns}
 \end{frame}
 
 % --- Slide 13: Method Comparison ---
@@ -614,7 +595,7 @@ $9 \to 3 \to 1$ (factor $\eta=3$): total cost $= 9 \times 10 + 3 \times 30 + 1 \
 Computational cost & $\mathcal{O}(k^d)$ & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ & $\mathcal{O}(n \log n)$ \\
 Sample efficiency & Low & Medium & \emphc{High} & High \\
 Parallelisable & Fully & Fully & Limited & Partially \\
-Handles interactions & No & Partially & \emphc{Yes} & No \\
+Handles interactions & No & Partially & \emphc{Yes} & As random \\
 Early stopping & No & No & No & \emphc{Yes} \\
 Implementation & Trivial & Trivial & Moderate & Moderate \\
 \bottomrule
@@ -622,12 +603,12 @@ Implementation & Trivial & Trivial & Moderate & Moderate \\
 }
 \end{center}
 
-\vspace{0.4cm}
+\vspace{-0.05cm}
 \textbf{Practical advice:}
 \begin{itemize}
-    \item \textbf{Quick exploration:} Random search (strong baseline)
-    \item \textbf{Limited budget:} Bayesian optimization (sample-efficient)
-    \item \textbf{Large search space:} Hyperband (aggressive early stopping)
+    \item \textbf{First pass:} random search, several seeds, log-scale on the learning rate. It is the baseline every other method has to beat.
+    \item \textbf{Each trial is expensive and sequential is fine:} Bayesian optimization.
+    \item \textbf{Bad trials show early:} successive halving or Hyperband; count the budget in epochs, and continue survivors rather than restarting them.
 \end{itemize}
 \end{frame}
 
@@ -656,88 +637,64 @@ SPACE = {
     "layers":     [1, 2, 3, 4, 5],
     "units":      [32, 64, 96, 128, 160, 192, 224, 256],
     "activation": ["relu", "tanh", "swish"],
-    "lr":         ("log_uniform", 1e-4, 1e-2),
+    "lr":         ("log_uniform", 1e-4, 1e-1),
 }
 def sample_config(rng):
     return {
         "layers":     int(rng.choice(SPACE["layers"])),
         "units":      int(rng.choice(SPACE["units"])),
         "activation": str(rng.choice(SPACE["activation"])),
-        "lr":         float(10 ** rng.uniform(-4, -2)),
+        "lr":         float(10 ** rng.uniform(-4, -1)),
     }
 \end{verbatim}
 }
 \end{block}
-{\scriptsize No \texttt{hp.Int} / \texttt{hp.Float} abstraction, the search space is a dict, the sampler is one function.}
+{\scriptsize The search space is a dict, the sampler is one function. The learning-rate range reaches $10^{-1}$ because \texttt{03\_01} found the optimum near $10^{-2}$; a range that stops there puts the best region on the boundary.}
 \end{frame}
 
 % --- Slide 16: Random Search from scratch ---
 \begin{frame}[fragile]{Random Search from Scratch}
-\begin{block}{30 trials, single function}
+\begin{block}{30 trials, one function}
 {\scriptsize
 \begin{verbatim}
 def random_search(n_trials=30, epochs=50, seed=0):
-    rng = np.random.default_rng(seed)
-    records = []
+    rng, records = np.random.default_rng(seed), []
     for t in range(n_trials):
-        cfg = sample_config(rng)
+        cfg   = sample_config(rng)
         model = build_model(cfg)
-        h = model.fit(X_tr, y_tr, epochs=epochs,
+        h = model.fit(X_train, y_train, epochs=epochs,
                       validation_data=(X_val, y_val), verbose=0)
         records.append((cfg, min(h.history["val_loss"])))
-    return min(records, key=lambda r: r[1])
+    return min(records, key=lambda r: r[1])   # ranked on validation
 \end{verbatim}
 }
 \end{block}
-{\scriptsize Independent uniform draws; $\mathcal{O}(N)$ cost, embarrassingly parallel (Bergstra \& Bengio, 2012).}
+{\scriptsize Independent uniform draws; cost exactly $N \cdot R$ epochs, embarrassingly parallel (Bergstra \& Bengio, 2012). Three sets: the search ranks on \texttt{X\_val}; \texttt{X\_test} is touched once, by the winner.}
 \end{frame}
 
 % --- Slide 17: Successive Halving from scratch ---
 \begin{frame}[fragile]{Successive Halving from Scratch}
-\begin{block}{$n_0=27$, $\eta=3$, three rounds}
+\vspace{-0.15cm}
+\begin{block}{$n_0=27$, $\eta=3$, three rungs, survivors continue}
 {\scriptsize
 \begin{verbatim}
-def successive_halving(n0=27, eta=3, r0=8, seed=0):
-    rng = np.random.default_rng(seed)
-    survivors = [(sample_config(rng), None) for _ in range(n0)]
-    r = r0
-    while len(survivors) > 1:
-        scored = [(cfg, train_for(cfg, epochs=r)) for cfg, _ in survivors]
-        scored.sort(key=lambda s: s[1])           # ascending val loss
-        keep   = max(1, len(scored) // eta)
-        survivors = scored[:keep]
-        r *= eta                                  # 8 -> 24 -> 72 epochs
-    return survivors[0]
+def successive_halving(n0=27, eta=3, r0=8, rounds=3, seed=0):
+    rng   = np.random.default_rng(seed)
+    alive = [dict(cfg=c, model=build_model(c), trained=0)
+             for c in (sample_config(rng) for _ in range(n0))]
+    target = r0
+    for k in range(rounds):
+        for a in alive:                         # pay only the extra epochs
+            a["val"] = fit_epochs(a["model"], target - a["trained"])
+            a["trained"] = target
+        alive.sort(key=lambda a: a["val"])
+        alive  = alive[:max(1, len(alive) // eta)] if k < rounds-1 else alive[:1]
+        target *= eta                           # 8 -> 24 -> 72 epochs
+    return alive[0]
 \end{verbatim}
 }
 \end{block}
-{\scriptsize Notebook schedule: 27 candidates @ 8 ep $\to$ 9 @ 24 ep $\to$ 3 @ 72 ep $\to$ 1 winner.  This is $648$ config-epochs, versus $1500$ for $30$ random-search trials at $50$ epochs each: about $2.3\times$ less compute while testing a comparable number of architectures.}
-\end{frame}
-
-% --- Slide 18: Tool landscape (footnote) ---
-\begin{frame}{Production Tooling (footnote)}
-We just wrote both algorithms in $\sim$25 lines of Python.  Real projects rarely hand-roll the loop; established libraries wrap (and parallelise) the same algorithms behind a uniform API:
-
-\vspace{0.3cm}
-\begin{center}
-\renewcommand{\arraystretch}{1.15}
-{\small
-\begin{tabular}{@{}lll@{}}
-\toprule
-\textbf{Library} & \textbf{Algorithms} & \textbf{Notes} \\
-\midrule
-\href{https://keras.io/keras_tuner/}{KerasTuner}   & Random, Bayesian, Hyperband      & Tight Keras integration \\
-\href{https://optuna.org/}{Optuna}                 & TPE, CMA-ES, Hyperband, NSGA-II  & Framework-agnostic; popular default \\
-\href{https://docs.ray.io/en/latest/tune/}{Ray Tune} & All of the above + ASHA, PBT     & Distributed by design \\
-\href{http://hyperopt.github.io/hyperopt/}{Hyperopt} & TPE, Random                      & The original TPE reference \\
-\href{https://ax.dev/}{Ax / BoTorch}               & Bayesian (multi-objective, MOO)  & Meta; PyTorch-native GPs \\
-\href{https://nni.readthedocs.io/}{NNI}            & Random, Bayesian, evolutionary, NAS & Microsoft; full graph-NAS support \\
-\bottomrule
-\end{tabular}}
-\end{center}
-
-\vspace{0.15cm}
-{\scriptsize\textbf{Why teach algorithms, not wrappers.}  APIs change; the search loops (Random, SHA/Hyperband, GP+EI, TPE) persist.}
+{\scriptsize Schedule: 27 at 8 epochs $\to$ 9 continued to 24 $\to$ 3 continued to 72 $\to$ 1 winner. Epochs paid: $27\cdot 8 + 9\cdot 16 + 3\cdot 48 = 504$, against $1500$ for 30 random-search trials at 50 epochs. Libraries (KerasTuner, Optuna, Ray Tune) wrap these same loops; the algorithms outlive the APIs.}
 \end{frame}
 
 % ============================================================================
@@ -769,8 +726,8 @@ We just wrote both algorithms in $\sim$25 lines of Python.  Real projects rarely
 \textbf{Data:}
 \begin{itemize}
     \item $d = 2$, uniform random samples
-    \item $n_\text{train} = 1{,}000$, $n_\text{test} = 2{,}000$
-    \item Loss: MSE, metric: test MAE
+    \item train $1{,}000$, validation $1{,}000$, test $2{,}000$
+    \item Loss: MSE; trials ranked on validation loss
 \end{itemize}
 
 \column{0.45\textwidth}
@@ -779,25 +736,25 @@ We just wrote both algorithms in $\sim$25 lines of Python.  Real projects rarely
     \item Layers: $1$--$5$
     \item Units/layer: $32$--$256$ (step 32)
     \item Activation: ReLU, tanh, swish
-    \item LR: $10^{-4}$--$10^{-2}$ (log scale)
+    \item LR: $10^{-4}$--$10^{-1}$ (log scale)
 \end{itemize}
 
 \vspace{0.3cm}
-\textbf{Baseline:} $3 \times 64$ ReLU MLP, $\eta = 10^{-3}$
+\textbf{Baseline:} $3 \times 64$ ReLU MLP, $\eta = 10^{-3}$, 100 epochs
 
 \vspace{0.2cm}
-\textbf{Budget:} 30 trials per method
+\textbf{Budget:} random search $30 \times 50 = 1500$ epochs; SHA $504$ epochs; three seeds each
 \end{columns}
 \end{frame}
 
 % --- Slide 21: Search Results ---
-\begin{frame}{Search Results (Random Search vs.\ SHA on a 2-D Genz Gaussian)}
+\begin{frame}{Search Results on the Genz Gaussian}
 \begin{center}
-\includegraphics[width=0.92\linewidth]{figures/nas_search_results.pdf}
+\includegraphics[width=0.88\linewidth]{figures/nas_search_results.pdf}
 \end{center}
 
 \vspace{-0.4em}
-{\scriptsize Generated by \texttt{03\_NAS\_RandomSearch\_Hyperband.ipynb}.  Random Search uses $30$ full trials; SHA uses $27$ initial candidates with $\eta=3$.  Both reach MAE of order $10^{-3}$ from a baseline near $4\cdot10^{-3}$; SHA uses about $2.3\times$ less config-epoch budget in this seeded run.}
+{\scriptsize Stored teaching run of \texttt{03\_02}, three seeds per method, horizontal axis in epochs paid. Median best validation loss: random search $3.2\cdot10^{-6}$ at 1500 epochs, SHA $6.7\cdot10^{-6}$ at 504 epochs, baseline $9.8\cdot10^{-6}$ at 100. Random search is ahead on all three seeds and the ranges do not overlap (random $1.8\cdot10^{-6}$ to $3.7\cdot10^{-6}$, SHA $6.4\cdot10^{-6}$ to $1.1\cdot10^{-5}$), SHA got within a factor of two for a third of the epochs.}
 \end{frame}
 
 % --- Slide 22: Visualization ---
@@ -807,11 +764,62 @@ We just wrote both algorithms in $\sim$25 lines of Python.  Real projects rarely
 \end{center}
 
 \vspace{-0.2em}
-{\footnotesize Generated by \texttt{03\_NAS\_RandomSearch\_Hyperband.ipynb}.  Left to right: the true Genz target, the best NAS-found NN approximation, and the absolute error map on $[0,1]^2$.  No placeholder shapes; this is the actual notebook output.  The companion \texttt{02\_NAS\_Random\_Search\_10D.ipynb} offers a 10-D testbed (search loop in plain Python, model in TF/Keras).}
+{\footnotesize Stored teaching run of \texttt{03\_02}. Left to right: the true target, the winning configuration retrained from scratch (4L 256-224-128-256 relu lr 5.5e-04), and the absolute error on $[0,1]^2$. Test MAE 0.00158 against 0.00294 for the hand-picked baseline, on the 2,000 test points the search never saw.}
+\end{frame}
+
+% --- Slide 22b: the same search on a DEQN ---
+\begin{frame}{The Same Search on a DEQN}
+\small
+A deep equilibrium net has no labels. A trial trains a policy network on the equilibrium
+residual and returns an \emphc{Euler-equation error}; the search loop does not change.
+
+\vspace{0.1cm}
+\textbf{Model:} stochastic Brock--Mirman of Session 2 (\texttt{02\_02}): $\alpha=0.36$,
+$\beta=0.99$, $\delta=0.1$, $\rho=0.9$, $\sigma=0.04$; savings rate through a sigmoid, five
+Gauss--Hermite nodes, states drawn from the \texttt{02\_02} box. \textbf{Score:} mean
+$|$relative Euler error$|$ on 4{,}096 held-out states after 3,000 episodes.
+\textbf{Search space:} depth $\{1,2,3\}$, width $\{16,32,64,128\}$, relu / tanh, learning rate
+log-uniform on $[10^{-4}, 10^{-2}]$; 30 random trials.
+
+\vspace{0.1cm}
+\begin{columns}[T]
+\column{0.52\textwidth}
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+{\scriptsize
+\begin{tabular}{@{}lr@{}}
+\toprule
+ & mean $|$Euler error$|$ \\
+\midrule
+best trial: 3$\times$32 tanh, lr $2.0\cdot10^{-3}$ & $2.4\cdot10^{-4}$ \\
+\texttt{02\_02} default: $2{\times}50$ relu, lr $3{\cdot}10^{-4}$ & $2.1\cdot10^{-3}$ \\
+worst trial: 1$\times$16 relu, lr $1.6\cdot10^{-4}$ & $7.9\cdot10^{-3}$ \\
+\bottomrule
+\end{tabular}}
+\end{center}
+\column{0.44\textwidth}
+\begin{center}
+\renewcommand{\arraystretch}{1.1}
+{\scriptsize
+\begin{tabular}{@{}lr@{}}
+\toprule
+median score by level of & spread \\
+\midrule
+width & 3.5$\times$ \\
+depth & 2.2$\times$ \\
+learning rate, per decade & 1.5$\times$ \\
+activation & 1.4$\times$ \\
+\bottomrule
+\end{tabular}}
+\end{center}
+\end{columns}
+\vspace{0.05cm}
+{\scriptsize Stored teaching run of \texttt{03\_02}, Section 7.}
 \end{frame}
 
 % --- Slide 23: Best Practices ---
 \begin{frame}{Best Practices for NAS}
+\small
 \begin{columns}[T]
 \column{0.50\textwidth}
 \textbf{Search space design:}
@@ -825,22 +833,23 @@ We just wrote both algorithms in $\sim$25 lines of Python.  Real projects rarely
 \vspace{0.3cm}
 \textbf{Budget allocation:}
 \begin{itemize}
-    \item Diminishing returns after $\sim$30 trials
-    \item Hyperband: set \texttt{factor=3} (default)
-    \item Use early stopping callbacks
+    \item Count in epochs, not trials
+    \item Run several seeds; report the range
+    \item Successive halving: $\eta=3$, continue survivors
 \end{itemize}
 
 \column{0.47\textwidth}
 \textbf{Common pitfalls:}
 \begin{itemize}
     \item Search space too large $\Rightarrow$ wasted budget
-    \item Overfitting to validation set $\Rightarrow$ use holdout test
-    \item Ignoring training stability $\Rightarrow$ check learning curves
+    \item Ranking on the test set $\Rightarrow$ optimistic numbers; keep a holdout
+    \item Best region on the boundary of a range $\Rightarrow$ widen it
+    \item One seed $\Rightarrow$ a lottery ticket, not a result
 \end{itemize}
 
 \vspace{0.3cm}
-\begin{alertblock}{Rule of thumb}
-If manual tuning took $N$ trials, automated search with $3N$ trials will likely find something better.
+\begin{alertblock}{Before searching}
+Sweep each axis alone (\texttt{03\_01}, Section 3); fix the ones that do not move the error.
 \end{alertblock}
 \end{columns}
 \end{frame}
@@ -854,10 +863,10 @@ If manual tuning took $N$ trials, automated search with $3N$ trials will likely 
     \item \textbf{Surrogate models:} Replace expensive simulations (e.g., climate IAMs) with NNs, architecture determines approximation quality.
 
     \vspace{0.2cm}
-    \item \textbf{DSGE policy functions:} Deep equilibrium nets (Lecture 03) use NNs to approximate policy/value functions. \emphc{Architecture search over the policy network} can improve convergence.
+    \item \textbf{Policy functions:} Deep equilibrium nets (Session 2) approximate policy functions with a network. The search loop of \texttt{03\_02}, Section 7, runs unchanged with an Euler error as the score.
 
     \vspace{0.2cm}
-    \item \textbf{High-dimensional problems:} As $d$ grows (many state variables), the architecture must scale. NAS automates this adaptation.
+    \item \textbf{High-dimensional problems:} As the state grows (Sessions 4 and 5), width and learning rate have to be re-tuned; a random search with a few seeds is the cheap way to do it.
 
     \vspace{0.2cm}
     \item \textbf{Reproducibility:} Automated search documents \emph{which} architectures were tried, making results more transparent than ``we chose 3 layers with 64 units.''
@@ -870,11 +879,11 @@ If manual tuning took $N$ trials, automated search with $3N$ trials will likely 
 \column{0.55\textwidth}
 \textbf{Key takeaways:}
 \begin{enumerate}
-    \item Architecture choice \emphc{strongly} affects NN performance
-    \item Random search is a strong baseline, always try it first
-    \item Bayesian optimization is most sample-efficient
-    \item Hyperband / SHA offers the best speed/quality trade-off
-    \item Production: KerasTuner, Optuna, Ray Tune, Ax all wrap these
+    \item Configuration choice moves the error by orders of magnitude; which knob depends on the problem, and the search tells you
+    \item Random search beats grid search when most axes are inert, and only then
+    \item Bayesian optimization buys sample efficiency at the price of sequential trials
+    \item Successive halving spends the epoch budget where it pays; continue survivors, count epochs
+    \item Rank on validation, report on test, run several seeds; the score can be an Euler error
 \end{enumerate}
 
 \column{0.42\textwidth}

@@ -16,7 +16,7 @@ Re-cuts applied:
 
 | Deck | Change |
 |---|---|
-| `02_DeepEquilibriumNets` | Dropped *Loss Balancing* and *Architecture Search*, these became Session 4, taught from dedicated decks. 77 → 54 frames. |
+| `02_DeepEquilibriumNets` | Dropped *Loss Balancing* and *Architecture Search*, these became Session 3, taught from dedicated decks. 77 → 54 frames. |
 | `06_Deep_Surrogates_and_GPs` | Dropped *Structural Estimation* (→ Session 7) and *Optimal Carbon Tax* / *Quantify: Uncertainty* (climate; no setup in this course). 75 → 39 frames. |
 | `07a_Structural_Estimation_SMM` | The estimation section of the surrogates deck, standing alone. |
 | `08_PINNs_Foundations` / `09_PINNs_Applications` | The full 57-frame deck, restored (Black–Scholes back in) and split across the two afternoon slots: sections I–III (36 frames) and IV–VI (25 frames). |
@@ -45,8 +45,9 @@ Re-cuts applied:
 demo in Session 6 → the inverse-problems frames in Session 9.
 
 Sessions 3 and 5 are the ones to watch. Session 3 has the least slack, and it is also the session
-where a live demo is most tempting, run `03_02` from its cached `nas_results/` rather than
-re-searching.
+where a live demo is most tempting: `03_02` loads its sweeps from `nas_results/` for both the smoke
+and the teaching preset, so a live run shows the plots in under a minute; do not delete the caches
+in class.
 
 **On the Day 2 afternoon.** It is two hours of PINNs and nothing else. Continuous-time
 heterogeneous agents was originally Session 9 and was cut: fifty minutes was not enough to do the
@@ -211,13 +212,39 @@ applications on purpose: IRBC's country-by-country Euler residuals and the cohor
 are exactly the multi-component losses that need balancing, so teaching the remedy first means both
 applications land on prepared ground. IRBC closes the day as the scaling finale.
 
+**Session 3 pass, the two engineering decks and their toy codes.** The 03b deck and its notebook told
+opposite stories: the deck's results table (ReLoBRaLo best at 0.53) matched no stored output, while
+the stored `03_03` run had ReLoBRaLo indistinguishable from equal weighting and non-dimensionalisation
+a hundred times better; the two figure captions described weight and loss behaviour the figures do not
+show, and the temperature figure was an old bar chart the notebook itself had replaced. The 03a deck
+referenced a 10-D notebook that does not exist, quoted an invented depth/width bar chart, and showed a
+results figure from a different run than the stored one. On the code side, `03_02` selected and
+reported on the same 2,000 points, retrained every successive-halving survivor from scratch, capped
+the learning rate at $10^{-2}$ where `03_01` had found the optimum, and had a cache cell that raised
+`TypeError` whenever `RUN_MODE` differed from the cached run (the in-class smoke setting), or, had it
+not, would have overwritten the teaching cache with smoke trials. `03_03`'s argument that the softmax
+ceiling $e^{1/T}$ limits ReLoBRaLo was wrong for the run it described: with $\alpha=\rho=0.999$ and
+one update per epoch, the smoothing caps the weights at a few percent of movement whatever $T$ is.
+Both notebooks were rebuilt. `03_02` now has a train / validation / test split, continuation-based
+successive halving with an exact 504-epoch budget against 1,500, three seeds, per-preset caches, and a
+final section that runs the same random search on the stochastic Brock–Mirman DEQN of `02_02` with
+the Euler error as the score (best trial $2.4\cdot10^{-4}$ against $2.1\cdot10^{-3}$ for the `02_02` default and $7.9\cdot10^{-3}$ for the worst draw). `03_03` records the gradient norm each weighted
+component sends to the shared parameters, runs ReLoBRaLo per epoch and per optimizer step, and closes
+on the labour model of `02_04`, where the gap between the two first-order conditions is $1.2\cdot10^{5}$ in gradient norm
+at initialisation and gone by episode 300: transient, unlike the Genz gap, which is in the units. The
+decks now carry the measured tables, a frame on natural units tied to what `05_01`/`05_02` code, a
+frame each on the DEQN results, and the `03_01` table on when random search actually beats grid
+search. Frame counts unchanged (27 and 29). Both decks' figures are written by the stored teaching
+runs, so every number on a results frame is in a stored output cell.
+
 ## Compute
 
 No notebook in the taught sessions needs a GPU. The one candidate, the optional Aiyagari notebook, is
 not taught. Measured on the laptop CPU: Session 4, `04_00` 69 s, `04_01` 11 min at the teaching preset
 and 2.5 min at smoke, `04_04` 3.5 min, `04_02` 49 min (not taught); Session 5, `05_01` 3 min at the
-teaching preset and under a minute at smoke, `05_02` 3 min, `05_01` with ten countries 8 min. The
-stored outputs are the teaching runs, so nobody has to reproduce them; in class students run `"smoke"`.
+teaching preset and under a minute at smoke, `05_02` 3 min, `05_01` with ten countries 8 min; Session 3, `03_01` 10 min, `03_02` 29 min from scratch and 2 min from
+its committed caches, `03_03` 12 min, all at the teaching preset. The stored outputs are the teaching runs,
+so nobody has to reproduce them; in class students run `"smoke"`.
 
 ## Open items
 

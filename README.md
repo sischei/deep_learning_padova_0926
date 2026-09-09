@@ -104,9 +104,7 @@ anything taught here. The exact package list is in [`requirements.txt`](requirem
 | 11:00 – 14:00 | *Break* | | |
 | 14:00 – 14:55 | **8.** Economics-informed neural networks: foundations | [slides](day2/slides/08_PINNs_Foundations.pdf) | [code](day2/code/08_pinns) |
 | 14:55 – 15:10 | *Coffee break* | | |
-| 15:10 – 15:40 | **9.** PINNs: economic and financial applications | [slides](day2/slides/09_PINNs_Applications.pdf) | [code](day2/code/09_pinns_applications) |
-| 15:40 – 15:52 | *Hands-on:* build a PINN from scratch | | [exercise](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) |
-| 15:52 – 16:00 | Course wrap-up | [slides](day2/slides/10_Wrap_Up.pdf) | |
+| 15:10 – 16:00 | **9.** PINNs: economic and financial applications; hands-on, build a PINN from scratch; course wrap-up | [slides](day2/slides/09_PINNs_Applications.pdf) · [wrap-up](day2/slides/10_Wrap_Up.pdf) | [code](day2/code/09_pinns_applications) · [exercise](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) |
 
 ---
 
@@ -124,10 +122,12 @@ the conditional expectation. Occasionally binding constraints via Fischer–Burm
 and a deliberate choice of loss kernel.
 
 **3. Architecture search and loss balancing.** The engineering session, and it comes early because
-everything after it depends on it. Grid versus random search versus Hyperband, implemented in pure
-Python; a 10-D search over depth, width, activation and learning-rate decay. Why multi-equation
-residual losses on different scales silently kill training, and how non-dimensionalisation,
-inverse-loss weighting and ReLoBRaLo fix it.
+everything after it depends on it. Grid versus random search, measured rather than asserted; random
+search and successive halving implemented in pure Python with an exact epoch budget, on a Genz
+testbed and then on the Brock–Mirman DEQN with the Euler error as the score. Why multi-equation
+residual losses on different scales silently kill training, measured through the gradient each
+component sends; why writing residuals in natural units comes first and what inverse-loss weighting
+and ReLoBRaLo can add after that.
 
 **4. Overlapping generations.** The session built for Padova's own research focus, and the one with
 the most time. It opens with Diamond's two-period model, one decision and one Euler equation, derived
