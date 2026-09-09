@@ -507,7 +507,7 @@ Given initial conditions $z_0,\,\{k_0^{\,h}\}_{h=1}^{A-1}$, a competitive equili
 
 % --- II.6 Equilibrium conditions: derivation first, result second ------
 \begin{frame}{II.6 Household Optimality: Deriving the Euler Equation}
-\small
+\footnotesize
 Cohort $h$ at date $t$ chooses $\{c,a\}$ for its remaining $A-h+1$ periods.  Attach $\nu$ to the
 budget constraint (4) and $\lambda\ge 0$ to the borrowing limit (3):
 \[
@@ -523,15 +523,15 @@ budget constraint (4) and $\lambda\ge 0$ to the borrowing limit (3):
           since $a_t^{\,h}$ becomes $k_{t+1}^{\,h+1}$ and earns $r_{t+1}$.
     \item Complementary slackness: $\lambda_t^{\,h}\ge 0$, $a_t^{\,h}\ge 0$, $\lambda_t^{\,h}a_t^{\,h}=0$.
 \end{itemize}
-\vspace{-8pt}
+\vspace{2pt}
 \[
 \boxed{\;\frac{1}{c_t^{\,h}} \;=\; \beta\,\mathbb{E}_t\!\left[\frac{r_{t+1}}{c_{t+1}^{\,h+1}}\right] + \lambda_t^{\,h}\;}
 \qquad\text{terminal cohort: } a_t^{\,A}=0,\quad c_t^{\,A} = r_t k_t^{\,A}.
 \]
-\vspace{-6pt}
+\vspace{2pt}
 {\scriptsize \emphc{Here $\lambda_t^{\,h}\equiv 0$}: no cohort has future labor income, only the newborn works
 and only once, so there is nothing to borrow against and $a_t^{\,h}\ge 0$ never binds.  What remains is the
-\emphc{interior} Euler equation.  Part III keeps $\lambda$ and adds a second multiplier.}
+\emphc{interior} Euler equation.  Part III keeps $\lambda$ and adds a second multiplier.\par}
 \end{frame}
 
 
@@ -786,7 +786,7 @@ G\!\left(\!\begin{bmatrix} z_t \\ \bm{k}_t\end{bmatrix},\; \N_\theta\!\left(\!\b
 \midrule
 II.1--II.6 Model and equilibrium        & \S 1--3 \;parameters, state, network/policy \\
 II.7--II.9 Loss, FREE, architecture     & \S 4 \;\texttt{compute\_cost()} + training-data construction \\
-II.10--II.13 Training/validation        & \S 5--8 \;mini-batches, diagnostics, policy stability, closed-form checks \\
+II.10--II.12 Training/validation        & \S 5--8 \;mini-batches, diagnostics, policy stability, closed-form checks \\
 \bottomrule
 \end{tabular}}
 \end{center}
@@ -798,13 +798,13 @@ II.10--II.13 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
 % --- II.10 Sampling + training loop -----------------------------------
 \begin{frame}{II.10 Sampling and the Training Loop}
 \small
-\begin{block}{Cloud method (Azinovic, Gaegauf \& Scheidegger, 2022)}
+\begin{block}{The DEQN training algorithm (Azinovic, Gaegauf \& Scheidegger, 2022), applied to OLG}
 \vspace{-2pt}
 \begin{enumerate}\itemsep2pt
-    \item \emphc{Initialisation.}  Sample a cloud of initial states $D_0 = \{x_j^{\,0}\}_{j=1}^{N}$; initialise $\theta^0$.
+    \item \emphc{Initialisation.}  Sample a set of initial states $D_0 = \{x_j^{\,0}\}_{j=1}^{N}$; initialise $\theta^0$.
     \item \emphc{Episode $k$.}
     \begin{enumerate}
-        \item[(a)] \textbf{Simulate.}  Draw fresh shocks $\{z_{+,j}\}$ from $\pi$; roll the cloud forward one period using the \emphc{current} policy $\N_{\theta^k}$:
+        \item[(a)] \textbf{Simulate.}  Draw fresh shocks $\{z_{+,j}\}$ from $\pi$; roll the states forward one period using the \emphc{current} policy $\N_{\theta^k}$:
         $x_j^{\,k+1} = \bigl(z_{+,j},\,0,\,\N_{\theta^k}^{[1:A-1]}(x_j^{\,k})\bigr)$.
         \item[(b)] \textbf{Mini-batch SGD.}  Take $\texttt{steps}$ Adam steps on $\Loss_{D_k}(\theta)$ using mini-batches from $D_k$.
     \end{enumerate}
@@ -813,10 +813,10 @@ II.10--II.13 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
 \end{block}
 
 \vspace{0.2em}
-\textbf{Definitions.}  \emphc{Episode} = one simulate-then-train pass.  \emphc{Epoch} = one pass through the full cloud.
+\textbf{Definitions.}  \emphc{Episode} = one simulate-then-train pass.  \emphc{Epoch} = one pass through the full training set.
 
-\vspace{0.3em}
-{\footnotesize Sampling from the ergodic set of the current policy makes the cost function focus on states the economy actually visits.}
+\vspace{0.2em}
+{\footnotesize This is Algorithm 1 of Session 2, unchanged: only the state $x$ and the residual $G$ are OLG-specific.  Sampling from the ergodic set of the current policy makes the cost function focus on states the economy actually visits.}
 \end{frame}
 
 
@@ -892,8 +892,8 @@ Cohort $h$ & Periods remaining ($A-h$) & Savings rate $\beta_h$\\
 \end{frame}
 
 
-% --- II.13 Validation --------------------------------------------------
-\begin{frame}{II.13 DEQN vs.\ Analytical Solution}
+% --- II.12 Validation --------------------------------------------------
+\begin{frame}{II.12 DEQN vs.\ Analytical Solution}
 \footnotesize
 \centering
 \begin{tikzpicture}
@@ -921,7 +921,7 @@ The points are the exact closed form. The DEQN should reproduce them cohort by c
 \end{block}
 \end{frame}
 
-\begin{frame}{II.13$'$ Policy Functions State by State}
+\begin{frame}{II.12$'$ Policy Functions State by State}
 \centering
 \includegraphics[width=0.98\textwidth]{figures/olg6_policy_scatter.pdf}
 
@@ -941,7 +941,7 @@ The points are the exact closed form. The DEQN should reproduce them cohort by c
     \item Equilibrium definition + conditions (II.5--II.6).
     \item Conditions $\to$ \emphc{cost function} (II.7).
     \item Equilibrium map $f$ $\to$ neural network $\N_\theta$ (II.8--II.9).
-    \item Trained by sampling + SGD (II.10--II.11), \emphc{validated} against the closed form (II.13).
+    \item Trained by sampling + SGD (II.10--II.11), \emphc{validated} against the closed form (II.12).
 \end{enumerate}
 \end{block}
 
