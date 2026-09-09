@@ -2,14 +2,14 @@
 
 Day 1, 14:25–15:25. Slides: [`04_OLG_Models_DEQNs.pdf`](../../slides/04_OLG_Models_DEQNs.pdf)
 
-| Notebook | What it does | Teaching preset |
+| Notebook | What it does | Runtime |
 |---|---|---|
-| [`04_00_OLG_Diamond_Warmup.ipynb`](04_00_OLG_Diamond_Warmup.ipynb) | **Warm-up.** Diamond's two-period OLG: two cohorts alive at once, one policy, one Euler equation, closed form $s=\beta w/(1+\beta)$. The whole DEQN in sixty lines. | **69 s** |
+| [`04_00_OLG_Diamond_Warmup.ipynb`](04_00_OLG_Diamond_Warmup.ipynb) | **Warm-up.** Diamond's two-period OLG: two cohorts alive at once, one policy, one Euler equation, closed form $a=\beta w/(1+\beta)$. | **69 s** |
 | [`04_01_OLG_Analytic_DEQN_persistent.ipynb`](04_01_OLG_Analytic_DEQN_persistent.ipynb) | **Start here.** Analytic 6-generation OLG (Krueger & Kübler, 2004), trained on its own ergodic set and validated against the closed-form savings rates. | **11 min** (smoke 2.5 min) |
 | [`04_03_OLG_Exercise.ipynb`](04_03_OLG_Exercise.ipynb) | **Exercise.** Closed-form savings rates; simulate to get the model's own ergodic prices; lifecycle profiles at those prices; the discount factor in general equilibrium. Pure NumPy, no network. | seconds to run, ~25 min to work through |
-| [`04_04_OLG_Analytic_DEQN_exogenous.ipynb`](04_04_OLG_Analytic_DEQN_exogenous.ipynb) | Ablation: the same model trained on a broad exogenous box instead of the ergodic set. | **3.5 min** |
+| [`04_04_OLG_Analytic_DEQN_exogenous.ipynb`](04_04_OLG_Analytic_DEQN_exogenous.ipynb) | The same model trained on states drawn from a fixed box instead of simulated under the policy. | **3.5 min** |
 
-All timings measured on a laptop CPU, not estimated.
+Timings measured on a laptop CPU.
 
 ## The shipped outputs are converged runs
 
@@ -18,19 +18,21 @@ numbers and figures you see without running anything are the good ones:
 
 | | loss | mean rel. Euler error | vs the closed form |
 |---|---|---|---|
-| `04_00` | 1e-06.2 | — | savings fraction within 4.6e-04 on the visited states |
-| `04_01` | 1.2e-07 | **0.026%** | savings rates to **1.0e-05**, capital path to 2.0e-04 |
-| `04_04` | 2.8e-07 | 0.037% | savings rates to 2.7e-05, capital path to 2.4e-04 |
+| `04_00` | 6.2e-07 | — | savings fraction within 4.7e-04 on the visited states |
+| `04_01` | 1.2e-07 | **0.025%** | savings rates to **1.0e-05**, mean capital-path error 2.0e-04 |
+| `04_04` | 2.8e-07 | 0.037% | savings rates to 2.7e-05, mean capital-path error 2.4e-04 |
 
 Both DEQN notebooks report `PASS: policy drift is small`.
 
-**In class, set `RUN_MODE = "smoke"` first.** That is a deliberately unconverged sanity check, and it is
-the preset that fits the hands-on slot. Note that smoke is ~2.5 min rather than seconds: the diagnostics
-and the 200k-period ergodic-price simulation at the end cost the same at any preset.
+**In class, set `RUN_MODE = "smoke"` first.** That is a short run whose numbers are not converged, and
+it is the preset that fits the hands-on slot. Smoke takes about 2.5 minutes rather than seconds, because
+the diagnostics and the 20,000-period ergodic-price simulation at the end cost the same at any preset.
 
-The `persistent` / `exogenous` pair is the point: where you draw the training cloud changes the solution
-you get. Compare `04_01` against `04_04`, and see [`optional/`](optional/) for the same comparison at
-56 cohorts, where the gap is a factor of 1180.
+`04_01` and `04_04` differ in one thing: where the training states come from, simulated under the
+current policy or drawn from a fixed box. At six cohorts both work, because the box was chosen to contain
+the ergodic set; `04_04` even trains faster. The two ways of sampling come apart when the ergodic set is
+not known in advance. At 56 cohorts ([`optional/`](optional/)) the box-trained network is a factor of
+1180 worse on the states the economy actually visits.
 
 ## The 56-cohort benchmark
 

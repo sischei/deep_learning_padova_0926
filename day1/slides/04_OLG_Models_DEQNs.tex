@@ -129,7 +129,7 @@ with the paper's trained weights, is the \texttt{DeepEquilibriumNets} repository
   \item Construct a finite-dimensional overlapping-generations equilibrium with cohort-specific savings and lifecycle heterogeneity
   \item Derive equilibrium conditions and build the mean-squared Euler-residual loss for a multi-cohort OLG model
   \item Implement the DEQN recipe: model specification, equilibrium definition, cost function, network training, and validation
-  \item Validate a learned solution against the closed-form equilibrium in the analytic Krueger--Kuebler model
+  \item Validate a learned solution against the closed-form equilibrium in the analytic Krueger--K\"ubler model
   \item Read a research-scale benchmark (56 cohorts, two assets, two constraints, adjustment costs) as the same recipe with a larger $G$
 \end{itemize}
 \end{frame}
@@ -148,7 +148,7 @@ with the paper's trained weights, is the \texttt{DeepEquilibriumNets} repository
 \vspace{-3pt}\begin{itemize}\itemsep2pt
     \item \emphc{Lifecycle:} agents are born, work, save, retire, die.  A representative infinitely-lived household cannot speak to pensions, retirement, inheritance, or cohort-specific shocks.
     \item \emphc{Demographics:} at any $t$, many cohorts coexist, each with its own asset holdings and labor income.
-    \item \emphc{Finite asset distribution:} with $A$ cohorts, the cross-sectional wealth distribution is an $A$-vector, not an infinite-dimensional object.  \emphc{Perfect for DEQNs:} state stays finite-dimensional with realistic heterogeneity.
+    \item \emphc{Finite asset distribution:} with $A$ cohorts, the cross-sectional wealth distribution is an $A$-vector, not an infinite-dimensional object.  \emphc{Suited to DEQNs:} the state stays finite-dimensional with realistic heterogeneity.
 \end{itemize}
 \end{block}
 \vspace{-3pt}
@@ -213,7 +213,7 @@ At each period $t$ we have $A$ coexisting cohorts.  A newborn enters (age 1); th
 \end{frame}
 
 
-\begin{frame}{The DEQN Recipe in One Line}
+\begin{frame}{The DEQN Recipe}
 \small
 \begin{block}{From model to neural network (to be applied twice in today's lecture)}
 \begin{enumerate}\itemsep2pt
@@ -230,7 +230,7 @@ The \emphc{equilibrium conditions $G$}.  Everything else, the network, the SGD l
 \end{alertblock}
 
 \vspace{0.2em}
-{\footnotesize Today's deliverable: derive $G$ explicitly for both the analytic and the benchmark OLG models.}
+{\footnotesize Today: derive $G$ explicitly for both the analytic and the benchmark OLG models.}
 \end{frame}
 
 
@@ -315,7 +315,7 @@ $r'(z',K')$ follows for each of the four shocks, the old consume $c^{o\prime}=r'
 \[
 e(z,k) \;=\; \frac{\bigl(\beta\,\mathbb{E}[\,r'/c^{o\prime}\,]\bigr)^{-1}}{w-\hat s} \;-\; 1 .
 \]
-\textbf{Loss:} mean of $e^2$ over a cloud of states that is re-simulated under the current policy
+\textbf{Loss:} mean of $e^2$ over a set of states that is re-simulated under the current policy
 after every gradient step.
 
 \column{0.45\textwidth}
@@ -344,7 +344,7 @@ the code carries over to the six-cohort case unchanged.}
 \end{enumerate}
 \vspace{0.4em}
 {\footnotesize 3 minutes. Then open \texttt{04\_00\_OLG\_Diamond\_Warmup.ipynb}: 69 seconds on a
-laptop CPU. The network should report $\hat\sigma = 0.4118$ at every state the economy visits, and drift away from it \emph{outside} that set, because the loss is only ever evaluated where the policy goes (Session 2, ``Residual training only tests states the policy visits'').  That is why training uses a simulated cloud.}
+laptop CPU. The network should report $\hat\sigma = 0.4118$ at every state the economy visits, and drift away from it \emph{outside} that set, because the loss is only ever evaluated where the policy goes (Session 2, ``Residual training only tests states the policy visits'').  That is why training uses simulated states.}
 \end{frame}
 
 
@@ -492,7 +492,7 @@ r_t \;=\; \alpha\,\eta(z_t)\, K_t^{\alpha-1}\, L_t^{1-\alpha} \;+\; \bigl(1-\del
 \footnotesize
 \begin{block}{Definition 1 (competitive equilibrium)}
 \vspace{-2pt}
-Given initial conditions $z_0,\,\{k_0^{\,h}\}_{h=1}^{A-1}$, a competitive equilibrium is a collection of choices for households $\bigl\{(c_t^{\,h},\,a_t^{\,h})_{h=1}^{A}\bigr\}_{t=0}^{\infty}$, for the representative firm $(K_t, L_t)_{t=0}^{\infty}$, and prices $(r_t, w_t)_{t=0}^{\infty}$, such that:
+Given initial conditions $z_0,\,\{k_0^{\,h}\}_{h=2}^{A}$, a competitive equilibrium is a collection of choices for households $\bigl\{(c_t^{\,h},\,a_t^{\,h})_{h=1}^{A}\bigr\}_{t=0}^{\infty}$, for the representative firm $(K_t, L_t)_{t=0}^{\infty}$, and prices $(r_t, w_t)_{t=0}^{\infty}$, such that:
 \begin{enumerate}\itemsep1pt
     \item Given $(r_t, w_t)_{t\ge 0}$, household choices maximize the lifetime utility (1) subject to the savings-to-capital identity (2), the borrowing limit (3), and the per-period budget (4):\\[1pt]
     \mbox{}\hspace{1em}{\scriptsize $a_t^{\,h} = k_{t+1}^{\,h+1};\;\; a_t^{\,h} \ge \underline{a};\;\; c_t^{\,h} + a_t^{\,h} = r_t k_t^{\,h} + \ell^h w_t.$}
@@ -547,7 +547,7 @@ and only once, so there is nothing to borrow against and $a_t^{\,h}\ge 0$ never 
           cancel. Persistent shocks would change nothing here; i.i.d.\ shocks only keep the aggregate
           dynamics simple.
     \item \emphc{No future labor income.}  Only the newborn works, once. Cash-on-hand
-          $W_t^{\,h} = r_t k_t^{\,h} + \ell^h w_t$ is the household's entire state, there is nothing
+          $\text{inc}_t^{\,h} = r_t k_t^{\,h} + \ell^h w_t$ is the household's entire state, there is nothing
           to borrow against, and $\lambda\equiv 0$.
 \end{enumerate}
 \end{block}
@@ -569,21 +569,21 @@ No closed form; multipliers in the network; a numerical solver is needed.
 % --- II.6b backward induction --------------------------------------------
 \begin{frame}{II.6b Backward Induction to $\beta_h$}
 \small
-Write $W$ for cash-on-hand and $V_h(W)$ for the value of a cohort of age $h$.
+Write $\text{inc}$ for cash-on-hand and $V_h(\text{inc})$ for the value of a cohort of age $h$.
 \begin{itemize}\itemsep4pt
-    \item \textbf{Age $A$:} no tomorrow. $c = W$, \; $V_A(W) = \ln W$.
-    \item \textbf{Age $A-1$:} $\max_a\;\ln(W-a) + \beta\,\mathbb{E}\ln(r'a)$. FOC $\tfrac{1}{W-a}=\tfrac{\beta}{a}$
-          $\Rightarrow a = \tfrac{\beta}{1+\beta}W$, \; $V_{A-1}(W) = (1+\beta)\ln W + \text{const}$.
-    \item \textbf{Age $A-2$:} $\max_a\;\ln(W-a) + \beta(1+\beta)\,\mathbb{E}\ln(r'a)$
-          $\Rightarrow a = \tfrac{\beta+\beta^2}{1+\beta+\beta^2}W$, \; $V_{A-2}(W) = (1+\beta+\beta^2)\ln W + \text{const}$.
+    \item \textbf{Age $A$:} no tomorrow. $c = \text{inc}$, \; $V_A(\text{inc}) = \ln \text{inc}$.
+    \item \textbf{Age $A-1$:} $\max_a\;\ln(\text{inc}-a) + \beta\,\mathbb{E}\ln(r'a)$. FOC $\tfrac{1}{\text{inc}-a}=\tfrac{\beta}{a}$
+          $\Rightarrow a = \tfrac{\beta}{1+\beta}\text{inc}$, \; $V_{A-1}(\text{inc}) = (1+\beta)\ln \text{inc} + \text{const}$.
+    \item \textbf{Age $A-2$:} $\max_a\;\ln(\text{inc}-a) + \beta(1+\beta)\,\mathbb{E}\ln(r'a)$
+          $\Rightarrow a = \tfrac{\beta+\beta^2}{1+\beta+\beta^2}\text{inc}$, \; $V_{A-2}(\text{inc}) = (1+\beta+\beta^2)\ln \text{inc} + \text{const}$.
     \item \textbf{Age $h$,} by induction:
 \end{itemize}
 \[
-\boxed{\;\beta_h \;=\; \frac{a}{W} \;=\; \frac{\beta+\beta^2+\cdots+\beta^{A-h}}{1+\beta+\cdots+\beta^{A-h}}
+\boxed{\;\beta_h \;=\; \frac{a}{\text{inc}} \;=\; \frac{\beta+\beta^2+\cdots+\beta^{A-h}}{1+\beta+\cdots+\beta^{A-h}}
 \;=\; \beta\,\frac{1-\beta^{A-h}}{1-\beta^{A-h+1}},\qquad h=1,\ldots,A-1.\;}
 \]
 \vspace{0.2em}
-{\footnotesize The constant absorbs $\mathbb{E}\ln r'$ at every step, which is why the return distribution never reaches the decision. $W$ is the $\text{inc}_t^{\,h}$ of the budget constraint (4), so the sigmoid savings-fraction head of II.9 has the same shape as the closed form.}
+{\footnotesize The constant absorbs $\mathbb{E}\ln r'$ at every step, which is why the return distribution never reaches the decision. The policy is a fixed fraction of $\text{inc}_t^{\,h}$, which is why the sigmoid savings-fraction head of II.9 has the same shape as the closed form.}
 \end{frame}
 
 
@@ -645,11 +645,11 @@ e_{\text{REE}}^{\,i}(x_j) \;:=\;
 \vspace{0.2em}
 \raggedright
 Cohort $h$'s Euler equation needs $c_{t+1}^{\,h+1}$, the consumption of a household \emph{one year older}
-next period.  Nobody hands that to us, so the network supplies it: one call at $x_t$, one call at each
+next period.  It is not observed; the network supplies it: one call at $x_t$, one call at each
 successor state.  \emphc{Five forward passes per residual}, all with the same $\theta$.
 
 \vspace{0.3em}
-\begin{alertblock}{Why this matters}
+\begin{alertblock}{The loss is a fixed point, not a regression}
 \vspace{-2pt}
 The loss is a \emphc{fixed-point condition on $\theta$}, not a regression: there is no target to fit,
 only the requirement that the network be consistent with itself one period ahead.  Gradients flow
@@ -691,7 +691,7 @@ f(z_t, \bm{k}_t) = \bigl[\,a_t^{\,1},\ldots,a_t^{\,A-1}\,\bigr]^{\!\top},
 \begin{center}i.e.\ $G\bigl([z_t,\bm{k}_t],\,f([z_t,\bm{k}_t])\bigr)=\bm{0}$ at \emph{every} state.\end{center}
 \vspace{-6pt}\end{exampleblock}
 \vspace{-3pt}
-{\scriptsize Existence and stationarity are \emph{assumed}; in Part II the closed form is such a function, so here the assumption is verified.\quad \emphc{$f$ is the unknown the equilibrium defines; $\N_\theta$ next slide is the parametric family we search in.}}
+{\scriptsize Existence and stationarity are \emph{assumed}; in Part II the closed form is such a function, so here the assumption is verified.\quad \emphc{$f$ is the unknown the equilibrium defines; $\N_\theta$ on the next slide is the parametric family we search in.}}
 \end{frame}
 
 
@@ -784,9 +784,9 @@ G\!\left(\!\begin{bmatrix} z_t \\ \bm{k}_t\end{bmatrix},\; \N_\theta\!\left(\!\b
 \toprule
 \textbf{Deck slide} & \textbf{Notebook section} \\
 \midrule
-II.1--II.6 Model and equilibrium        & \S 1--3 \;parameters, state, network/policy \\
-II.7--II.9 Loss, FREE, architecture     & \S 4 \;\texttt{compute\_cost()} + training-data construction \\
-II.10--II.12 Training/validation        & \S 5--8 \;mini-batches, diagnostics, policy stability, closed-form checks \\
+II.1--II.6 Model and equilibrium        & \S 1--4 \;parameters, closed form, state, network \\
+II.7--II.9 Loss, FREE, architecture     & \S 5--6 \;\texttt{compute\_residuals()}, training states \\
+II.10--II.12 Training/validation        & \S 7--10 \;training loop, diagnostics, policy stability, closed-form checks \\
 \bottomrule
 \end{tabular}}
 \end{center}
@@ -808,7 +808,7 @@ II.10--II.12 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
         $x_j^{\,k+1} = \bigl(z_{+,j},\,0,\,\N_{\theta^k}^{[1:A-1]}(x_j^{\,k})\bigr)$.
         \item[(b)] \textbf{Mini-batch SGD.}  Take $\texttt{steps}$ Adam steps on $\Loss_{D_k}(\theta)$ using mini-batches from $D_k$.
     \end{enumerate}
-    \item \emphc{Stop} when $\log_{10} \Loss$ falls below the target.
+    \item After a fixed number of episodes, check that the policy has stopped moving on held-out states.
 \end{enumerate}
 \end{block}
 
@@ -816,7 +816,7 @@ II.10--II.12 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
 \textbf{Definitions.}  \emphc{Episode} = one simulate-then-train pass.  \emphc{Epoch} = one pass through the full training set.
 
 \vspace{0.2em}
-{\footnotesize This is Algorithm 1 of Session 2, unchanged: only the state $x$ and the residual $G$ are OLG-specific.  Sampling from the ergodic set of the current policy makes the cost function focus on states the economy actually visits.}
+{\footnotesize Algorithm 1 of Session 2, unchanged: only the state $x$ and the residual $G$ are OLG-specific.  Sampling from the ergodic set of the current policy concentrates the cost function on states the economy visits.}
 \end{frame}
 
 
@@ -830,12 +830,12 @@ II.10--II.12 Training/validation        & \S 5--8 \;mini-batches, diagnostics, p
 \vspace{-0.1em}
 \begin{block}{Reading the plots}
 \vspace{-2pt}
-{\scriptsize\emphc{Left:} monitor loss and mean train-step loss per segment, $\log_{10}$ scale; the cloud is re-simulated each segment.\\
+{\scriptsize\emphc{Left:} monitor loss and mean train-step loss per segment, $\log_{10}$ scale; the training states are re-simulated each segment.\\
 \emphc{Right:} mean savings fraction by cohort against the closed form $\beta_h$, matched to $1.0\times 10^{-5}$.}
 \vspace{-2pt}
 \end{block}
 \vspace{-5pt}
-{\scriptsize \texttt{04\_01} at \texttt{RUN\_MODE = "teaching"}, eleven minutes on a laptop CPU; mean relative Euler error $2.6\times10^{-4}$.  Use \texttt{"smoke"} ($\sim$2.5 min) in class.}
+{\scriptsize \texttt{04\_01} at \texttt{RUN\_MODE = "teaching"}, eleven minutes on a laptop CPU; mean relative Euler error $2.5\times10^{-4}$ on out-of-sample simulated states.  Use \texttt{"smoke"} ($\sim$2.5 min) in class.}
 \end{frame}
 
 
@@ -926,7 +926,7 @@ The points are the exact closed form. The DEQN should reproduce them cohort by c
 \includegraphics[width=0.98\textwidth]{figures/olg6_policy_scatter.pdf}
 
 \vspace{0.3em}
-{\small One panel per cohort: savings $a^h$ against cash-on-hand $\text{inc}^h$ on the simulated ergodic cloud. The closed form is a line through the origin with slope $\beta_h$; the DEQN should lie on it at every income level.}
+{\small One panel per cohort: savings $a^h$ against cash-on-hand $\text{inc}^h$ on the simulated ergodic set. The closed form is a line through the origin with slope $\beta_h$; the DEQN should lie on it at every income level.}
 
 \vspace{0.2em}
 {\footnotesize The ergodic gross return is about $0.69$, below one because $\delta\in\{0.5,0.9\}$, and the young still save two thirds of their wage: capital is the only store of value in this economy.}
@@ -946,7 +946,7 @@ The points are the exact closed form. The DEQN should reproduce them cohort by c
 \end{block}
 
 \begin{block}{Hands-on}
-Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Run \texttt{RUN\_MODE = "smoke"} ($\sim$2.5 min) now; the stored outputs are already the converged \texttt{"teaching"} run ($\sim$11 min on a laptop CPU), and \texttt{"production"} chases AGS Table~3 accuracy.  Both notebooks expose a \texttt{SAMPLING\_MODE = "simulation" / "exogenous"} switch (the persistent primary uses \texttt{"simulation"}, the companion \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb} uses \texttt{"exogenous"}); the model and loss are identical, only the training cloud differs.
+Open \texttt{04\_01\_OLG\_Analytic\_DEQN\_persistent.ipynb}.  Run \texttt{RUN\_MODE = "smoke"} ($\sim$2.5 min) now; the stored outputs are already the converged \texttt{"teaching"} run ($\sim$11 min on a laptop CPU), and \texttt{"production"} targets the accuracy of AGS (2022), Table~3.  Both notebooks expose a \texttt{SAMPLING\_MODE = "simulation" / "exogenous"} switch (the persistent primary uses \texttt{"simulation"}, the companion \texttt{04\_04\_OLG\_Analytic\_DEQN\_exogenous.ipynb} uses \texttt{"exogenous"}); the model and loss are identical, only the training states differ.
 \end{block}
 \end{frame}
 
@@ -999,7 +999,7 @@ Born and die with nothing.  Three markets clear: labor, capital, \emphc{and bond
 \end{axis}
 \end{tikzpicture}
 
-{\scriptsize \emphc{This is the model that breaks the closed form.}  CRRA kills the separation of II.6a;
+{\scriptsize \emphc{Both assumptions of II.6a fail here.}  CRRA removes the separation of return and choice;
 future wages give the young a reason to borrow, so the constraints bind and multipliers are back.}
 \end{columns}
 \end{frame}
@@ -1023,7 +1023,7 @@ u'(c_t^h)\,p_t = \beta\,\E{u'(c_{t+1}^{h+1})} + \ubr{\kappa\,\mu^h}{$\partial(k'
 \qquad (\lambda_b \text{ absent: } b' \text{ is not in that constraint})
 \]
 \vspace{-4pt}
-\begin{block}{The general rule, worth remembering}
+\begin{block}{The general rule}
 \vspace{-2pt}
 A multiplier enters each first-order condition weighted by \emphc{its constraint's derivative in that
 instrument}.  The collateral constraint contains both assets, so $\mu$ appears twice, scaled by $\kappa$
@@ -1048,8 +1048,7 @@ will pay on top.}
 \begin{block}{Stack everything, exactly as in II.7}
 \vspace{-6pt}
 \[
-\Loss(\theta) = \frac{1}{|D|}\,\frac{1}{4(A{-}1)+1}
-\sum_{x_j \in D}\Biggl[\;\sum_{h=1}^{A-1}
+\Loss(\theta) = \operatorname{mean}_{x_j \in D}\Biggl[\;\sum_{h=1}^{A-1}
 \underbrace{\bigl(e_{\text{REE},k}^{h}\bigr)^2 + \bigl(e_{\text{REE},b}^{h}\bigr)^2
 + \underbrace{\bigl(\lambda_b^h k'^h\bigr)^2 + \bigl(\mu^h q^h\bigr)^2}_{\text{KKT, product form}}}_{\text{per cohort}}
 \;+\; \Bigl(\underbrace{\textstyle\sum_h \hat b'^h}_{\text{bond market}}\Bigr)^2\Biggr]
@@ -1065,7 +1064,7 @@ will pay on top.}
 \]
 \vspace{-10pt}
 \begin{itemize}\itemsep0pt
-    \item minimal state $113$; input $240$ after engineered aggregates and transition probabilities
+    \item minimal state $113$; input $12+4A = 236$ after engineered aggregates and transition probabilities (AGS 2022, \S 4.3)
     \item output $4\times 55 + 1 = \emphc{221}$: $\hat k'^h$, $\hat\lambda_b^h$, $\hat b'^h$, $\hat\mu^h$, and the
           \emphc{bond price $\hat p_t$}, an equilibrium price the network must learn
     \item two ReLU layers of $1000$ units
@@ -1074,8 +1073,8 @@ will pay on top.}
 \begin{alertblock}{Nothing conceptually new}
 \vspace{-2pt}
 Part II had $A-1 = 5$ residuals per state.  This has $221$.  The recipe, the cost function, the
-simulate-and-train loop, and the diagnostics are \emph{identical}.  What changes is only how hard the
-optimisation is, and that turns out to matter a great deal.
+simulate-and-train loop, and the diagnostics are \emph{identical}.  What changes is how hard the
+optimisation is.
 \vspace{-2pt}
 \end{alertblock}
 \end{columns}
@@ -1096,7 +1095,7 @@ optimisation is, and that turns out to matter a great deal.
     \item Applied the DEQN recipe \emphc{three times}:
     \begin{itemize}\itemsep0pt
         \item \emphc{Part I\textonehalf:} Diamond's two-period model, one Euler equation, solved by hand and by the network.
-        \item \emphc{Part II:} the 6-agent Krueger--K\"ubler (2004) analytic model, validated against the closed form: savings rates to $10^{-5}$, mean relative Euler error $2.6\times 10^{-4}$.
+        \item \emphc{Part II:} the 6-agent Krueger--K\"ubler (2004) analytic model, validated against the closed form: savings rates to $10^{-5}$, mean relative Euler error $2.5\times 10^{-4}$.
         \item \emphc{Part III:} the 56-cohort benchmark of AGS (2022) read off the slides: CRRA, hump-shaped labor, persistent shocks, two assets, two constraints, adjustment costs.  Working code and trained weights: the \texttt{DeepEquilibriumNets} repository.
     \end{itemize}
     \item \emphc{Same recipe} every time: model, equilibrium conditions, cost, recursive equilibrium, network, training, validation.
@@ -1126,25 +1125,7 @@ optimisation is, and that turns out to matter a great deal.
 \end{frame}
 
 
-% --- Bridge to the Agentic-Programming Lecture ---
-\begin{frame}{Bridge: one more dimension to add}
-\footnotesize
-\textbf{What we just did.}  Cohort structure changed the size of the residual system, one Euler equation per
-generation, derived once from the Lagrangian and stacked into one loss, but not the training principle. The
-two-period model gave the idea, the six-cohort model a closed form to validate against, and the 56-cohort
-benchmark added what breaks the closed form: CRRA, future wages, and the borrowing and collateral constraints
-the young actually hit, encoded as product-form KKT residuals.
 
-\vspace{0.5em}
-\textbf{Next (Session 5): the international real business cycle model.}  OLG stacked equations along
-the \emph{age} dimension. IRBC stacks them along a \emph{country} dimension instead: $N$ Euler
-equations plus a world resource constraint on a $2N$-dimensional state. Same loss, same training
-loop, and the point where a tensor-product grid is no longer an option.
-
-\vspace{0.5em}
-\textbf{Bring with you.}  The architecture search and loss balancing from Session 3: IRBC is the
-first model in this course whose residual components genuinely live on different scales.
-\end{frame}
 
 
 \end{document}

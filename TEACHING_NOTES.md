@@ -25,14 +25,14 @@ Re-cuts applied:
 
 ## Timing
 
-405 frames across 540 minutes, about 1.33 minutes per frame overall, before hands-on time.
+404 frames across 540 minutes, about 1.34 minutes per frame overall, before hands-on time.
 
 | Session | Frames | Minutes | Pace |
 |---|---:|---:|---|
 | 1 Intro to DL | 57 | 90 | 1.58 comfortable |
 | 2 DEQNs | 54 | 75 | 1.39 comfortable |
 | 3 NAS + loss balancing | 56 | 55 | **0.98 tightest** |
-| 4 OLG | 37 | 60 | **1.62 the most slack** |
+| 4 OLG | 36 | 60 | **1.67 the most slack** |
 | 5 IRBC | 49 | 50 | 1.02 tight |
 | 6 Surrogates + GPs | 39 | 50 | 1.28 comfortable |
 | 7 SMM | 42 | 55 | 1.31 comfortable |
@@ -127,6 +127,30 @@ distribution rather than the loss, but it does not earn class time in a sixty-mi
 looseness at ~5x rather than 1000x, so it would still catch a genuine runaway, but its segment logs
 print no `repairs=` counter at all: there is no way to tell from the committed outputs whether that
 guard has ever fired. `05_01`'s stored diagnostics also contain a `FAIL capital fixed point`.
+
+**Audit pass on the OLG session, for correctness, coherence and generated-sounding prose.** Slides:
+the hand-over map named `compute_cost()`, which does not exist (`compute_residuals()`); II.10 claimed
+training stops when the loss falls below a target, which no notebook does; II.5 indexed the initial
+capital holdings $h=1..A-1$ when the cohorts holding capital are $h=2..A$; III.3 quoted the notebook's
+input dimension (240) for what is now a description of the paper (236); cash-on-hand was $W$ on two
+slides and $\text{inc}$ on four. All fixed, along with the informal phrasing I had put on III.1, III.2,
+III.3 and II.7a. The bridge slide to Session 5 was cut on Simon's call; the deck ends on the references.
+
+Notebooks: `04_04`'s sections 6 and 7 were byte-copies of `04_01`'s and described segment continuation
+and repairs that the exogenous notebook does not perform; a preset comment said "two hours" for a run
+that takes nine minutes; `04_03` had $k'_h$ where it needs $k'^{h+1}$; the README wrote a loss as
+`1e-06.2` and a 20,000-period simulation as 200k. The markdown of all four taught notebooks was
+rewritten: no meta-commentary about the notebook, no listicle summaries, the word "cloud" (which is
+not in AGS 2022) replaced by what is meant in each place, sections renumbered 1-10, notation matched to
+the slides. Outputs are untouched; every edit is source-only.
+
+**The finding worth remembering.** The README sold `04_01` versus `04_04` as showing that "where you
+draw the training states changes the solution". At six cohorts it does not: the box-trained `04_04`
+reaches $3.7\times10^{-4}$ mean Euler error on the ergodic set against `04_01`'s $2.5\times10^{-4}$, in
+68 s instead of 539 s, and is 22x better on the box. The box was chosen to contain the ergodic set, so of
+course it works. The lesson is now stated correctly in both READMEs and in `04_00` and `04_04`: a box
+works when you already know where the ergodic set is; at 56 cohorts nobody does, the box misses it by a
+factor of 1180 on the states the economy visits, and simulation is what finds it.
 
 **On the session order.** Architecture search and loss balancing come *before* the two large
 applications on purpose: IRBC's country-by-country Euler residuals and the cohort-stacked OLG system
