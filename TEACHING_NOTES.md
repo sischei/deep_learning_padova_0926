@@ -19,12 +19,12 @@ Re-cuts applied:
 | `02_DeepEquilibriumNets` | Dropped *Loss Balancing* and *Architecture Search*, these became Session 3, taught from dedicated decks. 77 → 54 frames. |
 | `06_Deep_Surrogates_and_GPs` | Dropped *Structural Estimation* (→ Session 7) and *Optimal Carbon Tax* / *Quantify: Uncertainty* (climate; no setup in this course). 75 → 39 frames. |
 | `07_Structural_Estimation_SMM` | Rewritten for Padova around two notebooks; the old exercise deck `07b` is folded in. |
-| `08_PINNs_Foundations` / `09_PINNs_Applications` | The full 57-frame deck, restored (Black–Scholes back in) and split across the two afternoon slots: sections I–III (36 frames) and IV–VI (25 frames). |
+| `08_PINNs_Foundations` / `09_PINNs_Applications` | The full-length PINN deck split across the two afternoon slots, sections I–III and IV–VI. Reviewed in September 2026: every notebook rebuilt around a reference (closed form or finite differences), figures written by the stored runs, the two DGM detail frames dropped, an inverse-problem run and the borrowing-constraint comparison added. |
 | `10_Wrap_Up` | **New.** Rewritten for a two-day arc; climate-specific slides replaced. |
 
 ## Timing
 
-376 frames across 540 minutes, about 1.44 minutes per frame overall, before hands-on time.
+379 frames across 540 minutes, about 1.42 minutes per frame overall, before hands-on time.
 
 | Session | Frames | Minutes | Pace |
 |---|---:|---:|---|
@@ -34,9 +34,9 @@ Re-cuts applied:
 | 4 OLG | 36 | 60 | 1.67 comfortable |
 | 5 IRBC | 49 | 50 | 1.02 tight |
 | 6 Surrogates + GPs | 29 | 50 | 1.72 comfortable |
-| 7 SMM | 24 | 55 | **2.29 the most slack** |
+| 7 SMM | 26 | 55 | **2.12 the most slack** |
 | 8 PINNs I, foundations | 36 | 55 | 1.53 comfortable |
-| 9 PINNs II, applications | 25 | 30 | 1.20 tight |
+| 9 PINNs II, applications | 26 | 30 | 1.15 tight |
 | Hands-on (09_04) |, | 12 | at the keyboard |
 | Wrap-up | 10 | 8 |, |
 
@@ -55,9 +55,11 @@ runs to 126 frames. The extract was kept for a while as optional self-study and 
 for ninety minutes, so restoring it in full (Black--Scholes included) and splitting it across two
 slots gives both halves more room than anything on Day 1, plus twelve minutes of hands-on at the keyboard.
 
-Session 9 is the tight one in the afternoon at 1.20 min/frame. If it runs over, the Black--Scholes
-frames (§V, 6 minutes) are the ones to drop --- notebook `09_02` covers the same ground and students
-can run it themselves --- rather than eating into the hands-on block.
+Session 9 is the tight one in the afternoon at 1.15 min/frame. If it runs over, the Black--Scholes
+frames (§V, 6 minutes) are the ones to drop, notebook `09_02` covers the same ground and students
+can run it themselves, rather than eating into the hands-on block. Keep the borrowing-constraint
+frames: they are the honest half of the case for PINNs, and the hands-on exercise ends on the same
+point (its Bonus B is an ill-posed problem the network solves with a loss of $10^{-6}$).
 
 **On the OLG session.** Reviewed twice, because OLG is Padova's research focus. The first pass
 checked correctness: the mathematics on the slides was right, but the 56-cohort notebook's policy head

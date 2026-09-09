@@ -13,7 +13,8 @@ day2/code/06_surrogates_and_gps/06_02_GP_Regression.ipynb
 day2/code/07_structural_estimation/07_01_SMM_One_Parameter.ipynb
 day2/code/08_pinns/08_01_ODE_PINN_ZeroBCs.ipynb
 day2/code/08_pinns/08_02_ODE_PINN_SoftVsHardBCs.ipynb
-day2/code/08_pinns/08_03_Cake_Eating_HJB_PINN.ipynb
+day2/code/09_pinns_applications/09_01_Cake_Eating_HJB_PINN.ipynb
+day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb
 "
 for nb in $NBS; do
   name=$(basename "$nb" .ipynb)

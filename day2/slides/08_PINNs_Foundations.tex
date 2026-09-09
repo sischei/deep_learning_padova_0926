@@ -2,7 +2,7 @@
 % Physics (Economics)-Informed Neural Networks (PINNs)
 % Summer School on AI for Economics and Finance
 % University of Padova, 23-24 September 2026
-% Duration: 90 minutes
+% Session 8 of the Padova suite, 55 minutes; Session 9 continues the block
 % ============================================================================
 
 \documentclass[aspectratio=169,11pt]{beamer}
@@ -195,7 +195,7 @@
 \end{frame}
 
 % --- Slide 3: Outline ---
-\begin{frame}{Outline}
+\begin{frame}{Outline of the PINN Block, Sessions 8 and 9}
 \begin{enumerate}
     \item \textbf{From DEQNs to PINNs}\\
     {\small Bridging discrete and continuous time; the PINN loss.}
@@ -267,7 +267,7 @@ economic and financial models.
 
 % --- Slide 5: Recall the DEQN Loss ---
 \begin{frame}{Recall: The DEQN Loss from Day 1}
-\textbf{Yesterday morning} (\texttt{02\_DEQN.pdf}) \textbf{we trained} a neural network $\mathcal{N}_\theta$ to satisfy
+\textbf{Yesterday morning} (\texttt{02\_DeepEquilibriumNets.pdf}) \textbf{we trained} a neural network $\mathcal{N}_\theta$ to satisfy
 economic equilibrium conditions in \emphc{discrete time}:
 \[
 \boxed{
@@ -342,7 +342,7 @@ Loss: PDE residual $\mathcal{R}(\cdot) = 0$
 
 \vspace{0.4em}
 \begin{block}{Where this sits in the course}
-Day 1 solved equilibrium conditions in \emphc{discrete} time with DEQNs. This afternoon we do the \emphc{continuous-time} counterpart. Coupling the HJB to a Kolmogorov forward equation, for heterogeneous agents, is the optional material in \texttt{day2/optional\_continuous\_time\_ha}.
+Day 1 solved equilibrium conditions in \emphc{discrete} time with DEQNs. This afternoon we do the \emphc{continuous-time} counterpart: this session builds the method on equations with known solutions, Session 9 applies it to the cake-eating HJB, to Black--Scholes, and to a consumption-savings problem with a borrowing constraint and a discrete income state, solved by finite differences and by a PINN side by side.
 \end{block}
 \end{frame}
 
@@ -600,37 +600,30 @@ PINNs evaluate the PDE residual at \emphc{randomly sampled} points, no grid requ
 \end{frame}
 
 % --- Slide 14b: Optimizer pipeline and FP64 ---
-\begin{frame}{Optimizer Pipeline: Adam $\to$ L-BFGS, in FP64}
+\begin{frame}{Adam First, Then L-BFGS, in Double Precision}
 \small
 \begin{columns}[T]
 \column{0.50\textwidth}
 \textbf{Two stages.}
-\begin{itemize}\itemsep0pt
-    \item \emphc{Adam} on resampled collocation: finds a basin.
-    \item \emphc{Deterministic L-BFGS} on a \emph{fixed} grid: closes the residual. Resampling per evaluation breaks the line search.
+\begin{itemize}\itemsep1pt
+    \item \emphc{Adam} on resampled points finds the basin; every step sees a different loss, so it cannot go below a noise floor.
+    \item \emphc{L-BFGS} on a \emph{fixed} set of points: deterministic objective, strong-Wolfe line search, the residual closes. Resampling inside it breaks the line search.
 \end{itemize}
-
-\vspace{0.3em}
-\textbf{Why FP64?}
-\begin{itemize}\itemsep0pt
-    \item $\tanh$-MLP second derivatives lose $\sim$7 digits in FP32.
-    \item The Wolfe search compares values at exactly that scale.
-    \item FP32 plateaus at the noise floor; FP64 keeps going.
-\end{itemize}
+\textbf{Measured, hard-BC run of \texttt{08\_02}}, max error: $1.0\times10^{-5}$ after 5{,}000 Adam steps, $2.6\times10^{-7}$ after L-BFGS on 200 fixed points.
 
 \column{0.48\textwidth}
 \begin{block}{Practical recipe}
 \footnotesize
-\textbf{1.}~Cast model + data to \texttt{float64}.\\
-\textbf{2.}~Adam, lr $10^{-3}$, a few k epochs, resampled collocation.\\
-\textbf{3.}~Freeze grid; \texttt{torch.optim.LBFGS} (strong-Wolfe).\\
-\textbf{4.}~Stop on residual stagnation.
+\textbf{1.}~\texttt{float64} for the model and every tensor.\\
+\textbf{2.}~Adam, lr $10^{-3}$, a few thousand steps, resampled points.\\
+\textbf{3.}~Freeze the points; \texttt{torch.optim.LBFGS}, \texttt{strong\_wolfe}.\\
+\textbf{4.}~Stop when the residual stagnates.
 \end{block}
-{\footnotesize Precision evidence: \href{https://arxiv.org/abs/2505.10949}{arXiv:2505.10949}.}
+\begin{alertblock}{Why double precision}
+\footnotesize
+Same run in \texttt{float32}: L-BFGS stops after 55 evaluations at a loss of $3\times10^{-9}$, the resolution of the objective, max error $6.8\times10^{-7}$; in \texttt{float64} it reaches $8\times10^{-10}$ and $2.6\times10^{-7}$. On a CPU it costs nothing. Used from \texttt{08\_02} on; precision analysis in \href{https://arxiv.org/abs/2505.10949}{arXiv:2505.10949}.
+\end{alertblock}
 \end{columns}
-
-\vspace{0.2em}
-{\footnotesize \emphc{Used in notebooks 04 and 05.} Report PDE residuals and solution diagnostics, not the optimizer label.}
 \end{frame}
 
 % --- Slide 15: PINN Architecture ---
@@ -752,36 +745,33 @@ For PINNs requiring $k$-th order derivatives, use activations that are at least 
 \]
 
 \column{0.50\textwidth}
-\textbf{After 5{,}000 Adam epochs:}
+\textbf{After 5{,}000 Adam steps} (\texttt{08\_02}'s recipe comes next):
 \begin{itemize}\setlength\itemsep{3pt}
-    \item Final loss $\approx 2\times10^{-5}$, of which the BC term is $\approx 9\times10^{-6}$
-    \item Max absolute error $1.9\times10^{-3}$, mean $1.8\times10^{-3}$
+    \item Loss $8\times10^{-6}$, of which the boundary term is $3\times10^{-7}$
+    \item Max absolute error $6.5\times10^{-4}$, mean $2.5\times10^{-4}$
 \end{itemize}
 
 \vspace{0.5em}
 \begin{block}{Read the error, not the loss}
 \footnotesize
-A small loss says the residual is small at the sampled points. Only the comparison against $\tfrac12x(1-x)$ says the \emph{solution} is right.
+A small loss says the residual is small at the sampled points. Only the comparison against $\tfrac12x(1-x)$ says the \emph{solution} is right. Here the loss is $10^{-5}$ and the error $10^{-3}$.
 \end{block}
 \end{columns}
 
 \vspace{0.4em}
-{\small\hfill\textbf{Notebook:} \texttt{01\_ODE\_PINN\_ZeroBCs}}
+{\small\hfill\textbf{Notebook:} \texttt{08\_01\_ODE\_PINN\_ZeroBCs}}
 \end{frame}
 
 % --- Slide 17b: Warm-up result, full width so the axes are readable ---
-\begin{frame}{Warm-up: PINN vs.\ Analytical Solution}
+\begin{frame}{Warm-up: the Error Is the Boundary Error, Carried Inside}
 \begin{center}
-\includegraphics[width=\linewidth,keepaspectratio]{figures/pinn_ode_warmup.png}
+\includegraphics[width=0.78\linewidth,keepaspectratio]{figures/pinn_ode_warmup.pdf}
 \end{center}
-
-\vspace{0.4em}
-{\footnotesize Left: the network on top of $y(x)=\tfrac12x(1-x)$, indistinguishable at this
-scale. Right: the absolute error, which is what actually tells you how well it did. Note the axis:
-it stays in a narrow band around $1.8\times10^{-3}$ across the domain, with no drift to the boundaries.}
+\vspace{-0.3em}
+{\footnotesize Left: the network on top of $y(x)=\tfrac12x(1-x)$. Right: the error $y_\theta - y$ (solid) and the straight line through its two boundary values (dotted). With the residual at $10^{-5}$, $e'' \approx 0$: the miss of $6.5\times10^{-4}$ at $x=1$ is carried through the domain, and the error deviates from the straight line by at most $1.2\times10^{-4}$. A soft penalty puts the boundary error everywhere. Part III removes it.}
 
 \vspace{-0.1em}
-{\small\hfill\textbf{Notebook:} \texttt{01\_ODE\_PINN\_ZeroBCs}}
+{\small\hfill\textbf{Notebook:} \texttt{08\_01\_ODE\_PINN\_ZeroBCs}}
 \end{frame}
 
 % --- Slide 18: Non-Zero BCs ---
@@ -1179,17 +1169,17 @@ def residual(model, x):
 \end{frame}
 
 % --- Slide 22: Soft vs Hard Comparison ---
-\begin{frame}{Soft vs.\ Hard BCs: Comparison}
+\begin{frame}{Soft vs.\ Hard BCs: the Same Run, Twice}
 \begin{center}
-\includegraphics[width=0.97\linewidth]{figures/pinn_softvshard.png}
+\includegraphics[width=0.92\linewidth]{figures/pinn_softvshard.pdf}
 \end{center}
 
 \begin{center}
-{\footnotesize Both fit the solution (left). The difference is the error (right, log scale): the soft-BC run sits near $10^{-3}$ \emphc{including at the endpoints}, while the hard-BC run falls to $10^{-7}$ at the boundary, exact there by construction.}
+{\footnotesize Same network, seed, points and steps; only the boundary treatment differs. Max error after 5{,}000 Adam steps: soft $3.5\times10^{-4}$, hard $1.0\times10^{-5}$ (dashed lines). After the L-BFGS stage: soft $3.2\times10^{-6}$, hard $2.6\times10^{-7}$ (solid curves). The hard run is exact at the endpoints by construction; the soft run's error is largest there.}
 \end{center}
 
 \vspace{-0.3em}
-{\footnotesize\hfill\textbf{Notebook:} \texttt{02\_ODE\_PINN\_SoftVsHardBCs}}
+{\footnotesize\hfill\textbf{Notebook:} \texttt{08\_02\_ODE\_PINN\_SoftVsHardBCs}}
 \end{frame}
 
 % --- Finger Exercise: Hard BCs ---
@@ -1244,17 +1234,12 @@ A = (1\!-\!x)\,g_L(y) + x\,g_R(y) + (1\!-\!y)\,g_B(x) + y\,g_T(x) - \text{corner
 % --- Slide 24: 2D Results ---
 \begin{frame}{2D Poisson: Results}
 \begin{center}
-\includegraphics[width=\linewidth]{figures/pinn_poisson2d_hard.png}
+\includegraphics[width=0.95\linewidth]{figures/pinn_poisson2d.pdf}
 \end{center}
+\vspace{-0.2em}
+{\footnotesize Left: the hard-BC solution. Middle and right: the absolute error of the hard and of the soft run, same network, seed, sampling and schedule (5{,}000 Adam steps, then L-BFGS on a fixed set). Relative $L^2$ error $\mathbf{3.7\times10^{-6}}$ against $1.4\times10^{-4}$: a factor \emphc{38}, at one fewer hyperparameter. The soft run's largest error, $1.6\times10^{-3}$, sits on the boundary; the hard run's boundary error is $10^{-16}$.}
 
-\vspace{0.2em}
-\begin{center}
-{\small Hard-BC PINN, analytical solution, and absolute error. Relative $L^2$ error
-$\;\mathbf{2.06\times 10^{-4}}$ against $\;1.36\times 10^{-3}$ for the tuned soft-penalty run:
-a \emphc{$6.6\times$} improvement, at one fewer hyperparameter.}
-\end{center}
-
-{\small\hfill\textbf{Notebook:} \texttt{03\_PDE\_PINN\_Poisson2D}}
+{\small\hfill\textbf{Notebook:} \texttt{08\_03\_PDE\_PINN\_Poisson2D}}
 \end{frame}
 
 % --- Slide 25: When to Use Which ---

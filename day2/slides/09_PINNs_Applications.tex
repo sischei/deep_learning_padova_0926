@@ -2,7 +2,7 @@
 % Physics (Economics)-Informed Neural Networks (PINNs)
 % Summer School on AI for Economics and Finance
 % University of Padova, 23-24 September 2026
-% Duration: 90 minutes
+% Session 9 of the Padova suite, 30 minutes of slides plus hands-on and wrap-up
 % ============================================================================
 
 \documentclass[aspectratio=169,11pt]{beamer}
@@ -195,7 +195,7 @@
 \end{frame}
 
 % --- Slide 3: Outline ---
-\begin{frame}{Outline}
+\begin{frame}{Outline of the PINN Block, Sessions 8 and 9}
 \begin{enumerate}
     \item \textbf{From DEQNs to PINNs}\\
     {\small Bridging discrete and continuous time; the PINN loss.}
@@ -243,8 +243,8 @@ deliberate choice between soft and hard boundary conditions.  Now we put it to w
 \vspace{0.5em}
 \textbf{VI.\ When to use one}~~\mbox{\small (10 min)}
 \begin{itemize}\setlength\itemsep{1pt}
-    \item PINNs vs.\ grid solvers; the other half, inverse problems
-    \item Failure modes, and the multi-component loss returning from Session 3
+    \item A borrowing constraint, where the grid wins and the residual does not tell you
+    \item Inverse problems: $\rho$ recovered from data; the multi-component loss, again
 \end{itemize}
 
 \vspace{0.5em}
@@ -321,11 +321,11 @@ V^\star(a) = \frac{\kappa^{-\gamma}}{1-\gamma}\,a^{1-\gamma}, \qquad c^\star(a) 
 
 % --- Slide 29: PINN for HJB (trial solution, hard BCs) ---
 \begin{frame}{PINN for the HJB Equation: Hard-BC Trial Solution}
-\textbf{Anchor + mask + scaled MLP.}  Let $x(a) = (a-a_{\min})/(a_{\max}-a_{\min}) \in [0,1]$ and $S$ a value-scale constant:
+\textbf{Anchor + mask + scaled MLP.}  Let $x(a) = (a-a_{\min})/(a_{\max}-a_{\min}) \in [0,1]$ on $[a_{\min}, a_{\max}] = [0.5, 5]$, and $S = |V^\star(a_{\min})|$:
 \[
 \hat V(a) \;=\; V^\star(a_{\min}) + x(a)\bigl[V^\star(a_{\max}) - V^\star(a_{\min})\bigr] \;+\; x(a)\bigl(1-x(a)\bigr)\,S\,f_\theta\bigl(x(a)\bigr).
 \]
-Endpoints are exact \emph{by construction}, so the boundary loss is identically zero and the optimizer focuses on the HJB residual only.
+Endpoints are exact \emph{by construction}, so there is no boundary loss. The HJB is first order, so one value pins the solution; wealth flows towards $a_{\min}$ ($\dot a = -0.01\,a$), which is where the anchor matters.
 
 \vspace{0.3em}
 \textbf{Consumption} via FOC, $\hat c(a) = (\hat V'(a))^{-1/\gamma}$, with softplus safeguard on $\hat V'$.
@@ -339,7 +339,7 @@ Endpoints are exact \emph{by construction}, so the boundary loss is identically 
 \]
 
 \vspace{0.2em}
-{\small \emphc{Pedagogical point:} a small MLP plus hard BCs beats a large gated net with a soft-BC penalty, because the boundary term no longer dominates the objective.}
+{\small \emphc{Scale:} $V^\star$ runs from $-1250$ to $-125$ on this domain. The factor $S$ lets the network work in units of order one; the residual is still of order $\rho V \sim 16$, which is why the Adam loss starts in the hundreds.}
 \end{frame}
 
 % --- Slide 30: DGM Architecture (optional / high-D) ---
@@ -409,128 +409,33 @@ For the 1D cake problem, the trial-solution MLP of the previous slide is simpler
 \end{columns}
 \end{frame}
 
-% --- Slide 31b: Inside a DGM layer ---
-\begin{frame}{Inside a DGM Layer}
-\begin{columns}[T]
-\column{0.56\textwidth}
-{\small $S_\ell\in\R^U$ is the depth-$\ell$ hidden state, initialised as $S_0=\tanh(Wx+b)$; $\odot$ is the Hadamard product; and $Z,G,R$ are sigmoid gates valued in $[0,1]$:}
-\vspace{0.2em}
-{\small\begin{align*}
-Z_\ell &= \sigma(U^z x + W^z S_\ell + b^z)\\
-G_\ell &= \sigma(U^g x + W^g S_\ell + b^g)\\
-R_\ell &= \sigma(U^r x + W^r S_\ell + b^r)\\
-H_\ell &= \tanh(U^h x + W^h (S_\ell \odot R_\ell) + b^h)\\
-S_{\ell+1} &= (1 - G_\ell)\odot H_\ell + Z_\ell \odot S_\ell
-\end{align*}}
-
-\column{0.42\textwidth}
-\begin{block}{Reading the gates}
-\footnotesize
-$R_\ell$ decides how much of the current state enters the candidate $H_\ell$.\\[4pt]
-$G_\ell$ and $Z_\ell$ then blend that candidate against the state being carried forward.\\[4pt]
-Every one of them sees $x$ directly.
-\end{block}
-
-\vspace{0.4em}
-{\footnotesize \textbf{Cost:} four weight matrices per layer instead of one, so roughly $4\times$ the parameters of a plain MLP of the same width.}
-\end{columns}
-\end{frame}
-
-% --- Slide 31: DGM Code ---
-\begin{frame}[fragile]{DGM Implementation (PyTorch)}
-\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
-class DGMNet(nn.Module):
-    def __init__(self, dim, layers=4, units=64):
-        super().__init__()
-        self.input = nn.Linear(dim, units)
-        self.z  = nn.ModuleList(nn.Linear(dim, units) for _ in range(layers))
-        self.wz = nn.ModuleList(nn.Linear(units, units) for _ in range(layers))
-        # ... similar for g, r, h gates
-        self.out = nn.Linear(units, 1)
-
-    def forward(self, x):
-        s = torch.tanh(self.input(x))
-        for l in range(len(self.z)):
-            z = torch.sigmoid(self.z[l](x) + self.wz[l](s))
-            g = torch.sigmoid(self.g[l](x) + self.wg[l](s))
-            r = torch.sigmoid(self.r[l](x) + self.wr[l](s))
-            h = torch.tanh(self.h[l](x) + self.wh[l](s * r))
-            s = (1 - g) * h + z * s
-        return self.out(s)
-\end{lstlisting}
-\end{frame}
-
 % --- Slide 32: HJB Residual Code ---
 \begin{frame}[fragile]{HJB Residual Implementation}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-def pde_residual(model, a):
-    a.requires_grad_(True)
-    V = model(a)                        # value function
-    V_a = torch.autograd.grad(          # V'(a) via autograd
-        V.sum(), a, create_graph=True)[0].squeeze(-1)
-
-    safe_Va = F.softplus(V_a) + 1e-6   # positivity guard
-    c = safe_Va.pow(-1.0 / gamma)       # FOC: optimal c
-    u_c = c.pow(1-gamma) / (1-gamma)    # flow utility
-
-    R = rho*V - (u_c + safe_Va*(r*a.squeeze(-1) - c))
-    return R                            # HJB residual
+def consumption_and_residual(V_of, a, rho_val=rho):
+    a = a.clone().requires_grad_(True)
+    V = V_of(a)                                  # trial solution
+    V_a = torch.autograd.grad(V, a,              # V'(a) by autograd
+        grad_outputs=torch.ones_like(V), create_graph=True)[0]
+    V_a = softplus(V_a) + 1e-8                   # positivity guard
+    c = V_a ** (-1.0 / gamma)                    # FOC: optimal c
+    R = rho_val * V - (c**(1-gamma)/(1-gamma) + V_a * (r*a - c))
+    return c, R                                  # policy, HJB residual
 \end{lstlisting}
 
 \vspace{0.1em}
-{\footnotesize The \texttt{softplus} safeguard prevents $V'(a)^{-1/\gamma}$ from blowing up if $V'(a) \leq 0$ during early training.}
+{\footnotesize The \texttt{softplus} safeguard prevents $V'(a)^{-1/\gamma}$ from blowing up if $V'(a) \leq 0$ during early training. \texttt{rho\_val} is an argument because the inverse problem, two frames on, makes it a trainable tensor.}
 \end{frame}
 
 % --- Slide 33: Cake-Eating Results ---
-\begin{frame}{Cake-Eating: the Closed-Form Benchmark}
-\begin{columns}[T]
-\column{0.48\textwidth}
+\begin{frame}{Cake-Eating: Against the Closed Form}
 \begin{center}
-\begin{tikzpicture}
-\begin{axis}[
-    width=5.8cm, height=4.5cm,
-    xlabel={Wealth $a$}, ylabel={$V(a)$},
-    xlabel style={font=\small}, ylabel style={font=\small},
-    tick label style={font=\tiny},
-    xmin=0.5, xmax=4, ymin=-1300, ymax=-100,
-    grid=major, grid style={gray!15},
-    legend style={font=\tiny, at={(0.98,0.02)}, anchor=south east},
-    axis lines=left,
-]
-    \addplot[thick, softblue, domain=0.5:4, samples=80] {-625/x};
-    \addlegendentry{Analytical $V^\star(a) = -625/a$}
-\end{axis}
-\end{tikzpicture}\\
-{\small Value function $V(a)$ (closed form)}
+\includegraphics[width=0.9\linewidth]{figures/pinn_cake_eating.pdf}
 \end{center}
+\vspace{-0.2em}
+{\footnotesize Stored run of \texttt{09\_01}: 2{,}000 Adam steps on 512 resampled wealth levels, then L-BFGS on 300 fixed points, in \texttt{float64}. Consumption within $4.3\times10^{-3}$ of $\kappa a$ everywhere (relative $L^2$ error $1.1\times10^{-3}$), the value function within $1.4\times10^{-4}$; the HJB residual is $10^{-2}$ against $\rho V \sim 16$. The closed form is $V^\star(a) = -625/a$, $c^\star(a) = 0.04\,a$.}
 
-\column{0.48\textwidth}
-\begin{center}
-\begin{tikzpicture}
-\begin{axis}[
-    width=5.8cm, height=4.5cm,
-    xlabel={Wealth $a$}, ylabel={$c(a)$},
-    xlabel style={font=\small}, ylabel style={font=\small},
-    tick label style={font=\tiny},
-    xmin=0.1, xmax=4, ymin=0, ymax=0.18,
-    grid=major, grid style={gray!15},
-    legend style={font=\tiny, at={(0.02,0.98)}, anchor=north west},
-    axis lines=left,
-]
-    \addplot[thick, softblue, domain=0.1:4, samples=80] {0.04*x};
-    \addlegendentry{Analytical $c^\star(a) = \kappa\, a$}
-\end{axis}
-\end{tikzpicture}\\
-{\small Consumption policy $c(a)$ (closed form)}
-\end{center}
-\end{columns}
-
-\vspace{0.1em}
-\begin{center}
-{\footnotesize These are the \emph{exact} solutions, the target the PINN is scored against. Classroom run: HJB loss $\approx 3\!\times\!10^{-4}$, consumption relative $L^2$ error $\approx 6\!\times\!10^{-3}$. The notebook overlays the fitted $\hat V$ and $\hat c$.}
-\end{center}
-
-{\small\hfill\textbf{Notebook:} \texttt{04\_Cake\_Eating\_HJB\_PINN}}
+{\small\hfill\textbf{Notebook:} \texttt{09\_01\_Cake\_Eating\_HJB\_PINN}}
 \end{frame}
 
 % --- Slide 34: Extensions ---
@@ -640,52 +545,23 @@ def pde_residual(model, S, t):
 \end{frame}
 
 % --- Slide 38: Black-Scholes Results ---
-\begin{frame}{Black--Scholes: the Closed-Form Benchmark}
-\begin{columns}[T]
-\column{0.55\textwidth}
+\begin{frame}{Black--Scholes: Against the Closed Form}
 \begin{center}
-\begin{tikzpicture}
-\begin{axis}[
-    width=6.8cm, height=5.2cm,
-    xlabel={Asset price $S$}, ylabel={Option price $V(S, 0)$},
-    xlabel style={font=\small}, ylabel style={font=\small},
-    tick label style={font=\small},
-    xmin=0, xmax=100, ymin=0, ymax=56,
-    grid=major, grid style={gray!15},
-    legend style={font=\footnotesize, at={(0.02,0.98)}, anchor=north west, draw=none, fill=none},
-    axis lines=left,
-]
-    \addplot[thick, gray, dashed, domain=0:100, samples=2, forget plot] coordinates {(50,0) (100,50)};
-    \addplot[gray, dashed, domain=0:50, samples=2] coordinates {(0,0) (50,0)};
-    \addlegendentry{payoff $\max(S-K,0)$}
-    \addplot[very thick, softblue] coordinates {
-      (0,0.000) (10,0.000) (20,0.000) (24,0.001) (26,0.002) (28,0.009)
-      (30,0.027) (32,0.069) (34,0.154) (36,0.307) (38,0.556) (40,0.930)
-      (42,1.451) (44,2.138) (46,2.997) (48,4.029) (50,5.225) (52,6.571)
-      (54,8.049) (56,9.640) (58,11.324) (60,13.085) (64,16.772) (68,20.605)
-      (72,24.520) (76,28.477) (80,32.457) (86,38.444) (92,44.440) (100,52.439)};
-    \addlegendentry{Black--Scholes, closed form}
-\end{axis}
-\end{tikzpicture}
+\includegraphics[width=0.9\linewidth]{figures/pinn_bs_price.pdf}
 \end{center}
+\vspace{-0.2em}
+{\footnotesize $K = 50$, $T = 1$, $r = 0.05$, $\sigma = 0.2$, $S_{\max} = 100$. Network $2 \to 64 \to 64 \to 64 \to 1$, $\tanh$; 2{,}500 Adam steps, then L-BFGS on one fixed design. At $t=0$ the price is within $0.06$ of the closed form on $[0, 100]$ (mean $0.03$); at the money $5.24$ against $5.23$. The largest error sits above the strike, where the terminal payoff has its kink. The gap between payoff and price is the \emphc{time value}.}
 
-\column{0.42\textwidth}
-{\small
-\textbf{Parameters:} $K = 50$, $T = 1$, $r = 0.05$, $\sigma = 0.2$, $S_{\max} = 100$.
+{\small\hfill\textbf{Notebook:} \texttt{09\_02\_Black\_Scholes\_PINN}}
+\end{frame}
 
-\vspace{0.2em}
-\textbf{Network:} 3 hidden layers, 64 units, $\tanh$; 2{,}500 Adam epochs, then 300 L-BFGS iterations.
-
-\vspace{0.3em}
-The gap between the curves is the \emphc{time value}: at the money the option is worth $5.23$, not $0$.
-
-\vspace{0.3em}
-Against this benchmark the notebook reports max absolute error $\approx 0.13$, mean $\approx 0.04$, and plots the PINN overlay.
-}
-\end{columns}
-
-\vspace{0.2em}
-{\small\hfill\textbf{Notebook:} \texttt{05\_Black\_Scholes\_PINN}}
+% --- Slide 38a: Greeks ---
+\begin{frame}{The Greeks Come Out of the Same Network}
+\begin{center}
+\includegraphics[width=0.9\linewidth]{figures/pinn_bs_greeks.pdf}
+\end{center}
+\vspace{-0.2em}
+{\footnotesize Delta $= V_S$ and Gamma $= V_{SS}$ are the first and second derivative of the network, the same \texttt{autograd} calls the residual used. No bumping, no re-solve. Delta is within $0.01$ of the closed form; Gamma, a second derivative of a network trained on a residual that itself contains $V_{SS}$, within $0.003$ of a peak of $0.044$.}
 \end{frame}
 
 % ============================================================================
@@ -705,39 +581,36 @@ Against this benchmark the notebook reports max absolute error $\approx 0.13$, m
 \end{frame}
 
 % --- Slide 38b2: Honest comparison against a classical solver ---
-\begin{frame}{Should You Use a PINN at All?}
-\textbf{On a 1D problem, finite differences win. Outright.}
+\begin{frame}{Should You Use a PINN at All? Not Here}
+\begin{center}
+\includegraphics[width=0.9\linewidth]{figures/pinn_pe_hjb.pdf}
+\end{center}
+\vspace{-0.3em}
+{\footnotesize \texttt{09\_03}: a household with a borrowing constraint and a two-state income, partial equilibrium, no closed form. The upwind finite-difference scheme converges in 13 iterations. The PINN, same economics, state constraint as an inequality at $\underline a$, ends at a loss of $4\times10^{-6}$ and value functions within 3\,\%, and a consumption policy \emphc{26\,\% off}: it consumes about its income at every wealth level, where the reference household with 20 units of wealth and $\rho > r$ dissaves 0.6 a year. The residual, $10^{-3}$, does not say so. The benchmark does.}
+\end{frame}
 
-\vspace{0.4em}
+% --- Slide 38b2b: why, and where the trade flips ---
+\begin{frame}{Why It Fails Here, and Where the Trade Flips}
+\small
 \begin{columns}[T]
-\column{0.52\textwidth}
-{\small Notebook \texttt{07} solves the same partial-equilibrium HJB both ways:}
-\begin{itemize}\setlength\itemsep{2pt}
-    \item \emphc{Upwind implicit FD}: 13 iterations on a 500-point grid, then the error is whatever the discretization gives you, and you can shrink it by refining.
-    \item \emphc{PINN}: thousands of epochs to reach $10^{-3}$--$10^{-2}$, with no comparable knob.
+\column{0.56\textwidth}
+\textbf{Why.} The HJB is first order and its derivative enters multiplied by savings:
+\[
+\rho V_j = u(c_j) + V_j'\,\underbrace{(ra + wz_j - c_j)}_{s_j} + \lambda_{jk}(V_k - V_j).
+\]
+\begin{itemize}\setlength\itemsep{1pt}
+    \item Small $s_j$ switches the derivative off, and many smooth $V$ nearly satisfy what is left: the residual can hardly tell the optimal policy from one that stays put.
+    \item The upwind scheme propagates values \emphc{along the flow}, which selects the constrained viscosity solution. A residual has no notion of direction.
+    \item Cake-eating worked because its endpoints were anchored; the inverse problem because the data anchored it.
 \end{itemize}
 
-\vspace{0.5em}
-{\small Anyone selling you PINNs as a universal replacement for a grid solver is overselling.}
-
-\vspace{0.3em}
-
-\column{0.45\textwidth}
+\column{0.41\textwidth}
 \begin{block}{Where the trade flips}
 \footnotesize
-A tensor grid needs $n^d$ points. At $n=50$:\\[3pt]
-\begin{tabular}{@{}rl@{}}
-$d=1$ & $50$ \\
-$d=2$ & $2{,}500$ \\
-$d=4$ & $6.3$ million \\
-$d=6$ & $1.6\times10^{10}$ \\
-\end{tabular}\\[4pt]
-Collocation cost is set by the \emph{sample size you choose}, not by $d$.
+A tensor grid needs $n^d$ points. At $n=50$: $d=1$: $50$; $d=2$: $2{,}500$; $d=4$: $6.3$ million; $d=6$: $1.6\times10^{10}$. Collocation cost is set by the sample size you choose, not by $d$.
 \end{block}
+{\footnotesize \emphc{Use a PINN when} the state space is high-dimensional, the equation is second order (a diffusion keeps the derivatives in play everywhere), the domain is irregular, or you need the solution \emph{and} its derivatives as one differentiable object. On a 1-D first-order HJB with a state constraint, use the grid.}
 \end{columns}
-
-\vspace{0.4em}
-{\footnotesize \emphc{Use a PINN when} the state space is high-dimensional, the domain is irregular, there are many discrete states, or you need the solution \emph{and} its derivatives as a differentiable object. Otherwise, use the grid.}
 \end{frame}
 
 % --- Slide 38b3: The other half of Raissi et al. ---
@@ -765,15 +638,36 @@ $\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\t
 \begin{itemize}\setlength\itemsep{3pt}
     \item $\mu$ is just \emphc{another set of trainable parameters}: one extra tensor, same optimizer, same loop.
     \item In economics $\mu$ is a \emphc{structural parameter}, risk aversion, a discount rate, an adjustment cost, and the data term is a moment condition.
-    \item This is estimation and solution in \emphc{one} optimization, rather than a solver nested inside an estimation loop.
+    \item Estimation and solution in \emphc{one} optimization, rather than a solver nested inside an estimation loop, as in Session 7 this morning.
 \end{itemize}
+\end{frame}
 
-\vspace{0.3em}
-{\footnotesize Connects directly to the deep-surrogate approach to structural estimation from Day 1.}
+% --- Slide 38b4: the inverse problem, run ---
+\begin{frame}{The Inverse Problem, Run: Recover $\rho$ From Data}
+\begin{columns}[T]
+\column{0.54\textwidth}
+\begin{center}
+\includegraphics[width=\linewidth]{figures/pinn_cake_inverse.pdf}
+\end{center}
+\column{0.44\textwidth}
+\small
+Cake-eating with $\rho$ unknown and consumption observed at 20 wealth levels:
+\[
+\ell(\theta,\rho) = \Bigl\|\tfrac{\mathcal{R}(\cdot;\theta,\rho)}{\rho_0 S}\Bigr\|^2
+ + \Bigl\|\tfrac{\hat c(a_k) - c^{\text{obs}}_k}{c^{\text{obs}}_k}\Bigr\|^2
+\]
+\begin{itemize}\setlength\itemsep{1pt}
+    \item $\log\rho$ is one more trainable tensor; same Adam $\to$ L-BFGS loop.
+    \item The data replace the boundary conditions: the network for $V$ is free.
+    \item From $\rho_0 = 0.08$: $\hat\rho = 0.0500$ with exact data, $0.0495$ with 1\,\% noise.
+\end{itemize}
+{\footnotesize\textbf{Notebook:} \texttt{09\_01}, Section 4}
+\end{columns}
 \end{frame}
 
 % --- Slide 38c: When PINNs fail, the multi-component loss again ---
 \begin{frame}{When PINNs Fail: the Multi-Component Loss, Again}
+\vspace{-0.2em}
 \textbf{The soft-BC loss is a weighted sum of residuals that live at different scales:}
 \[
 \ell_\theta = \underbrace{\lambda_{\text{pde}}\,\ell_{\text{pde}}}_{\text{interior}}
@@ -781,7 +675,7 @@ $\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\t
 \;+\; \underbrace{\lambda_{\text{ic}}\,\ell_{\text{ic}}}_{\text{initial}}
 \]
 
-\vspace{0.5em}
+\vspace{0.1em}
 \begin{columns}[T]
 \column{0.50\textwidth}
 \textbf{This is exactly the Day 1 pathology.}
@@ -796,22 +690,23 @@ $\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\t
 \small
 \textbf{1.}~\emphc{Non-dimensionalize} first, rescale so every residual is $O(1)$.\\[3pt]
 \textbf{2.}~Enforce \emphc{structurally} where you can: a hard-BC trial solution deletes $\ell_{\text{bc}}$ from the sum.\\[3pt]
-\textbf{3.}~Only then reach for adaptive weights.
+\textbf{3.}~Only then reach for adaptive weights.\\[2pt]
+\textbf{4.}~\emphc{Keep a benchmark}: in \texttt{09\_03} the loss fell to $4\times10^{-6}$ with the policy 26\,\% wrong.
 \end{block}
 \end{columns}
 
 \vspace{0.3em}
-{\footnotesize On Day 1 this bought $\approx 110\times$ over equal weighting, where the best adaptive scheme managed $2\times$ (\texttt{02\_DEQN.pdf}, Part IV). See Wang, Teng \& Perdikaris (2021).}
+{\footnotesize In Session 3 a change of units cut the total relative error from 0.861 to 0.011, a factor 75, where the best adaptive rule reached 0.448 (\texttt{03b\_Loss\_Balancing.pdf}). See Wang, Teng \& Perdikaris (2021).}
 \end{frame}
 
 % --- Slide 38d: Hands-on ---
 \begin{frame}{Hands-On: What to Run}
-\textbf{All seven notebooks are PyTorch, CPU-only, and self-contained.}\\[2pt]
-{\footnotesize Run them on \href{https://nuvolos.cloud}{nuvolos.cloud}, no local setup needed.}
+\vspace{-0.3em}
+\textbf{All seven notebooks are PyTorch, CPU-only, and self-contained.} {\footnotesize Run them on \href{https://nuvolos.cloud}{nuvolos.cloud}, no local setup needed.}
 
-\vspace{0.4em}
+\vspace{0.2em}
 \textbf{Session 8, the method}
-\begin{itemize}\setlength\itemsep{1pt}
+\begin{itemize}\setlength\itemsep{0pt}
     \item The simplest possible PINN: $y''=-1$ with zero BCs \hfill{\footnotesize\texttt{08\_01}}
     \item Soft penalty vs.\ hard trial solution, the core choice \hfill{\footnotesize\texttt{08\_02}}
     \item 2D Poisson: hard BCs by transfinite interpolation \hfill{\footnotesize\texttt{08\_03}}
@@ -819,17 +714,15 @@ $\ell(\theta,\mu) = \|\mathcal{D}_\mu[\mathcal{N}_\theta]\|^2 + \|\mathcal{N}_\t
 
 \vspace{0.3em}
 \textbf{Session 9, the applications}
-\begin{itemize}\setlength\itemsep{1pt}
+\begin{itemize}\setlength\itemsep{0pt}
     \item The first economic application: the cake-eating HJB \hfill{\footnotesize\texttt{09\_01}}
     \item Black--Scholes, Greeks for free by autodiff \hfill{\footnotesize\texttt{09\_02}}
     \item PE HJB with discrete income, against an FD benchmark \hfill{\footnotesize\texttt{09\_03}}
 \end{itemize}
 
-\vspace{0.1em}
 \begin{exampleblock}{Now: build one yourself \hfill{\footnotesize\texttt{09\_04}}}
 \footnotesize
-A fill-in-the-blank PINN for $u''+u=0$ on $[0,\pi]$, solution $\sin(x)$.  We start it together
-now; solutions follow each task in the same file, so you can finish it afterwards.
+A fill-in-the-blank PINN for $u''+u=0$ on $[0,\pi/2]$, $u(0)=0$, $u(\pi/2)=1$, solution $\sin x$; 12 minutes, solutions follow each task. Bonus at home: hard BCs, and why the same equation on $[0,\pi]$ with zero boundary values is ill-posed: every $c\sin x$ solves it, and the network returns $u \equiv 0$ at a loss of $10^{-6}$.
 \end{exampleblock}
 \end{frame}
 
@@ -883,7 +776,7 @@ HJB equations, Black--Scholes, and any continuous-time model. Scales to \emphc{h
 \url{https://sischei.github.io}
 
 \vspace{0.6cm}
-{\small Materials:~~\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}}
+{\small Materials:}\\{\scriptsize\href{https://github.com/sischei/deep_learning_padova_0926}{github.com/sischei/deep\_learning\_padova\_0926}}
 \end{center}
 
 \column{0.45\textwidth}
@@ -891,13 +784,13 @@ HJB equations, Black--Scholes, and any continuous-time model. Scales to \emphc{h
 \textbf{Companion Notebooks:}\\[8pt]
 {\small
 \begin{tabular}{rl}
-01 & ODE PINN (zero BCs) \\
-02 & Soft vs.\ hard BCs \\
-03 & 2D Poisson \\
-04 & Cake-eating HJB \\
-05 & Black--Scholes \\
-06 & Exercise: build a PINN \\
-07 & PE HJB: FD vs.\ PINN \\
+08\_01 & Smallest complete PINN \\
+08\_02 & Soft vs.\ hard BCs \\
+08\_03 & 2D Poisson \\
+09\_01 & Cake-eating, inverse \\
+09\_02 & Black--Scholes \\
+09\_03 & FD vs.\ PINN \\
+09\_04 & Build a PINN \\
 \end{tabular}
 }
 

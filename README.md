@@ -102,9 +102,9 @@ anything taught here. The exact package list is in [`requirements.txt`](requirem
 | 09:50 – 10:05 | *Coffee break* | | |
 | 10:05 – 11:00 | **7.** Structural estimation via simulated method of moments | [slides](day2/slides/07_Structural_Estimation_SMM.pdf) | [code](day2/code/07_structural_estimation) |
 | 11:00 – 14:00 | *Break* | | |
-| 14:00 – 14:55 | **8.** Economics-informed neural networks: foundations | [slides](day2/slides/08_PINNs_Foundations.pdf) | [code](day2/code/08_pinns) |
+| 14:00 – 14:55 | **8.** Physics-informed neural networks (PINNs) for economics: foundations | [slides](day2/slides/08_PINNs_Foundations.pdf) | [code](day2/code/08_pinns) |
 | 14:55 – 15:10 | *Coffee break* | | |
-| 15:10 – 16:00 | **9.** PINNs: economic and financial applications; hands-on, build a PINN from scratch; course wrap-up | [slides](day2/slides/09_PINNs_Applications.pdf) · [wrap-up](day2/slides/10_Wrap_Up.pdf) | [code](day2/code/09_pinns_applications) · [exercise](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) |
+| 15:10 – 16:00 | **9.** Physics-informed neural networks: economic and financial applications; hands-on, build a PINN from scratch; course wrap-up | [slides](day2/slides/09_PINNs_Applications.pdf) · [wrap-up](day2/slides/10_Wrap_Up.pdf) | [code](day2/code/09_pinns_applications) · [exercise](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) |
 
 ---
 
@@ -163,19 +163,24 @@ reference solution, simulated under common random numbers, and minimized on the 
 $\varrho$ first, then $(\beta, \varrho)$ jointly, where the criterion surface shows which moments
 identify which parameter.
 
-**8. Economics-informed neural networks: foundations.** From equilibrium residuals to PDE residuals
-,  the same idea with a different operator. The PINN loss on collocation points; automatic
-differentiation for PDEs and the second derivatives it has to produce; the training loop, Adam →
-L-BFGS schedules in FP64, and why tanh. A 1-D ODE warm-up, then the central design choice: soft
-penalties versus hard trial solutions that satisfy the boundary conditions by construction, and how
-to build one in 2-D. The 2-D Poisson equation end to end.
+**8. Physics-informed neural networks (PINNs) for economics: foundations.** A PINN is a neural network
+trained to satisfy a differential equation: the residual of the equation, evaluated by automatic
+differentiation, is the loss. From equilibrium residuals to PDE residuals, the same idea with a
+different operator. The PINN loss on collocation points; automatic differentiation for PDEs and the
+second derivatives it has to produce; the training loop, Adam then L-BFGS in double precision, and
+why tanh. A 1-D ODE warm-up whose error is the boundary error carried inside, then the central
+design choice: soft penalties versus hard trial solutions that satisfy the boundary conditions by
+construction, measured on the same run, and how to build one in 2-D. The 2-D Poisson equation end
+to end.
 
-**9. PINNs: economic and financial applications.** The cake-eating HJB with a scaled hard-BC trial
-solution, checked against its closed form; the Deep Galerkin Method as an optional architecture when
-the state space grows. Black–Scholes option pricing, with the Greeks for free by automatic
-differentiation. The other half of the method, inverse problems, recovering parameters from data.
-When PINNs fail, how to tell, and the multi-component loss problem returning from Session 3. Then
-twelve minutes at the keyboard building a PINN from scratch, and the course wrap-up.
+**9. Physics-informed neural networks: economic and financial applications.** The cake-eating HJB
+with a trial solution whose endpoint values are exact, checked against its closed form; the same
+equation as an inverse problem, the discount rate recovered from consumption data in one
+optimisation. Black–Scholes option pricing, with Delta and Gamma for free by automatic
+differentiation. Then the case against: a consumption-savings problem with a borrowing constraint
+and a two-state income, solved by finite differences and by a PINN, where the grid wins and the
+PINN's own residual does not say so. Twelve minutes at the keyboard building a PINN from scratch,
+and the course wrap-up.
 
 ---
 

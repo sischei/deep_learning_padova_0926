@@ -83,4 +83,7 @@ derivations, worked examples and exercise solutions. Everything below is supplem
   [`day2/readings`](day2/readings/Raissi_Perdikaris_Karniadakis_2019_PINNs.pdf). The founding paper.
 * Sirignano & Spiliopoulos (2018), *DGM: A Deep Learning Algorithm for Solving Partial Differential
   Equations*, arXiv:1708.07469.
+* Achdou, Han, Lasry, Lions & Moll (2022), *Income and Wealth Distribution in Macroeconomics: A
+  Continuous-Time Approach*, Review of Economic Studies 89(1), 45–86. The upwind finite-difference
+  scheme that `09_03` uses as its benchmark, and the state-constraint boundary condition.
 * Companion script, Chapter 7.
