@@ -100,7 +100,7 @@ anything taught here. The exact package list is in [`requirements.txt`](requirem
 |---|---|---|---|
 | 09:00 – 09:50 | **6.** Deep surrogates and Gaussian processes | [slides](day2/slides/06_Deep_Surrogates_and_GPs.pdf) | [code](day2/code/06_surrogates_and_gps) |
 | 09:50 – 10:05 | *Coffee break* | | |
-| 10:05 – 11:00 | **7.** Structural estimation via simulated method of moments | [slides](day2/slides/07a_Structural_Estimation_SMM.pdf) · [exercise](day2/slides/07b_SMM_Exercise.pdf) | [code](day2/code/07_structural_estimation) |
+| 10:05 – 11:00 | **7.** Structural estimation via simulated method of moments | [slides](day2/slides/07_Structural_Estimation_SMM.pdf) | [code](day2/code/07_structural_estimation) |
 | 11:00 – 14:00 | *Break* | | |
 | 14:00 – 14:55 | **8.** Economics-informed neural networks: foundations | [slides](day2/slides/08_PINNs_Foundations.pdf) | [code](day2/code/08_pinns) |
 | 14:55 – 15:10 | *Coffee break* | | |
@@ -151,15 +151,17 @@ than an age one. Why DEQNs scale here and tensor grids do not. Training on the e
 Euler-residual validation, irreversible investment through a Fischer-Burmeister residual, and a
 direct comparison of the trained policy with a sparse-grid time-iteration solution of the same model.
 
-**6. Deep surrogates and Gaussian processes.** Solve once, then reuse: structural parameters as
-pseudo-states. A deep surrogate of Black–Scholes with implied-volatility inversion as a controlled
-benchmark. Gaussian-process regression with built-in uncertainty quantification, and Bayesian active
-learning to place the next design point.
+**6. Deep surrogates and Gaussian processes.** A surrogate is a cheap stand-in for an expensive
+model: the idea on one concrete case, the Brock–Mirman model solved by a reference method with a
+Gaussian process and a network fit to the same labels. Gaussian-process regression from scratch, the
+kernel and the posterior in two lines, hyperparameters by marginal likelihood, and where a GP beats a
+network and where it does not.
 
-**7. Structural estimation via SMM.** The moment condition, the weighting matrix and the asymptotic
-distribution of the estimator. Why the inner-loop re-solve is the binding constraint and how a
-surrogate removes it. Scalar SMM for the persistence ϱ on Brock–Mirman, then joint (β, ϱ) estimation
-with identification diagnostics and the partial-identification ridge.
+**7. Structural estimation via SMM.** The moment criterion, and why every evaluation used to require
+solving the model. A policy network with the structural parameters as inputs, validated against the
+reference solution, simulated under common random numbers, and minimized on the fly: the persistence
+$\varrho$ first, then $(\beta, \varrho)$ jointly, where the criterion surface shows which moments
+identify which parameter.
 
 **8. Economics-informed neural networks: foundations.** From equilibrium residuals to PDE residuals
 ,  the same idea with a different operator. The PINN loss on collocation points; automatic
@@ -188,7 +190,7 @@ Each day carries hands-on notebooks marked as exercises, with full solutions pro
 | 4 | [Two-period OLG: finger exercise + warm-up notebook](day1/code/04_olg/04_00_OLG_Diamond_Warmup.ipynb) | in-slides |
 | 4 | [OLG savings rates, ergodic prices and lifecycle profiles](day1/code/04_olg/04_03_OLG_Exercise.ipynb) | in-notebook |
 | 5 | [IRBC: steady state, loss weighting, one re-weighted run](day1/code/05_irbc/05_03_IRBC_Exercise.ipynb) | in-notebook |
-| 7 | [Surrogate-based SMM](day2/slides/07b_SMM_Exercise.pdf) (five finger exercises) | [notebooks](day2/code/07_structural_estimation) |
+| 7 | [SMM finger exercise](day2/slides/07_Structural_Estimation_SMM.pdf) (in the deck) | [notebooks](day2/code/07_structural_estimation) |
 | 9 | [Build a PINN from scratch](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb), run in class | in-notebook |
 
 ## Further reading
@@ -208,8 +210,7 @@ Topics adjacent to this course that ten hours could not fit:
 * **Climate economics and integrated assessment models**, DICE with DEQNs, deep uncertainty
   quantification, and constrained Pareto-improving carbon taxes.
 * **Continuous-time heterogeneous agents**, the HJB–KFE system, continuous-time Aiyagari, and the
-  master equation. Slides and a runnable notebook are included in
-  [`day2/optional_continuous_time_ha`](day2/optional_continuous_time_ha), as optional self-study.
+  master equation.
 * **Agentic programming**, AI coding agents as research partners.
 
 All of these are covered in the companion script and in the full-length version of this course.

@@ -18,31 +18,30 @@ Re-cuts applied:
 |---|---|
 | `02_DeepEquilibriumNets` | Dropped *Loss Balancing* and *Architecture Search*, these became Session 3, taught from dedicated decks. 77 → 54 frames. |
 | `06_Deep_Surrogates_and_GPs` | Dropped *Structural Estimation* (→ Session 7) and *Optimal Carbon Tax* / *Quantify: Uncertainty* (climate; no setup in this course). 75 → 39 frames. |
-| `07a_Structural_Estimation_SMM` | The estimation section of the surrogates deck, standing alone. |
+| `07_Structural_Estimation_SMM` | Rewritten for Padova around two notebooks; the old exercise deck `07b` is folded in. |
 | `08_PINNs_Foundations` / `09_PINNs_Applications` | The full 57-frame deck, restored (Black–Scholes back in) and split across the two afternoon slots: sections I–III (36 frames) and IV–VI (25 frames). |
-| `Continuous_Time_HA` | **New,** then cut from the taught schedule. 26-frame extract from the two 60-frame continuous-time decks; now optional self-study under `day2/optional_continuous_time_ha/`. |
 | `10_Wrap_Up` | **New.** Rewritten for a two-day arc; climate-specific slides replaced. |
 
 ## Timing
 
-404 frames across 540 minutes, about 1.34 minutes per frame overall, before hands-on time.
+376 frames across 540 minutes, about 1.44 minutes per frame overall, before hands-on time.
 
 | Session | Frames | Minutes | Pace |
 |---|---:|---:|---|
 | 1 Intro to DL | 57 | 90 | 1.58 comfortable |
 | 2 DEQNs | 54 | 75 | 1.39 comfortable |
 | 3 NAS + loss balancing | 56 | 55 | **0.98 tightest** |
-| 4 OLG | 36 | 60 | **1.67 the most slack** |
+| 4 OLG | 36 | 60 | 1.67 comfortable |
 | 5 IRBC | 49 | 50 | 1.02 tight |
-| 6 Surrogates + GPs | 39 | 50 | 1.28 comfortable |
-| 7 SMM | 42 | 55 | 1.31 comfortable |
+| 6 Surrogates + GPs | 29 | 50 | 1.72 comfortable |
+| 7 SMM | 24 | 55 | **2.29 the most slack** |
 | 8 PINNs I, foundations | 36 | 55 | 1.53 comfortable |
 | 9 PINNs II, applications | 25 | 30 | 1.20 tight |
 | Hands-on (09_04) |, | 12 | at the keyboard |
 | Wrap-up | 10 | 8 |, |
 
-**Trim order if running long:** the GradNorm comparison in Session 3 → the Bayesian active-learning
-demo in Session 6 → the inverse-problems frames in Session 9.
+**Trim order if running long:** the GradNorm frame in Session 3 → the finger exercise in Session 6 → the
+inverse-problems frames in Session 9.
 
 Sessions 3 and 5 are the ones to watch. Session 3 has the least slack, and it is also the session
 where a live demo is most tempting: `03_02` loads its sweeps from `nas_results/` for both the smoke
@@ -52,7 +51,7 @@ in class.
 **On the Day 2 afternoon.** It is two hours of PINNs and nothing else. Continuous-time
 heterogeneous agents was originally Session 9 and was cut: fifty minutes was not enough to do the
 HJB--KFE system justice straight after a compressed PINN session, and the source deck it came from
-runs to 126 frames. The material survives intact as optional self-study. The PINN deck was designed
+runs to 126 frames. The extract was kept for a while as optional self-study and then removed from the repository to keep it focused. The PINN deck was designed
 for ninety minutes, so restoring it in full (Black--Scholes included) and splitting it across two
 slots gives both halves more room than anything on Day 1, plus twelve minutes of hands-on at the keyboard.
 
@@ -237,13 +236,37 @@ frame each on the DEQN results, and the `03_01` table on when random search actu
 search. Frame counts unchanged (27 and 29). Both decks' figures are written by the stored teaching
 runs, so every number on a results frame is in a stored output cell.
 
+**Sessions 6 and 7 pass, surrogates, Gaussian processes and SMM.** Both decks were leftovers of a
+90-minute lecture: the six-part roadmap, objectives about Sobol' indices and the carbon tax, a
+"three questions" table with two cut columns, a notation frame, and cross-references to parts that
+no longer existed; `07a` opened at Part II and spent four frames on the asymptotic sandwich and
+Hall–Inoue pseudo-true parameters; `07b` repeated `07a` with a different colour theme and frames on
+a BoTorch acquisition and a GP-over-moments layer that the notebooks no longer contained. The
+primer notebook trained a 200k-parameter network on Black–Scholes and its own table showed the
+surrogate losing to numpy. The SMM notebooks generated their "data" from the surrogate under the
+same shocks as every candidate, so the criterion was identically zero and the estimate exact by
+construction; nothing validated the surrogate against a solution of the model. Rebuilt around one
+shared reference solver, `day2/code/brock_mirman_reference.py` (endogenous grid method, cubic splines,
+Euler errors below 1e-6 at every corner of the parameter box, one to two seconds per solve): the
+primer fits a GP and a network to the same labels of a Brock–Mirman quantity of interest and
+measures both as the label budget grows; the GP notebook is the old one trimmed to its sound parts
+plus the two-input case; the SMM notebooks take their data from the reference solution, validate the
+pseudo-state policy network against it at four and five parameter values, simulate under common
+random numbers, minimize on the fly, and lay the surrogate's criterion over the reference solver's.
+Tuning notes: the policy network needs the log of capital as an input, a capital box wide enough for
+the ergodic set at ρ = 0.99 (which spans a factor of ten), width 128 and about 12,000 steps; sampling
+log z within each candidate's own ergodic range made things worse. The near-unit-root end ρ = 0.99 is
+the hardest and is reported as measured: mean consumption error $1.1\cdot10^{-3}$ and max $2.1\cdot10^{-2}$ at ρ = 0.99 in `07_01`, against $2.1\cdot10^{-4}$ mean at the best ρ. Decks: 06 has 29 frames, 07 has
+24 (from 39 and 21 + 21); `07b` is gone, its finger exercise replaced by the AR(1)-variance
+one in the deck.
+
 ## Compute
 
-No notebook in the taught sessions needs a GPU. The one candidate, the optional Aiyagari notebook, is
-not taught. Measured on the laptop CPU: Session 4, `04_00` 69 s, `04_01` 11 min at the teaching preset
+No notebook needs a GPU. Measured on the laptop CPU: Session 4, `04_00` 69 s, `04_01` 11 min at the teaching preset
 and 2.5 min at smoke, `04_04` 3.5 min, `04_02` 49 min (not taught); Session 5, `05_01` 3 min at the
 teaching preset and under a minute at smoke, `05_02` 3 min, `05_01` with ten countries 8 min; Session 3, `03_01` 10 min, `03_02` 29 min from scratch and 2 min from
-its committed caches, `03_03` 12 min, all at the teaching preset. The stored outputs are the teaching runs,
+its committed caches, `03_03` 12 min, all at the teaching preset. Sessions 6 and 7: `06_01` 6 min (220 reference solves at
+about 1.7 s each), `06_02` 30 s, `07_01` 4 min, `07_02` 6 min. The stored outputs are the teaching runs,
 so nobody has to reproduce them; in class students run `"smoke"`.
 
 ## Open items

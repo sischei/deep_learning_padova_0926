@@ -68,6 +68,9 @@ derivations, worked examples and exercise solutions. Everything below is supplem
   [`day2/readings`](day2/readings/Chen_Didisheim_Scheidegger_2026_Deep_Surrogates_for_Finance_JFE.pdf).
 * Rasmussen & Williams (2006), *Gaussian Processes for Machine Learning* , 
   [`day2/readings`](day2/readings/Rasmussen_Williams_2006_Gaussian_Processes_for_ML.pdf).
+* Carroll (2006), *The Method of Endogenous Gridpoints for Solving Dynamic Stochastic Optimization
+  Problems*, Economics Letters 91(3), 312–320. The method behind `day2/code/brock_mirman_reference.py`,
+  the reference solver that Sessions 6 and 7 validate their surrogates against.
   Chapters 2 and 5 are what the session uses.
 * Scheidegger et al., *Machine Learning for Dynamic Programming* , 
   [`day2/readings`](day2/readings/Scheidegger_etal_Machine_Learning_Dynamic_Programming.pdf).
@@ -81,16 +84,3 @@ derivations, worked examples and exercise solutions. Everything below is supplem
 * Sirignano & Spiliopoulos (2018), *DGM: A Deep Learning Algorithm for Solving Partial Differential
   Equations*, arXiv:1708.07469.
 * Companion script, Chapter 7.
-
-## Optional, continuous-time heterogeneous agents
-
-Not covered in the two days; see [`day2/optional_continuous_time_ha`](day2/optional_continuous_time_ha).
-
-* **Achdou, Han, Lasry, Lions & Moll (2022)**, *Income and Wealth Distribution in Macroeconomics: A
-  Continuous-Time Approach*, *Review of Economic Studies* 89(1), 45–86. The finite-difference benchmark.
-* Payne, lecture notes on continuous-time methods , 
-  [`day2/readings/Payne_continuous_time`](day2/readings/Payne_continuous_time): stochastic calculus,
-  the Kolmogorov forward equation, solving differential equations, optimal control, equilibrium, and
-  the Krusell–Smith master equation.
-* Gu, Laurière, Merkel & Payne (2024), *Global Solutions to Master Equations*, arXiv:2406.13726.
-* Companion script, Chapter 8.
