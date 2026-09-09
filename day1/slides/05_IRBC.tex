@@ -116,8 +116,9 @@
 \titlepage
 \vspace{-0.4cm}
 \begin{center}
-{\footnotesize Based on: Azinovic, Gaegauf \& Scheidegger (2022), \emph{International Economic Review} 63(4), 1471--1525.\\
-Brumm, Krause, Schaab \& Scheidegger (2022), ``Sparse Grids for Dynamic Economic Models,'' \emph{Oxford Research Encyclopedia of Economics and Finance}, Oxford University Press.}
+{\footnotesize Model and calibration: Brumm \& Scheidegger (2017), ``Using Adaptive Sparse Grids to Solve High-Dimensional Dynamic Models,'' \emph{Econometrica} 85(5), 1575--1612.\\
+Method: Azinovic, Gaegauf \& Scheidegger (2022), \emph{International Economic Review} 63(4), 1471--1525.\\
+Reference solution: Brumm, Krause, Schaab \& Scheidegger (2022), ``Sparse Grids for Dynamic Economic Models,'' \emph{Oxford Research Encyclopedia of Economics and Finance}.}
 \end{center}
 \end{frame}
 }
@@ -138,7 +139,7 @@ Brumm, Krause, Schaab \& Scheidegger (2022), ``Sparse Grids for Dynamic Economic
 \begin{itemize}
     \item \textbf{Part II.} DEQN formulation: states, architecture, loss, Gauss--Hermite, training algorithm
     \item \textbf{Part III.} Implementation: Keras code, convergence, policy functions, validation
-    \item Bridge to the production-code DEQN library
+    \item Bridge: from solving to estimating (Day 2)
 \end{itemize}
 \end{columns}
 \end{frame}
@@ -150,8 +151,8 @@ Brumm, Krause, Schaab \& Scheidegger (2022), ``Sparse Grids for Dynamic Economic
   \item Set up the International Real Business Cycle model with multi-country state space, capital adjustment costs, and irreversibility constraints
   \item Derive first-order conditions (Euler equations, consumption sharing) and convert KKT conditions into smooth complementarity functions (Fischer--Burmeister)
   \item Formulate the DEQN loss function for multi-country DSGE models and train the network on simulated paths
-  \item Implement policy functions in Keras and validate numerical solutions against theoretical steady states
-  \item Extend the framework to 4--100+ dimensional problems and perform sensitivity analysis on model parameters
+  \item Read the companion notebooks: training loop, policy drift, zero-shock steady state, and the comparison with a sparse-grid time-iteration solution
+  \item Explain why the state, the network outputs and the quadrature grow linearly in $N$, and where a grid method explodes instead
 \end{itemize}
 \end{frame}
 
@@ -181,13 +182,13 @@ $N$ heterogeneous countries linked through a world capital market. The IRBC mode
     \item \emphc{Consumption-correlation puzzle} (Backus--Kehoe--Kydland 1992): complete markets
           imply $\rho(c^i,c^j)\approx 1$; data say $\rho(c^i,c^j)<\rho(y^i,y^j)$.
     \item \emphc{Home bias} and the \emphc{welfare cost of missing insurance} (Heathcote \& Perri 2002).
-    \item Macro-financial transmission through adjustment costs, constraints, Pareto weights.
 \end{itemize}
 
 \vspace{0.2em}
 \textbf{The computation.}  State dimension is \emphc{linear in $N$}: $2N$, capital and TFP per country.
-Smooth but highly nonlinear; the planner's problem gives a clean target; the standard benchmark for
-projection methods (Krueger \& K\"ubler 2004; Brumm \& Scheidegger 2017).
+Smooth but nonlinear; the planner's problem gives a clean target. The benchmark of the JEDC comparison
+study (Den Haan, Judd \& Juillard 2011; Juillard \& Villemot 2011; Malin, Krueger \& K\"ubler 2011) and,
+up to $N = 50$, of Brumm \& Scheidegger (2017).
 
 \column{0.46\textwidth}
 \begin{center}
@@ -252,7 +253,7 @@ projection methods (Krueger \& K\"ubler 2004; Brumm \& Scheidegger 2017).
 
 % --- Slide 6: Model Overview ---
 \begin{frame}{Model Overview}
-\textbf{International Real Business Cycle (IRBC) model}: Backus, Kehoe \& Kydland (1992); here with the DEQN-style extensions of Azinovic, Gaegauf \& Scheidegger (2022):
+\textbf{International Real Business Cycle (IRBC) model}: Backus, Kehoe \& Kydland (1992), in the version of Brumm \& Scheidegger (2017), which follows Juillard \& Villemot (2011) and adds irreversible investment:
 
 \vspace{0.5em}
 \begin{itemize}
@@ -346,7 +347,7 @@ z^{j\prime} = \rho_z \, z^j + \sigma_e \bigl(\varepsilon^j + \varepsilon^{\text{
 \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
-    width=7cm, height=4.9cm,
+    width=6.6cm, height=4.9cm,
     xlabel={$t$}, ylabel={$z^j_t$},
     xlabel style={font=\small},
     ylabel style={font=\small},
@@ -374,7 +375,7 @@ z^{j\prime} = \rho_z \, z^j + \sigma_e \bigl(\varepsilon^j + \varepsilon^{\text{
 \begin{frame}{Capital Adjustment Costs}
 \begin{columns}[T]
 \column{0.48\textwidth}
-Changing the capital stock is \emphc{costly} ($\kappa = 0.5$):
+Changing the capital stock is \emphc{costly} ($\kappa = 0.5$, the paper's $\phi$):
 \[
 \Gamma^j = \frac{\kappa}{2}\, k^j \!\left(\frac{k^{j\prime}}{k^j} - 1\right)^{\!2}
 \]
@@ -391,7 +392,7 @@ Changing the capital stock is \emphc{costly} ($\kappa = 0.5$):
 \begin{center}
 \begin{tikzpicture}
 \begin{axis}[
-    width=7cm, height=5.5cm,
+    width=6.6cm, height=5.5cm,
     xlabel={$k'/k$}, ylabel={$\Gamma / k$},
     xlabel style={font=\small},
     ylabel style={font=\small},
@@ -608,6 +609,9 @@ Rearranging the Euler equation into \emphc{relative error} form:
     \item Residuals can be interpreted as \emphc{percentage errors} in the optimality condition
     \item A residual of $10^{-3}$ means the agent is off by 0.1\%
 \end{itemize}
+
+\vspace{0.3em}
+{\small Brumm \& Scheidegger (2017, eq.\ 43) report this residual without $\mu^j$ in the numerator, which is the same thing whenever the constraint is slack today; for the nonsmooth model they combine it with the relative constraint violation (their eq.\ 46).}
 \end{frame}
 
 % --- Slide 17: Aggregate Resource Constraint ---
@@ -686,11 +690,11 @@ $N$ & \textbf{States} & \textbf{Policies} & \textbf{Equations} \\
 % --- Finger Exercise: IRBC ---
 \begin{frame}{\exercisepause{} Finger Exercise: IRBC Euler Equations}
 \begin{exampleblock}{Exercise}
-Consider the 2-country IRBC model. Suppose we \emphc{double} the capital depreciation rate $\delta$ from the baseline $0.01$ to $0.02$.
+Suppose we \emphc{double} the depreciation rate $\delta$ from $0.01$ to $0.02$. The notebook recomputes $A_{\text{tfp}} = (1/\beta - 1 + \delta)/\zeta$ so that $k_{ss} = 1$.
 \begin{enumerate}
-    \item Without running any code: will the steady-state capital stock in each country \emph{increase} or \emph{decrease}? Why?
-    \item Will the optimal savings rate (investment / output) increase or decrease?
-    \item Open notebook \texttt{05\_01\_IRBC\_DEQN\_smooth.ipynb}, change $\delta$, and verify your prediction.
+    \item Hold $A_{\text{tfp}}$ fixed at its baseline value instead. Does steady-state capital rise or fall? Why?
+    \item In the notebook's normalization $k_{ss}$ stays at $1$. What changes instead? Compute the steady-state investment share $I_{ss}/Y_{ss}$ before and after.
+    \item Confirm your number from the parameter cell's printout of $A_{\text{tfp}}$ in \texttt{05\_01\_IRBC\_DEQN\_smooth.ipynb} (no training needed).
 \end{enumerate}
 \end{exampleblock}
 \end{frame}
@@ -698,9 +702,9 @@ Consider the 2-country IRBC model. Suppose we \emphc{double} the capital depreci
 \begin{frame}{Solution: IRBC Euler Equations}
 \begin{block}{Answer}
 \begin{enumerate}
-    \item Steady-state capital \emphc{decreases} \emph{if} $A_\mathrm{tfp}$ is held fixed at its $\delta = 0.01$ value: the Euler equation implies $r = 1/\beta - 1 + \delta$, so higher $\delta$ requires a higher marginal product of capital and (with diminishing returns) a lower $k^*$.  \textbf{Caveat:} the script's calibration normalizes $A_\mathrm{tfp} = (1/\beta - 1 + \delta)/\zeta$ so that $k_\mathrm{ss} = 1$ at the baseline; if you re-derive $A_\mathrm{tfp}$ at the new $\delta$, the normalized $k_\mathrm{ss}$ stays at $1$ and the change shows up in $A_\mathrm{tfp}$ itself and in the consumption--investment split.  The exercise asks for the \emph{$A_\mathrm{tfp}$-fixed} convention.
-    \item The savings rate \emphc{increases}. More capital depreciates each period, so a larger fraction of output must be reinvested just to maintain the (lower) capital stock.
-    \item In the notebook: changing $\delta$ from $0.01$ to $0.02$ should show the policy function shifting down (lower capital) and the investment share rising.
+    \item With $A_\mathrm{tfp}$ fixed, capital \emphc{falls}: the steady-state Euler equation is $\zeta A_\mathrm{tfp}\, k^{\zeta - 1} = 1/\beta - 1 + \delta$, so a higher $\delta$ needs a higher marginal product, and with diminishing returns that means a lower $k$. Here $k_{ss}$ drops from $1$ to $(0.0199/0.0298)^{1/0.64} \approx 0.53$.
+    \item With $k_{ss}$ pinned at $1$, the change lands in $A_\mathrm{tfp}$: it rises from $0.0558$ to $0.0836$. Output rises with it and depreciation doubles, so the investment share $I_{ss}/Y_{ss} = \delta/A_\mathrm{tfp}$ \emphc{rises} from $0.179$ to $0.239$; $c_{ss} = A_\mathrm{tfp} - \delta$ goes from $0.0458$ to $0.0636$.
+    \item The parameter cell prints \texttt{A\_tfp = 0.083613} after the change. The trained policy is not needed for any of this: the steady state is pinned by $\beta$, $\delta$, $\zeta$ alone.
 \end{enumerate}
 \end{block}
 \end{frame}
@@ -779,7 +783,7 @@ Consider the 2-country IRBC model. Suppose we \emphc{double} the capital depreci
 \begin{itemize}
     \item \textbf{Hidden layers:} 2 layers $\times$ 128 units with \emphc{tanh} activation
     \item \textbf{Output layer:} \emphc{linear} (zero-initialized); raw outputs pass through custom transforms
-    \item Transforms enforce the constraints: $k^{j\prime} > 0$ via $\exp\!\cdot\!\tanh$, $\lambda > 0$ via $\exp\!\cdot\!\tanh$, $\mu^j \geq 0$ via softplus (the smooth model omits $\mu^j$)
+    \item Transforms enforce the constraints: $k^{j\prime} = k^j \exp\{\bar g \tanh r\}$ in \texttt{05\_01}, $k^{j\prime} = (1-\delta)k^j + k^j\,\bar\iota\,\sigma(r)$ with $I^j \ge 0$ by construction in \texttt{05\_02}; $\lambda > 0$ via $\exp\!\cdot\!\tanh$; $\mu^j \geq 0$ via softplus (\texttt{05\_02} only)
     \item Total parameters: $(2N \cdot 128 + 128) + (128 \cdot 128 + 128) + (128 \cdot (2N+1) + 2N+1)$
 \end{itemize}
 \end{frame}
@@ -823,7 +827,7 @@ The notebooks keep a \emphc{linear} output and apply bounded transforms: $k^{j\p
 The loss is the \emphc{sum of squared residuals} across all equilibrium conditions; $\ell_\rho = 0$ iff every condition holds exactly.
 
 \vspace{0.15em}
-\textbf{Smooth benchmark} (notebook 04a):
+\textbf{Smooth benchmark} (notebook \texttt{05\_01}):
 \[
 \boxed{
 \ell^{\mathrm{smooth}}_\rho = \frac{1}{B}\sum_{i=1}^{B} \left[\sum_{j=1}^{N} \bigl(\text{Euler}_j^{(i)}\bigr)^2 + \bigl(\text{ARC}^{(i)}\bigr)^2\right]
@@ -831,7 +835,7 @@ The loss is the \emphc{sum of squared residuals} across all equilibrium conditio
 \]
 
 \vspace{0.1em}
-\textbf{Irreversibility extension} (notebook 04b): add the Fischer--Burmeister block,
+\textbf{Irreversibility extension} (notebook \texttt{05\_02}): add the Fischer--Burmeister block,
 \[
 \ell^{\mathrm{irrev}}_\rho = \ell^{\mathrm{smooth}}_\rho + \frac{1}{B}\sum_{i=1}^{B}\sum_{j=1}^{N}\bigl(\text{FB}_j^{(i)}\bigr)^2.
 \]
@@ -840,8 +844,8 @@ The loss is the \emphc{sum of squared residuals} across all equilibrium conditio
 with $B$ the batch size:
 \begin{itemize}\itemsep0pt
     \item $\text{Euler}_j = \dfrac{\beta\,\E{\lambda' \text{MPK}' - (1-\delta)\mu'} + \mu}{\lambda(1+\Gamma_{k'})} - 1$ \quad (smooth: $\mu \equiv 0$)
-    \item $\text{ARC} = \sum_j [Y^j + (1-\delta)k^j - k^{j\prime} - \Gamma^j - c^j]$
-    \item $\text{FB}_j = \mu^j + I^j - \sqrt{(\mu^j)^2 + (I^j)^2 + \varepsilon^2}$ \quad (\emph{04b only})
+    \item $\text{ARC} = \sum_j [Y^j + (1-\delta)k^j - k^{j\prime} - \Gamma^j - c^j] \,\big/\, \sum_j [Y^j + (1-\delta)k^j]$ \quad (unit-free, as the paper's eq.\ 44)
+    \item $\text{FB}_j = \text{FB}_\varepsilon\bigl(\mu^j/\lambda,\; I^j/k^j\bigr)$ on the unit-free pair, same zero set \quad (\texttt{05\_02} only)
 \end{itemize}
 \end{frame}
 
@@ -872,8 +876,7 @@ $N$ & \textbf{Shocks} & $Q$ & \textbf{Quad.\ nodes} \\
 \end{tabular}
 \end{center}
 
-\vspace{0.2em}
-{\footnotesize \textbf{What the companion notebooks do.} Both 04a and 04b use the \emphc{Stroud-3 monomial rule} ($2(N+1)$ nodes; $6$ for $N=2$), not the tensor-product Gauss--Hermite above; the latter is shown for contrast and is practical only at very low $N$.}
+{\scriptsize \textbf{What the companion notebooks do.} Both \texttt{05\_01} and \texttt{05\_02} use the monomial rule of Brumm \& Scheidegger (2017, Appendix C; Judd 1998, \S 7.5): $2(N+1)$ nodes at $\pm\sqrt{N+1}$ on each shock axis with equal weights, exact for polynomials of degree 3, so $6$ nodes for $N = 2$. The tensor-product rule above is shown for contrast.}
 \end{frame}
 
 % --- Slide 26: Computing Euler Expectation ---
@@ -934,13 +937,13 @@ $N$ & \textbf{Shocks} & $Q$ & \textbf{Quad.\ nodes} \\
 \begin{algorithmic}
 \footnotesize
 \STATE \textbf{Input:} Network $\mathcal{N}_\rho$, learning rate $\eta$, segments $S$, monomial nodes/weights
-\STATE Initialize $M$ trajectory heads $\bm{X}^{(1)}, \ldots, \bm{X}^{(M)}$ from a feasible starting cloud
+\STATE Initialize $M$ trajectory heads $\bm{X}^{(1)}, \ldots, \bm{X}^{(M)}$ from a box of feasible states
 \FOR{segment $s = 1, \ldots, S$}
-    \STATE Simulate: for $t = 1, \ldots, T$, sample shocks and step each head one period under $\mathcal{N}_\rho$
+    \STATE Simulate: for $t = 1, \ldots, T$, sample shocks and step each head one period under $\mathcal{N}_\rho$; a head that leaves the admissible box is replaced and counted (\texttt{repairs})
     \STATE Flatten the $M\!\cdot\!T$ recorded states into a training batch
     \FOR{pass $p = 1, \ldots, P$ \textbf{ over mini-batches of the segment}}
         \STATE Compute loss $\ell_\rho$ on the segment (smooth: Euler + ARC; irreversible: also FB)
-        \STATE Update: $\rho \leftarrow \rho - \eta\,\nabla_\rho \ell_\rho$ (Adam)
+        \STATE Update: $\rho \leftarrow \rho - \eta\,\nabla_\rho \ell_\rho$ (Adam; $\eta$ stepped down twice over the run)
     \ENDFOR
     \STATE Continue: $\bm{X}^{(m)} \leftarrow$ terminal state of trajectory $m$ (\emph{no reset to steady state})
     \STATE \textbf{Monitor:} policy drift on \texttt{X\_anchor}; flag stable when below tolerance
@@ -958,21 +961,19 @@ $N$ & \textbf{Shocks} & $Q$ & \textbf{Quad.\ nodes} \\
 \toprule
 $N$ & \textbf{States} & \textbf{Policies} & \textbf{NN params} & \textbf{Grid pts ($n\!=\!10$)} \\
 \midrule
-2 & 4 & 5 & $\sim$4.8K & $10^4$ \\
-4 & 8 & 9 & $\sim$5.3K & $10^8$ \\
-10 & 20 & 21 & $\sim$6.9K & $10^{20}$ \\
-50 & 100 & 101 & $\sim$17K & $10^{100}$ \\
-100 & 200 & 201 & $\sim$30K & $10^{200}$ \\
+2 & 4 & 5 & 17.8K & $10^4$ \\
+4 & 8 & 9 & 18.8K & $10^8$ \\
+10 & 20 & 21 & 21.9K & $10^{20}$ \\
+50 & 100 & 101 & 42.5K & $10^{100}$ \\
+100 & 200 & 201 & 68.1K & $10^{200}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\vspace{0.5em}
-\begin{itemize}
-    \item NN parameters grow \emphc{linearly} in $N$ (only input/output layers scale)
-    \item Grid methods grow \emphc{exponentially}: $10^{2N}$ points
-    \item DEQN training cost per step: $\mathcal{O}(|\rho| \cdot B \cdot Q^{N+1})$
-    \item For large $N$: replace tensor-product GH with monomial rules or QMC
+\vspace{0.1em}
+\begin{itemize}\itemsep1pt
+    \item NN parameters grow \emphc{linearly} in $N$ (two $128$-unit layers; only the input and output layers scale); grid points grow as $n^{2N}$
+    \item DEQN cost per update: $\mathcal{O}\bigl(|\rho| \, B \, (2N+3)\bigr)$ with the monomial rule, against $\mathcal{O}(|\rho| \, B \, Q^{N+1})$ with tensor-product Gauss--Hermite; at large $N$, quasi-Monte Carlo or sparse-grid quadrature
     \item Theoretical underpinning: \emphc{deep ReLU networks} beat the curse of dimensionality for sparse-grid-representable functions (Montanelli \& Du 2019)
 \end{itemize}
 \end{frame}
@@ -1054,27 +1055,27 @@ $\Rightarrow$ \textbf{Next:} implementation in TensorFlow/Keras and results.
 % --- Slide 33: Notebook Overview ---
 \begin{frame}{Notebook Overview}
 \scriptsize
-\textbf{Three notebooks accompany this lecture} (two in the L04 \texttt{code/} folder, one in the L05 folder; self-contained, all equations inline):
+\textbf{Three notebooks accompany this lecture}, all in \texttt{day1/code/05\_irbc/}:
 
 \vspace{0.2em}
 \begin{enumerate}\itemsep1pt
-    \item \texttt{05\_01\_IRBC\_DEQN\_smooth.ipynb}, \emph{smooth benchmark, in-class walk-through (this lecture's \texttt{code/})}
+    \item \texttt{05\_01\_IRBC\_DEQN\_smooth.ipynb}, \emph{smooth benchmark, in-class walk-through}
     \begin{itemize}\itemsep0pt
-        \item Parameters \& steady state, monomial quadrature; Keras network, production/consumption/adjustment-cost equations
-        \item Cost function (Euler + ARC), persistent-simulation training loop
-        \item Time-invariance check and zero-shock stochastic steady state
+        \item Parameters, monomial quadrature, Keras network, \texttt{compute\_residuals} (Euler + ARC), persistent-simulation training loop
+        \item Policy drift, zero-shock steady state, and the comparison with the sparse-grid time-iteration solution of Brumm \& Scheidegger (2017)
     \end{itemize}
 
-    \item \texttt{05\_02\_IRBC\_DEQN\_irreversible.ipynb}, \emph{irreversible-investment extension (this lecture's \texttt{code/})}
+    \item \texttt{05\_02\_IRBC\_DEQN\_irreversible.ipynb}, \emph{irreversible-investment extension}
     \begin{itemize}\itemsep0pt
-        \item KKT multipliers $\mu^j$ and feasibility-by-construction policy; Fischer--Burmeister complementarity loss
-        \item Same training loop and diagnostics as the smooth benchmark
+        \item KKT multipliers $\mu^j$, feasibility-by-construction policy, Fischer--Burmeister complementarity loss
+        \item Same training loop and diagnostics; where the constraint binds, checked against the sparse-grid solution
     \end{itemize}
 
     \item \texttt{05\_03\_IRBC\_Exercise.ipynb}, \emph{hands-on exercise}
     \begin{itemize}\itemsep0pt
-        \item Task 1: comparative statics on the deterministic steady state
-        \item Task 2: inverse-loss weighting for multi-component losses (ReLoBRaLo, from Session 3)
+        \item Task 1: steady-state comparative statics in the lecture's calibration, $A_{\text{tfp}}$ fixed against $A_{\text{tfp}}$ renormalized
+        \item Task 2: inverse-loss weighting (Session 3) on the residual magnitudes from \texttt{05\_02}'s training log
+        \item Task 3: a two-minute smoke run of \texttt{05\_01} with a re-weighted loss
     \end{itemize}
 \end{enumerate}
 \end{frame}
@@ -1099,8 +1100,8 @@ $k_{ss}$ & Steady-state capital & 1.00 & Normalization \\
 \end{tabular}
 \end{center}
 
-\vspace{0.3em}
-{\small Pareto weights: $\tau^j = (A_{\text{tfp}} - \delta)^{1/\gamma_j} = c_{ss}^{1/\gamma_j}$.  At the symmetric steady state $c_{ss} = A_{\text{tfp}} - \delta$ for every country, so $\lambda_{ss} = \tau^j (c_{ss})^{-1/\gamma_j} = 1$ shared across all $j$ regardless of heterogeneous $\gamma_j$.}
+\vspace{0.2em}
+{\scriptsize Pareto weights: $\tau^j = c_{ss}^{1/\gamma_j}$ with $c_{ss} = A_{\text{tfp}} - \delta$, so that $\lambda_{ss} = \tau^j c_{ss}^{-1/\gamma_j} = 1$ for every $j$ despite heterogeneous $\gamma_j$. Table II of the paper has $\tau^j = A_{\text{tfp}}^{1/\gamma_j}$, inherited from Juillard \& Villemot (2011), where $\delta = 0$ and hence $c_{ss} = A_{\text{tfp}}$.}
 \end{frame}
 
 % --- Slide 35: Steady State ---
@@ -1209,8 +1210,10 @@ c_{ss} &= Y_{ss} - I_{ss} \approx 0.0459
 % --- Slide 39: Fischer-Burmeister (Code) ---
 \begin{frame}[fragile]{Fischer--Burmeister Function}
 \begin{lstlisting}
-def fischer_burmeister(mu, I, eps=1e-4):
-    return mu + I - tf.sqrt(mu**2 + I**2 + eps**2)
+FB_EPS = 1e-4
+def fischer_burmeister(a, b):
+    return a + b - tf.sqrt(a * a + b * b + FB_EPS * FB_EPS)
+# applied to the unit-free pair (mu / lambda, I / k)
 \end{lstlisting}
 
 \vspace{0.3em}
@@ -1225,53 +1228,47 @@ The FB function is:
 \begin{itemize}
     \item \emphc{Differentiable} everywhere for $\varepsilon>0$ (unlike $\min(\mu, I)$)
     \item \emphc{Exact zero set} at $\varepsilon=0$: $\mu \geq 0$, $I \geq 0$, $\mu \cdot I = 0$
-    \item The small $\varepsilon$ prevents division-by-zero at the origin
+    \item The small $\varepsilon$ keeps the gradient finite at the origin, where $\sqrt{\mu^2 + I^2}$ is not differentiable
 \end{itemize}
 \end{frame}
 
 % --- Slide 40: Cost Function Structure ---
 \begin{frame}[fragile]{Cost Function Structure}
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
-@tf.function
-def compute_cost(states, nn):
-    policies = nn(states)
-    # Extract k', lambda, mu per country
-    # For each GH quadrature node:
-    #   Compute next state, evaluate nn,
-    #   accumulate Euler integrand
-    # Euler residual (relative error)
-    # ARC: sum resources - uses = 0
-    # FB: complementarity per country
-    loss = mean(euler**2 + arc**2 + fb**2)
-    return loss
+def compute_residuals(states, model):
+    kp, lamb, mu = policy(states, model)
+    # For each monomial node q:
+    #   next state (kp, z'_q), evaluate policy there,
+    #   accumulate the Euler integrand
+    # Euler residual (relative error), N columns
+    # ARC residual, one column, unit-free
+    # FB residual on (mu/lambda, I/k), 05_02 only
+    loss = (mean(euler**2) + mean(arc**2)
+            + mean(fb**2))
+    return loss, euler, arc, fb, kp, lamb, mu
 \end{lstlisting}
 
 \vspace{0.3em}
-\textbf{Key point:} the entire computation graph is inside \texttt{@tf.function} for \emphc{automatic differentiation} via \texttt{GradientTape}.
+\textbf{Key point:} the whole residual is a TensorFlow graph, so \texttt{GradientTape} differentiates the loss through the policy at today's state and at every next-period node.
 \end{frame}
 
 % --- Slide 41: Persistent-Simulation Training ---
 \begin{frame}{Persistent-Simulation Training}
-\vspace{-2pt}
-The companion notebooks train on \emphc{one continuing trajectory ensemble}, no Phase~1 / Phase~2 switch, no resets to steady state.
+\footnotesize
+The companion notebooks train on \emphc{one continuing trajectory ensemble}, with no resets to the steady state.
 
-\vspace{0.15em}
-\begin{itemize}
-    \item Maintain $M = \texttt{N\_TRAJECTORIES}$ stochastic trajectory heads $\bm{X}^{(1)}, \ldots, \bm{X}^{(M)}$.
-    \item Each \emphc{training segment}: simulate the heads forward for $T = \texttt{SIMULATION\_LENGTH}$ stochastic periods under the \emph{current} policy network; flatten into a training cloud of size $M\!\cdot\!T$; perform a fixed number of SGD passes.
-    \item Continue from the segment's terminal states: $\bm{X}_{\mathrm{start}} \leftarrow \bm{X}_{\mathrm{end}}$. The trajectory ensemble \emphc{co-evolves} with the policy.
-    \item A \texttt{SAMPLING\_MODE} switch (\texttt{simulation} vs \texttt{exogenous}) is available for ablations; the default \texttt{simulation} mode never sees a uniform burn-in.
+\begin{itemize}\itemsep1pt
+    \item Maintain $M = \texttt{N\_TRAJECTORIES}$ trajectory heads $\bm{X}^{(1)}, \ldots, \bm{X}^{(M)}$.
+    \item Each \emphc{segment}: simulate the heads for $T = \texttt{SIMULATION\_LENGTH}$ periods under the \emph{current} policy; flatten into $M\!\cdot\!T$ training states; run a fixed number of mini-batch passes.
+    \item Continue from the terminal states: $\bm{X}_{\mathrm{start}} \leftarrow \bm{X}_{\mathrm{end}}$. The ensemble \emphc{co-evolves} with the policy.
+    \item \texttt{SAMPLING\_MODE = "exogenous"} draws from a box instead. Here that fails: the network finds a policy with small residuals on the box whose capital explodes under simulation. The Euler equations alone admit non-transversal paths; the ergodic set rules them out.
 \end{itemize}
 
-\vspace{0.15em}
-\textbf{Why this works without a separate burn-in.}
-\begin{itemize}
-    \item The policy parameterization is feasibility-bounded by construction:
-    \begin{itemize}\itemsep1pt
-        \item smooth (04a): $k^{j\prime} = k^j \exp\{\bar g \tanh r_j(\bm{s})\}$ keeps $k^{j\prime} > 0$;
-        \item irreversible (04b): $k^{j\prime} = (1-\delta)k^j + I^j$ with $I^j \ge 0$ enforced via a sigmoid head.
-    \end{itemize}
-    \item Random initial weights cannot drive the simulation into infeasible states.
+\textbf{Why this works without a separate burn-in.} The policy is feasible by construction:
+\begin{itemize}\itemsep1pt
+    \item smooth (\texttt{05\_01}): $k^{j\prime} = k^j \exp\{\bar g \tanh r_j(\bm{s})\}$, positive, growth capped at $\bar g = 0.1$ per quarter;
+    \item irreversible (\texttt{05\_02}): $k^{j\prime} = (1-\delta)k^j + \max\{0,\, \tilde k^{j\prime} - (1-\delta)k^j\}$, smoothed, with $\tilde k^{j\prime}$ the smooth head;
+    \item a head that still leaves the admissible box is replaced and counted (\texttt{repairs}, zero in every stored run).
 \end{itemize}
 \end{frame}
 
@@ -1281,7 +1278,7 @@ The companion notebooks train on \emphc{one continuing trajectory ensemble}, no 
 
 \vspace{0.2em}
 \begin{itemize}
-    \item Evaluate the policy on a fixed anchor cloud \texttt{X\_anchor} after each monitoring interval.
+    \item Evaluate the policy on a fixed set of holdout states \texttt{X\_anchor} after each monitoring interval.
     \item Report \texttt{policy\_drift\_rms} and \texttt{policy\_drift\_max}.
     \item When both fall below \texttt{TIME\_INVARIANCE\_TOL\_RMS} / \texttt{\_MAX}, the run is flagged \emphc{stable}.
 \end{itemize}
@@ -1292,88 +1289,72 @@ The companion notebooks train on \emphc{one continuing trajectory ensemble}, no 
 \vspace{0.2em}
 \begin{itemize}
     \item All paths should converge to a common point.
-    \item In a sensible SSS: $I^j \approx \delta\,k^j$ (investment replaces depreciation) and, in 04b, the irreversibility multiplier $\mu^j \approx 0$.
+    \item In a sensible SSS: $I^j \approx \delta\,k^j$ (investment replaces depreciation) and, in \texttt{05\_02}, the irreversibility multiplier $\mu^j \approx 0$.
 \end{itemize}
 \end{frame}
 
 % --- Slide 43: Persistent-Simulation Training: What to Monitor ---
 \begin{frame}{Persistent-Simulation Training: What to Monitor}
-With a single training pipeline (no Phase~1/Phase~2 switch), \emph{four} signals carry the whole convergence story:
+Four signals carry the convergence story:
 
 \vspace{0.3em}
 \begin{enumerate}\itemsep3pt
-    \item \textbf{Total loss} decays monotonically across training segments (the \emph{loss-vs-segment} panel in the notebooks).
-    \item \textbf{Per-residual mean magnitudes}: \texttt{mean\_abs\_euler}, \texttt{mean\_abs\_arc}, and (in 04b) \texttt{mean\_abs\_fb}, all fall below the prescribed tolerance.
-    \item \textbf{Policy drift on the anchor cloud} crosses from \emphc{moving} to \emphc{stable}: only then is the policy time-invariant in the recursive sense.
-    \item \textbf{Zero-shock SSS} converges from dispersed feasible starts to a common point with $I^j \to \delta\,k^j$ and (in 04b) $\mu^j \to 0$.
+    \item \textbf{Total loss} falls across training segments (the \emph{loss-vs-segment} panel in the notebooks), with a visible drop at each learning-rate step.
+    \item \textbf{Per-residual mean magnitudes}: \texttt{mean\_abs\_euler}, \texttt{mean\_abs\_arc}, and (in \texttt{05\_02}) \texttt{mean\_abs\_fb}.
+    \item \textbf{Policy drift on the holdout states} crosses from \emphc{moving} to \emphc{stable}: only then has the recursive policy stopped changing.
+    \item \textbf{Zero-shock SSS} converges from dispersed feasible starts to a common point with $I^j \to \delta\,k^j$ and (in \texttt{05\_02}) $\mu^j \to 0$.
 \end{enumerate}
 
 \vspace{0.4em}
-{\footnotesize \emph{Historical note.}  An earlier four-approach comparison (uniform vs simulation-only vs two-phase vs ReLoBRaLo) on the same model is preserved in \texttt{figures/irbc\_4approach\_loss.pdf}; it is \emph{not} produced by the current notebooks, which run a single persistent-simulation pipeline.}
+{\footnotesize A fifth, external check closes both notebooks: the trained policy is evaluated at the same states as the sparse-grid time-iteration solution of Brumm \& Scheidegger (2017), and the two are compared directly.}
 \end{frame}
 
 % --- Slide 44: Convergence: Per-Equation ---
-\begin{frame}{Convergence: Per-Equation Residuals}
-\textbf{After training}: we evaluate residuals on a test cloud (smooth + irreversible):
+\begin{frame}{Convergence: Measured Residuals}
+\footnotesize
+Stored \texttt{teaching} runs, laptop CPU. Residuals evaluated on states the trained policy visits (ergodic set) and on the paper's box $[0.8,1.2]^2 \times [-0.16, 0.16]^2$.
 
-\vspace{0.5em}
+\vspace{0.3em}
 \begin{center}
-\begin{tabular}{lcc}
+\begin{tabular}{llrrrr}
 \toprule
-\textbf{Residual} & \textbf{Mean $|\cdot|$} & \textbf{Max $|\cdot|$} \\
+\textbf{Notebook} & \textbf{States} & \textbf{mean $|$Euler$|$} & \textbf{max $|$Euler$|$} & \textbf{mean $|$ARC$|$} & \textbf{$|k'_{\text{DEQN}} - k'_{\text{SG}}|/k'$} \\
 \midrule
-Euler (country 1) & $\sim 10^{-4}$ & $\sim 10^{-3}$ \\
-Euler (country 2) & $\sim 10^{-4}$ & $\sim 10^{-3}$ \\
-ARC & $\sim 10^{-4}$ & $\sim 10^{-3}$ \\
-\midrule
-\multicolumn{3}{l}{\textit{Irreversibility extension (notebook 04b only):}} \\
-FB (country 1) & $\sim 10^{-5}$ & $\sim 10^{-4}$ \\
-FB (country 2) & $\sim 10^{-5}$ & $\sim 10^{-4}$ \\
+\texttt{05\_01} smooth & ergodic set & $2.1 \times 10^{-5}$ & $3.5 \times 10^{-4}$ & $4.7 \times 10^{-5}$ & $8.5 \times 10^{-5}$ \\
+\texttt{05\_01} smooth & paper box & $2.7 \times 10^{-4}$ & $3.0 \times 10^{-3}$ & $9.6 \times 10^{-4}$ & $1.1 \times 10^{-3}$ \\
+\texttt{05\_02} irreversible & ergodic set & $2.0 \times 10^{-5}$ & $3.6 \times 10^{-4}$ & $4.6 \times 10^{-5}$ & $5.4 \times 10^{-4}$ \\
+\texttt{05\_02} irreversible & paper box & $2.4 \times 10^{-3}$ & $1.8 \times 10^{-2}$ & $2.1 \times 10^{-3}$ & $2.9 \times 10^{-3}$ \\
+\texttt{05\_01}, $N = 10$ & ergodic set & $8.3 \times 10^{-5}$ & $5.8 \times 10^{-4}$ & $3.4 \times 10^{-5}$ & \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \vspace{0.3em}
-\begin{itemize}
-    \item Euler residuals $< 10^{-3}$ $\Rightarrow$ policy is accurate to within 0.1\%
-    \item FB residuals near zero $\Rightarrow$ complementarity is well satisfied (04b only)
-    \item These are \emphc{relative errors}, interpretable as percentage deviations
+\begin{itemize}\itemsep1pt
+    \item All residuals are \emphc{relative errors}: $10^{-4}$ is a 0.01\% wedge in the optimality condition.
+    \item The last column compares the DEQN's $k^{j\prime}$ with the adaptive-sparse-grid time-iteration solution at the same states; the sparse grid's own Euler error under the notebooks' quadrature rule is $8.4 \times 10^{-5}$ on the box and $2.4 \times 10^{-5}$ on its path, so on the ergodic set the two methods are equally accurate, and off it the sparse grid, which was solved on the whole box, is the better one.
+    \item Every number is printed by a stored notebook cell.
 \end{itemize}
 \end{frame}
 
 % --- Slide 45: Policy Functions ---
-\begin{frame}{Policy Functions}
-\textbf{After training,} we visualize the learned policies:
-
-\vspace{0.3em}
+\begin{frame}{What the Notebooks Plot}
+\footnotesize
 \begin{columns}[T]
 \column{0.48\textwidth}
-\begin{itemize}
-    \item \textbf{Capital policy} $k^{j\prime}$ vs.\ $k^j$:
-    \begin{itemize}
-        \item Near 45-degree line (close to replacement)
-        \item Higher investment when TFP is high
-    \end{itemize}
-    \vspace{0.3em}
-    \item \textbf{Shadow price} $\lambda$ vs.\ $z^j$:
-    \begin{itemize}
-        \item Decreasing in productivity (more output $\Rightarrow$ lower scarcity)
-    \end{itemize}
+\textbf{Both notebooks}
+\begin{itemize}\itemsep2pt
+    \item \textbf{Capital policy} $k^{j\prime}$ against $k^j$ on the simulated states: just off the 45-degree line, slope below one; the crossing is the stochastic steady state.
+    \item \textbf{The simulated $(k^1, k^2)$ states}: an ellipse along the diagonal. The common shock moves both stocks together, the idiosyncratic shocks spread them.
+    \item \textbf{Loss, residuals and policy drift} against the training segment.
 \end{itemize}
 
 \column{0.48\textwidth}
-\begin{itemize}
-    \item \textbf{Multiplier} $\mu^j$ vs.\ $k^j$:
-    \begin{itemize}
-        \item Near zero when $k$ is low (investment is positive)
-        \item Positive when $k$ is high (irreversibility binds)
-    \end{itemize}
-    \vspace{0.3em}
-    \item \textbf{Investment} $I^j$ vs.\ $k^j$:
-    \begin{itemize}
-        \item Positive most of the time
-        \item Occasionally zero (constraint active)
-    \end{itemize}
+\textbf{\texttt{05\_02} only}
+\begin{itemize}\itemsep2pt
+    \item \textbf{Complementarity scatter} $I^j/k^j$ against $\mu^j/\lambda$: every point on one of the two axes.
+    \item At this calibration ($\delta = \sigma = 1\%$ a quarter) the constraint never binds on the simulated path, in either method. On uniform draws from the paper's box the sparse grid binds on 25\% of (state, country) pairs; the DEQN, trained on simulated states only, binds on 23\% and agrees with it for 97\% of pairs: the smoothed maximum in its head carries the kink, though its multipliers there are untrained.
+    \item Hence Brumm \& Scheidegger (2017) evaluate the nonsmooth model on uniform draws over the box.
 \end{itemize}
 \end{columns}
 \end{frame}
@@ -1391,29 +1372,29 @@ FB (country 2) & $\sim 10^{-5}$ & $\sim 10^{-4}$ \\
 \end{itemize}
 
 \vspace{0.2em}
-{\footnotesize Reconnects with the \emphc{consumption-correlation puzzle} from slide~7: complete markets predict $\rho(c^1,c^2)\!\approx\!1$, but in data $\rho(c^1,c^2)<\rho(y^1,y^2)$; closing the gap needs incomplete markets or frictions.}
+{\footnotesize Reconnects with the \emphc{consumption-correlation puzzle} from the opening slide of Part I: complete markets predict $\rho(c^1,c^2)\!\approx\!1$, but in data $\rho(c^1,c^2)<\rho(y^1,y^2)$; closing the gap needs incomplete markets or frictions.}
 
 \vspace{0.2em}
-\textbf{Trade balance:}
+\textbf{Trade balance} (one line to add if you want it):
 \begin{itemize}\itemsep1pt
     \item $\text{TB}^j = Y^j - c^j - I^j - \Gamma^j$ ($>0$ when $j$ exports)
-    \item Sums to zero across countries
+    \item Sums to zero across countries by the ARC
 \end{itemize}
 
 \column{0.48\textwidth}
 \textbf{Ergodic distribution:}
 \begin{itemize}\itemsep1pt
-    \item Scatter plot of $(k^1, k^2)$ over long simulation
-    \item Should concentrate near $(k_{ss}, k_{ss})$
-    \item Correlation structure reveals risk-sharing patterns
+    \item The $(k^1, k^2)$ scatter over the simulated states
+    \item Concentrated around $(k_{ss}, k_{ss}) = (1, 1)$; each $k^j$ stays within $[0.83, 1.23]$ over 8{,}192 simulated states
+    \item Elongated along the diagonal: the common shock dominates
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{Complementarity check:}
+\textbf{Complementarity check (\texttt{05\_02}):}
 \begin{itemize}\itemsep1pt
-    \item Plot $\mu^j$ vs.\ $I^j$
-    \item Should lie on the axes: $\mu = 0$ or $I = 0$
-    \item Fraction of time constraint binds
+    \item Scatter of $\mu^j/\lambda$ against $I^j/k^j$
+    \item Points on the axes: $\mu = 0$ or $I = 0$
+    \item $\mu \cdot I$ is the headline number: where the constraint is slack, $\text{FB}_\varepsilon \approx \mu/\lambda$, which sits at the floor of the softplus head
 \end{itemize}
 \end{columns}
 \end{frame}
@@ -1455,8 +1436,8 @@ FB (country 2) & $\sim 10^{-5}$ & $\sim 10^{-4}$ \\
 \begin{frame}{Bridge: from solving to estimating}
 \footnotesize
 \textbf{What we leave with today.}  An IRBC DEQN trained with a single persistent-simulation
-pipeline and equal loss weights: the same recipe scales from $N=2$ to $N=10$ countries with no
-architectural change.  NAS-tuned width and ReLoBRaLo-balanced loss components, from Session 3 this
+pipeline and equal loss weights, checked against a sparse-grid time-iteration solution. The same code with $N = 10$ (20 states, 21 policies, 22 quadrature nodes) trains in eight minutes on a laptop CPU to a mean Euler error of $8 \times 10^{-5}$.
+NAS-tuned width and ReLoBRaLo-balanced loss components, from Session 3 this
 afternoon, are the refinements to reach for when the equal-weight recipe stalls.
 
 \vspace{0.4em}

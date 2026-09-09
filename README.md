@@ -144,11 +144,12 @@ paper's trained weights, is the
 repository, which ships the paper's trained weights, so `python benchmark.py` reproduces its figures in
 seconds without training anything.
 
-**5. Scaling up: IRBC.** The finale of Day 1. N symmetric countries, N Euler equations and a world
+**5. Scaling up: IRBC.** The finale of Day 1. The international real business cycle model of Brumm
+and Scheidegger (2017): N countries with heterogeneous preferences, N Euler equations and a world
 resource constraint on a 2N-dimensional state, residuals stacked along a country dimension rather
 than an age one. Why DEQNs scale here and tensor grids do not. Training on the ergodic set,
-Euler-residual validation, irreversible investment, and comparative statics read straight off the
-trained policy. The loss balancing from Session 3 earns its keep here.
+Euler-residual validation, irreversible investment through a Fischer-Burmeister residual, and a
+direct comparison of the trained policy with a sparse-grid time-iteration solution of the same model.
 
 **6. Deep surrogates and Gaussian processes.** Solve once, then reuse: structural parameters as
 pseudo-states. A deep surrogate of Black–Scholes with implied-volatility inversion as a controlled
@@ -186,7 +187,7 @@ Each day carries hands-on notebooks marked as exercises, with full solutions pro
 | 2 | [DEQN exercises](day1/code/02_deep_equilibrium_nets/02_03_DEQN_Exercises_Blanks.ipynb) | [solutions](day1/code/02_deep_equilibrium_nets/02_04_DEQN_Exercises_Solutions.ipynb) |
 | 4 | [Two-period OLG: finger exercise + warm-up notebook](day1/code/04_olg/04_00_OLG_Diamond_Warmup.ipynb) | in-slides |
 | 4 | [OLG savings rates, ergodic prices and lifecycle profiles](day1/code/04_olg/04_03_OLG_Exercise.ipynb) | in-notebook |
-| 5 | [IRBC: comparative statics and loss weighting](day1/code/05_irbc/05_03_IRBC_Exercise.ipynb) | in-notebook |
+| 5 | [IRBC: steady state, loss weighting, one re-weighted run](day1/code/05_irbc/05_03_IRBC_Exercise.ipynb) | in-notebook |
 | 7 | [Surrogate-based SMM](day2/slides/07b_SMM_Exercise.pdf) (five finger exercises) | [notebooks](day2/code/07_structural_estimation) |
 | 9 | [Build a PINN from scratch](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb), run in class | in-notebook |
 

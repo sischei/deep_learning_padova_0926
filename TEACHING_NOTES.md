@@ -123,10 +123,64 @@ laptop run, and two on the failed run and its diagnosis. The diagnosis is record
 `optional/README.md` instead. The lesson still holds for anyone who hits it, watch the state
 distribution rather than the loss, but it does not earn class time in a sixty-minute session.
 
-**Still open elsewhere, not touched in this pass.** IRBC (`05_01`, `05_02`) has the same shape of
-looseness at ~5x rather than 1000x, so it would still catch a genuine runaway, but its segment logs
-print no `repairs=` counter at all: there is no way to tell from the committed outputs whether that
-guard has ever fired. `05_01`'s stored diagnostics also contain a `FAIL capital fixed point`.
+**IRBC pass, correctness against Brumm and Scheidegger (2017) and a DEQN that converges.** The
+derivations on the slides match the paper line by line: the Euler equation with the adjustment-cost
+wedge on both sides and the $(1-\delta)\mu'$ term (their eq. 28), the consumption-sharing condition and
+the resource constraint (eq. 30), the adjustment-cost derivatives, and the KKT conditions (eq. 29). Two
+deliberate deviations are now stated on the slides: the Pareto weights are $c_{ss}^{1/\gamma_j}$ rather
+than the paper's $A^{1/\gamma_j}$ (so that $\lambda_{ss} = 1$ with $\delta > 0$), and the relative Euler
+residual keeps $\mu_t$ in the numerator where the paper's eq. (43) drops it. What was wrong on the
+slides: every notebook reference said "04a/04b"; the parameter-count table was computed for 64-unit
+layers while the architecture slide says 128; the convergence table was placeholders; the hand-over
+slide named `compute_cost`; the model was attributed to AGS (2022) and the benchmark literature to
+Krueger and Kübler (2004); the finger exercise asked students to verify in the notebook a fall in $k_{ss}$
+that the notebook's normalization rules out; the bridge slide claimed N = 10 works without anyone
+having run it.
+
+The notebooks were the larger problem. `05_01`'s stored run failed three of its own checks and had a
+mean Euler error of 1.7e-3, because it made 1,500 Adam updates at a flat 2e-4, because the committed
+`RUN_MODE` ("smoke") did not match the stored outputs ("teaching"), and because its "simulated
+evaluation states" started from a wide box with a 64-period burn-in, so they were transition paths, not
+the ergodic set. Both notebooks were rebuilt from shared templates: teaching preset with 8,020 updates
+under a three-stage learning-rate schedule (1e-3, 1e-4, 1e-5), growth cap 0.1 per quarter, runaway
+guard tied to the sampling box with a `repairs=` count in every log line (zero in every stored run),
+evaluation on the ergodic set after a 512-period burn-in and on the paper's box, and a final section
+that loads a sparse-grid time-iteration solution of the same model and compares policies at the same
+states. `05_01` now: mean relative Euler error 2.1e-5 on the ergodic set, all checks pass, 3 minutes
+on the laptop, capital policy within 8.5e-5 of the sparse grid on the sparse grid's own path. Ten
+countries with the same code: 8 minutes, 8.3e-5. `05_02`'s sigmoid investment head sat deep in its
+tail at $I/k = \delta$ and plateaued at 2.8e-4; it was replaced by a smoothed maximum around the smooth
+head: $k' = (1-\delta)k + \mathrm{softplus}_s(\tilde k - (1-\delta)k)$ with $s = 10^{-3}k$, so that investment
+can be exactly zero and the head has the smooth model's gradient wherever the constraint is slack. `05_02`
+now matches `05_01` on the ergodic set (2.0e-5) and passes all twelve checks in 3 minutes.
+
+The sparse-grid reference is Simon's own time-iteration code from the `crest_comp_econ` repository, run
+on a scratch copy with one bug fixed: `SOE.py` inverts the consumption first-order condition with the
+exponent $-1/\gamma_j$ where the welfare weights in `parameters.py` require $-\gamma_j$, so as shipped
+country 1 consumes $A^{16}$ and the stored solutions are a one-consumer economy ($\lambda_{ss} = 0.62$
+in `data_smooth/ARC_policy.txt`, against 1.39 for the consistent model). The same line is in every copy
+of that code in the lecture repositories, including `HDMR/IRBC/IRBC.py`. Nothing in those repositories
+was changed; `day1/code/05_irbc/reference/README.md` documents the fix and how to reproduce the CSVs.
+
+On binding: at this calibration the irreversibility constraint never binds on the simulated path, in
+either method. On uniform draws over the paper's box the sparse grid binds on 25 percent of
+(state, country) pairs; a DEQN trained on simulated states does not bind there, because it never sees
+those states. With the smoothed-maximum head the DEQN nevertheless binds on 23 percent of the box
+states and agrees with the sparse grid on binding against slack for 97 percent of pairs, because the kink
+is in the head; the multipliers there are untrained, so its box Euler error is 2.4e-3 against 2.0e-5 on the
+ergodic set. Training on the box instead (`SAMPLING_MODE = "exogenous"`, box set to the paper's) produces
+a spurious solution: mean Euler error 2.2e-4 on the box, $\lambda$ twice the sparse grid's, and capital that
+explodes under simulation (the zero-shock iteration runs off to $10^{20}$). The Euler equations on a box
+admit non-transversal paths; the ergodic set is what selects the stable one. That is the sharpest argument
+for simulation-based training in the whole course and it is now on the persistent-simulation slide. This is
+now stated on the slides and in the session README rather than the
+earlier claim that the multiplier is "positive when $k$ is high".
+
+`05_03` was rewritten: its four links pointed into a directory that does not exist, its Task 1 used
+$\delta = 0.025$ and $A = 1$ for "the 2-country IRBC model", its Task 2 used invented loss magnitudes
+that contradict the real logs (the resource term is the smallest, not the largest), and its Task 3
+"measured" a 2.5x speedup that was the ratio of two synthetic decay constants. It now uses the lecture's
+calibration, the residual magnitudes from `05_02`'s stored log, and one real re-weighted smoke run.
 
 **Audit pass on the OLG session, for correctness, coherence and generated-sounding prose.** Slides:
 the hand-over map named `compute_cost()`, which does not exist (`compute_residuals()`); II.10 claimed
@@ -159,15 +213,11 @@ applications land on prepared ground. IRBC closes the day as the scaling finale.
 
 ## Compute
 
-Notebooks needing a GPU (demo in class, `RUN_MODE = "smoke"` for students on laptops):
-
-* `05_01`, `05_02`, IRBC
-* the optional Aiyagari notebook, not taught
-* (`04_02` and `04_05` are no longer in the session; see above)
-
-Everything else runs on a laptop CPU in minutes. Measured for Session 4: `04_00` 69 s, `04_01` 11 min
-at the teaching preset and 2.5 min at smoke, `04_04` 3.5 min, `04_02` 49 min (not taught). The stored
-outputs are the teaching runs, so nobody has to reproduce them; in class students run `"smoke"`.
+No notebook in the taught sessions needs a GPU. The one candidate, the optional Aiyagari notebook, is
+not taught. Measured on the laptop CPU: Session 4, `04_00` 69 s, `04_01` 11 min at the teaching preset
+and 2.5 min at smoke, `04_04` 3.5 min, `04_02` 49 min (not taught); Session 5, `05_01` 3 min at the
+teaching preset and under a minute at smoke, `05_02` 3 min, `05_01` with ten countries 8 min. The
+stored outputs are the teaching runs, so nobody has to reproduce them; in class students run `"smoke"`.
 
 ## Open items
 
