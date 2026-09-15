@@ -113,9 +113,9 @@ but share the same core optimization logic.
 \midrule
 1 & Deep learning foundations, optimization, and generalization \\
 2 & DEQNs: equilibrium residuals as an unsupervised loss (Brock--Mirman) \\
-3 & Scaling to a 2N-dimensional state space (IRBC) \\
-4 & Making training work: architecture search and loss balancing \\
-5 & Cohort structure and constraints (OLG, 56 generations) \\
+3 & Making training work: architecture search and loss balancing \\
+4 & Cohort structure and constraints (OLG, 56 generations) \\
+5 & Scaling to a 2N-dimensional state space (IRBC) \\
 6 & Amortizing the solve: deep surrogates and Gaussian processes \\
 7 & Structural estimation via SMM on top of a surrogate \\
 8--9 & Continuous time: PINNs for ODEs, PDEs, HJB and option pricing \\
@@ -139,8 +139,8 @@ each layer reuses the one below it.
     arr/.style={-{Stealth[length=2.2mm]}, thick, uzhblue!80}
 ]
 \node[phasebox, fill=softblue!25]   (s1) at (0,0)    {S1\\DL basics};
-\node[phasebox, fill=softblue!25]   (s2) at (2.7,0)  {S2--S3\\DEQN solvers};
-\node[phasebox, fill=softblue!25]   (s4) at (5.4,0)  {S4--S5\\Tuning, OLG};
+\node[phasebox, fill=softblue!25]   (s2) at (2.7,0)  {S2--S3\\DEQNs, tuning};
+\node[phasebox, fill=softblue!25]   (s4) at (5.4,0)  {S4--S5\\OLG, IRBC};
 \node[phasebox, fill=softorange!25] (s6) at (8.1,0)  {S6--S7\\Surrogates, SMM};
 \node[phasebox, fill=softgreen!25]  (s8) at (10.8,0) {S8--S9\\PINNs};
 
