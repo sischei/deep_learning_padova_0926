@@ -1,6 +1,6 @@
 # Session 4, OLG models with DEQNs
 
-Day 1, 14:25–15:25. Slides: [`04_OLG_Models_DEQNs.pdf`](../../slides/04_OLG_Models_DEQNs.pdf)
+Day 1, 14:30–15:30. Slides: [`04_OLG_Models_DEQNs.pdf`](../../slides/04_OLG_Models_DEQNs.pdf)
 
 | Notebook | What it does | Runtime |
 |---|---|---|

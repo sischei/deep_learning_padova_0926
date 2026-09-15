@@ -1,6 +1,6 @@
 # Session 3, Neural architecture search and loss balancing
 
-Day 1, 13:30–14:25. Slides: [`03a_Neural_Architecture_Search.pdf`](../../slides/03a_Neural_Architecture_Search.pdf) · [`03b_Loss_Balancing.pdf`](../../slides/03b_Loss_Balancing.pdf)
+Day 1, 12:10–12:45 (architecture search) and 14:00–14:30 (loss balancing). Slides: [`03a_Neural_Architecture_Search.pdf`](../../slides/03a_Neural_Architecture_Search.pdf) · [`03b_Loss_Balancing.pdf`](../../slides/03b_Loss_Balancing.pdf)
 
 The engineering session. Sessions 4 and 5 both lean on it: cohort-stacked OLG residuals and the
 IRBC's country-by-country Euler equations are exactly the multi-component losses that need balancing,

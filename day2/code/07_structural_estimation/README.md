@@ -1,6 +1,6 @@
 # Session 7, Structural estimation via SMM
 
-Day 2, 10:05–11:00. Slides: [`07_Structural_Estimation_SMM.pdf`](../../slides/07_Structural_Estimation_SMM.pdf)
+Day 2, 09:45–10:30. Slides: [`07_Structural_Estimation_SMM.pdf`](../../slides/07_Structural_Estimation_SMM.pdf)
 
 | Notebook | What it does | Runtime |
 |---|---|---|

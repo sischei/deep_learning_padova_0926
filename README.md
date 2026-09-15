@@ -87,26 +87,27 @@ anything taught here. The exact package list is in [`requirements.txt`](requirem
 
 | **Time** | **Session** | **Slides** | **Code** |
 |---|---|---|---|
-| 09:00 – 10:30 | **1.** Introduction to machine learning and deep learning | [slides](day1/slides/01_Intro_to_DeepLearning.pdf) | [code](day1/code/01_deep_learning_intro) |
-| 10:30 – 10:45 | *Coffee break* | | |
-| 10:45 – 12:00 | **2.** Deep Equilibrium Nets: the method and the Brock–Mirman benchmark | [slides](day1/slides/02_DeepEquilibriumNets.pdf) | [code](day1/code/02_deep_equilibrium_nets) |
-| 12:00 – 13:30 | *Lunch break* | | |
-| 13:30 – 14:25 | **3.** Neural architecture search and loss balancing | [NAS](day1/slides/03a_Neural_Architecture_Search.pdf) · [loss balancing](day1/slides/03b_Loss_Balancing.pdf) | [code](day1/code/03_nas_loss_balancing) |
-| 14:25 – 15:25 | **4.** Overlapping generations with DEQNs | [slides](day1/slides/04_OLG_Models_DEQNs.pdf) | [code](day1/code/04_olg) |
-| 15:25 – 15:40 | *Coffee break* | | |
-| 15:40 – 16:30 | **5.** Scaling up: the international real business cycle model | [slides](day1/slides/05_IRBC.pdf) | [code](day1/code/05_irbc) |
+| 09:30 – 10:30 | **1.** Introduction to machine learning and deep learning | [slides](day1/slides/01_Intro_to_DeepLearning.pdf) | [code](day1/code/01_deep_learning_intro) |
+| 10:30 – 11:00 | **2.** Deep Equilibrium Nets, part I: motivation and the method | [slides](day1/slides/02_DeepEquilibriumNets.pdf) | [code](day1/code/02_deep_equilibrium_nets) |
+| 11:00 – 11:15 | *Coffee break* | | |
+| 11:15 – 12:10 | **2.** Deep Equilibrium Nets, part II: the Brock–Mirman benchmark, hands-on | [slides](day1/slides/02_DeepEquilibriumNets.pdf) | [code](day1/code/02_deep_equilibrium_nets) |
+| 12:10 – 12:45 | **3.** Neural architecture search | [NAS](day1/slides/03a_Neural_Architecture_Search.pdf) | [code](day1/code/03_nas_loss_balancing) |
+| 12:45 – 14:00 | *Lunch break* | | |
+| 14:00 – 14:30 | **3.** Loss balancing | [loss balancing](day1/slides/03b_Loss_Balancing.pdf) | [code](day1/code/03_nas_loss_balancing) |
+| 14:30 – 15:30 | **4.** Overlapping generations with DEQNs | [slides](day1/slides/04_OLG_Models_DEQNs.pdf) | [code](day1/code/04_olg) |
+| 15:30 – 15:45 | *Coffee break* | | |
+| 15:45 – 17:00 | **5.** Scaling up: the international real business cycle model; what to run tonight | [slides](day1/slides/05_IRBC.pdf) | [code](day1/code/05_irbc) |
 
 ### [Day 2](day2), Thursday, 24 September 2026
 
 | **Time** | **Session** | **Slides** | **Code** |
 |---|---|---|---|
-| 09:00 – 09:50 | **6.** Deep surrogates and Gaussian processes | [slides](day2/slides/06_Deep_Surrogates_and_GPs.pdf) | [code](day2/code/06_surrogates_and_gps) |
-| 09:50 – 10:05 | *Coffee break* | | |
-| 10:05 – 11:00 | **7.** Structural estimation via simulated method of moments | [slides](day2/slides/07_Structural_Estimation_SMM.pdf) | [code](day2/code/07_structural_estimation) |
-| 11:00 – 14:00 | *Break* | | |
-| 14:00 – 14:55 | **8.** Physics-informed neural networks (PINNs) for economics: foundations | [slides](day2/slides/08_PINNs_Foundations.pdf) | [code](day2/code/08_pinns) |
-| 14:55 – 15:10 | *Coffee break* | | |
-| 15:10 – 16:00 | **9.** Physics-informed neural networks: economic and financial applications; hands-on, build a PINN from scratch; course wrap-up | [slides](day2/slides/09_PINNs_Applications.pdf) · [wrap-up](day2/slides/10_Wrap_Up.pdf) | [code](day2/code/09_pinns_applications) · [exercise](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) |
+| 09:00 – 09:45 | **6.** Deep surrogates and Gaussian processes | [slides](day2/slides/06_Deep_Surrogates_and_GPs.pdf) | [code](day2/code/06_surrogates_and_gps) |
+| 09:45 – 10:30 | **7.** Structural estimation via simulated method of moments | [slides](day2/slides/07_Structural_Estimation_SMM.pdf) | [code](day2/code/07_structural_estimation) |
+| 10:30 – 10:45 | *Coffee break* | | |
+| 10:45 – 12:00 | **8.** Physics-informed neural networks (PINNs) for economics: foundations | [slides](day2/slides/08_PINNs_Foundations.pdf) | [code](day2/code/08_pinns) |
+| 12:00 – 14:30 | *Break* | | |
+| 14:30 – 16:00 | **9.** Physics-informed neural networks: economic and financial applications; hands-on, build a PINN from scratch; course wrap-up | [slides](day2/slides/09_PINNs_Applications.pdf) · [wrap-up](day2/slides/10_Wrap_Up.pdf) | [code](day2/code/09_pinns_applications) · [exercise](day2/code/09_pinns_applications/09_04_PINN_Exercise.ipynb) |
 
 ---
 
@@ -181,7 +182,7 @@ equation as an inverse problem, the discount rate recovered from consumption dat
 optimisation. Black–Scholes option pricing, with Delta and Gamma for free by automatic
 differentiation. Then the case against: a consumption-savings problem with a borrowing constraint
 and a two-state income, solved by finite differences and by a PINN, where the grid wins and the
-PINN's own residual does not say so. Twelve minutes at the keyboard building a PINN from scratch,
+PINN's own residual does not say so. Twenty minutes at the keyboard building a PINN from scratch,
 and the course wrap-up.
 
 ---

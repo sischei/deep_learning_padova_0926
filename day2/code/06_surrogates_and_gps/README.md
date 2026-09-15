@@ -1,6 +1,6 @@
 # Session 6, Deep surrogates and Gaussian processes
 
-Day 2, 09:00–09:50. Slides: [`06_Deep_Surrogates_and_GPs.pdf`](../../slides/06_Deep_Surrogates_and_GPs.pdf)
+Day 2, 09:00–09:45. Slides: [`06_Deep_Surrogates_and_GPs.pdf`](../../slides/06_Deep_Surrogates_and_GPs.pdf)
 
 | Notebook | What it does | Runtime |
 |---|---|---|

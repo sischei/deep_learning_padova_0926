@@ -1,6 +1,6 @@
 # Session 2, Deep Equilibrium Nets: the method and Brock–Mirman
 
-Day 1, 10:45–12:00. Slides: [`02_DeepEquilibriumNets.pdf`](../../slides/02_DeepEquilibriumNets.pdf)
+Day 1, 10:30–11:00 and 11:15–12:10. Slides: [`02_DeepEquilibriumNets.pdf`](../../slides/02_DeepEquilibriumNets.pdf)
 
 | Notebook | What it does | Runtime |
 |---|---|---|

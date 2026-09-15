@@ -1,6 +1,6 @@
 # Session 5, Scaling up: IRBC with DEQNs
 
-Day 1, 15:40–16:30. Slides: [`05_IRBC.pdf`](../../slides/05_IRBC.pdf)
+Day 1, 15:45–17:00. Slides: [`05_IRBC.pdf`](../../slides/05_IRBC.pdf)
 
 The closing session of Day 1. The model is the international real business cycle model of Brumm and
 Scheidegger (2017, *Econometrica*, section 4): N countries with heterogeneous preferences, one world

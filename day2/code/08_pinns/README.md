@@ -1,6 +1,6 @@
 # Session 8, Physics-informed neural networks (PINNs) for economics: foundations
 
-Day 2, 14:00–14:55. Slides: [`08_PINNs_Foundations.pdf`](../../slides/08_PINNs_Foundations.pdf)
+Day 2, 10:45–12:00. Slides: [`08_PINNs_Foundations.pdf`](../../slides/08_PINNs_Foundations.pdf)
 
 Part I of the PINN block. A PINN is a neural network trained to satisfy a differential equation:
 the residual of the equation, evaluated by automatic differentiation at collocation points, is the
