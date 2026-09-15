@@ -2,7 +2,7 @@
 % Introduction to Machine Learning and Deep Learning
 % Summer School on AI for Economics and Finance
 % University of Padova, 23-24 September 2026
-% Duration: 45--50 minutes
+% Duration: 60 minutes
 % ============================================================================
 
 \documentclass[aspectratio=169,11pt]{beamer}
@@ -108,77 +108,83 @@
 \begin{center}
 \begin{tikzpicture}[
     session/.style={rectangle, rounded corners=4pt, draw=uzhblue, thick, fill=softblue!15,
-                    minimum width=8.6cm, minimum height=0.72cm, align=left, font=\small,
-                    inner xsep=10pt, anchor=west},
+                    minimum width=8.6cm, minimum height=0.5cm, align=left, font=\footnotesize,
+                    inner xsep=10pt, inner ysep=2pt, anchor=west},
     now/.style={session, fill=uzhblue!85, draw=uzhblue, text=white, font=\small\bfseries},
     pause/.style={font=\scriptsize\itshape, text=uzhgreydark, anchor=west},
     time/.style={font=\small\bfseries, text=uzhgreydark, anchor=east}
 ]
-    \draw[uzhblue!30, line width=2pt] (0,0.45) -- (0,-4.76);
-    \node[time] at (-0.35,0.00) {09:00--10:30};
+    \draw[uzhblue!30, line width=2pt] (0,0.4) -- (0,-5.46);
+    \node[time] at (-0.35,0.00) {09:30--10:30};
     \node[now] at (0.25,0.00) {Introduction to machine learning and deep learning};
     \fill[uzhblue] (0,0.00) circle (3.5pt);
-    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,0.38) {you are here $\blacktriangledown$};
-    \node[pause] at (0.25,-0.62) {coffee break};
-    \fill[uzhblue!30] (0,-0.62) circle (2pt);
-    \node[time] at (-0.35,-1.24) {10:45--12:00};
-    \node[session] at (0.25,-1.24) {Deep Equilibrium Nets and Brock--Mirman};
-    \fill[uzhblue] (0,-1.24) circle (3.5pt);
-    \node[pause] at (0.25,-1.86) {lunch break};
-    \fill[uzhblue!30] (0,-1.86) circle (2pt);
-    \node[time] at (-0.35,-2.48) {13:30--14:25};
-    \node[session] at (0.25,-2.48) {Architecture search and loss balancing};
-    \fill[uzhblue] (0,-2.48) circle (3.5pt);
-    \node[time] at (-0.35,-3.10) {14:25--15:25};
-    \node[session] at (0.25,-3.10) {Overlapping generations with DEQNs};
-    \fill[uzhblue] (0,-3.10) circle (3.5pt);
-    \node[pause] at (0.25,-3.72) {coffee break};
-    \fill[uzhblue!30] (0,-3.72) circle (2pt);
-    \node[time] at (-0.35,-4.34) {15:40--16:30};
-    \node[session] at (0.25,-4.34) {IRBC with DEQNs};
-    \fill[uzhblue] (0,-4.34) circle (3.5pt);
+    \node[font=\tiny\bfseries, text=uzhblue, anchor=west] at (8.95,0.00) {$\blacktriangleleft$ you are here};
+    \node[time] at (-0.35,-0.56) {10:30--11:00};
+    \node[session] at (0.25,-0.56) {Deep Equilibrium Nets I: motivation and the method};
+    \fill[uzhblue] (0,-0.56) circle (3.5pt);
+    \node[pause] at (0.25,-1.12) {coffee break};
+    \fill[uzhblue!30] (0,-1.12) circle (2pt);
+    \node[time] at (-0.35,-1.68) {11:15--12:10};
+    \node[session] at (0.25,-1.68) {Deep Equilibrium Nets II: Brock--Mirman, hands-on};
+    \fill[uzhblue] (0,-1.68) circle (3.5pt);
+    \node[time] at (-0.35,-2.24) {12:10--12:45};
+    \node[session] at (0.25,-2.24) {Neural architecture search};
+    \fill[uzhblue] (0,-2.24) circle (3.5pt);
+    \node[pause] at (0.25,-2.80) {lunch break};
+    \fill[uzhblue!30] (0,-2.80) circle (2pt);
+    \node[time] at (-0.35,-3.36) {14:00--14:30};
+    \node[session] at (0.25,-3.36) {Loss balancing};
+    \fill[uzhblue] (0,-3.36) circle (3.5pt);
+    \node[time] at (-0.35,-3.92) {14:30--15:30};
+    \node[session] at (0.25,-3.92) {Overlapping generations with DEQNs};
+    \fill[uzhblue] (0,-3.92) circle (3.5pt);
+    \node[pause] at (0.25,-4.48) {coffee break};
+    \fill[uzhblue!30] (0,-4.48) circle (2pt);
+    \node[time] at (-0.35,-5.04) {15:45--17:00};
+    \node[session] at (0.25,-5.04) {IRBC with DEQNs; what to run tonight};
+    \fill[uzhblue] (0,-5.04) circle (3.5pt);
 \end{tikzpicture}
 \end{center}
 \end{frame}
 
 % --- Slide 3: Roadmap ---
-\begin{frame}{Roadmap of This Lecture (45--50 min)}
+\begin{frame}{Roadmap of This Lecture (60 min)}
 \begin{columns}[T]
 \column{0.48\textwidth}
-\textbf{Setting the Stage}~~\mbox{\small (6 min)}
+\textbf{Setting the Stage}~~\mbox{\small (8 min)}
 \begin{itemize}
     \item Why deep learning, why now?
     \item Deep learning in economics and finance
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{Machine Learning Foundations}~~\mbox{\small (8 min)}
+\textbf{Machine Learning Foundations}~~\mbox{\small (10 min)}
 \begin{itemize}
     \item Supervised, unsupervised, RL
     \item The three-step ML recipe
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{From Perceptrons to Deep Nets}~~\mbox{\small (8 min)}
+\textbf{From Perceptrons to Deep Nets}~~\mbox{\small (10 min)}
 \begin{itemize}
     \item Neurons, activations, universal approximation
 \end{itemize}
 
 \column{0.48\textwidth}
-\textbf{Training Neural Networks}~~\mbox{\small (12 min)}
+\textbf{Training Neural Networks}~~\mbox{\small (16 min)}
 \begin{itemize}
     \item Losses, (stochastic) gradient descent
     \item Backpropagation, optimizers
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{Generalization \& Regularization}~~\mbox{\small (6 min)}
+\textbf{Generalization \& Regularization}~~\mbox{\small (8 min)}
 \begin{itemize}
     \item Overfitting, early stopping, dropout
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{Outlook \& Practice}~~\mbox{\small (6 min)}
+\textbf{Outlook \& Practice}~~\mbox{\small (8 min)}
 \begin{itemize}
     \item Beyond feedforward nets; software; exercises
 \end{itemize}

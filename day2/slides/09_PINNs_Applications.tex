@@ -2,7 +2,7 @@
 % Physics (Economics)-Informed Neural Networks (PINNs)
 % Summer School on AI for Economics and Finance
 % University of Padova, 23-24 September 2026
-% Session 9 of the Padova suite, 30 minutes of slides plus hands-on and wrap-up
+% Session 9 of the Padova suite, 40 minutes of slides plus hands-on and wrap-up, 90 minutes in all
 % ============================================================================
 
 \documentclass[aspectratio=169,11pt]{beamer}
@@ -170,27 +170,25 @@
     pause/.style={font=\scriptsize\itshape, text=uzhgreydark, anchor=west},
     time/.style={font=\small\bfseries, text=uzhgreydark, anchor=east}
 ]
-    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-4.6);
-    \node[time] at (-0.35,0.0) {09:00 -- 09:50};
-    \node[session] at (0.25,0.0) {Deep surrogates and Gaussian processes};
-    \fill[uzhblue] (0,0.0) circle (3.5pt);
-    \node[pause] at (0.25,-0.7) {coffee break};
-    \fill[uzhblue!30] (0,-0.7) circle (2pt);
-    \node[time] at (-0.35,-1.4) {10:05 -- 11:00};
-    \node[session] at (0.25,-1.4) {Structural estimation via SMM};
-    \fill[uzhblue] (0,-1.4) circle (3.5pt);
-    \node[pause] at (0.25,-2.1) {lunch break};
-    \fill[uzhblue!30] (0,-2.1) circle (2pt);
-    \node[time] at (-0.35,-2.8) {14:00 -- 14:55};
-    \node[session] at (0.25,-2.8) {PINNs I: foundations};
-    \fill[uzhblue] (0,-2.8) circle (3.5pt);
-    \node[pause] at (0.25,-3.5) {coffee break};
-    \fill[uzhblue!30] (0,-3.5) circle (2pt);
-    \node[time] at (-0.35,-4.2) {15:10 -- 16:00};
-    \node[now] at (0.25,-4.2) {PINNs II: applications, hands-on, wrap-up};
-    \fill[uzhblue] (0,-4.2) circle (3.5pt);
-    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-3.75) {you are here $\blacktriangledown$};
-    \end{tikzpicture}
+    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-3.92);
+    \node[time] at (-0.35,0.00) {09:00--09:45};
+    \node[session] at (0.25,0.00) {Deep surrogates and Gaussian processes};
+    \fill[uzhblue] (0,0.00) circle (3.5pt);
+    \node[time] at (-0.35,-0.70) {09:45--10:30};
+    \node[session] at (0.25,-0.70) {Structural estimation via SMM};
+    \fill[uzhblue] (0,-0.70) circle (3.5pt);
+    \node[pause] at (0.25,-1.40) {coffee break};
+    \fill[uzhblue!30] (0,-1.40) circle (2pt);
+    \node[time] at (-0.35,-2.10) {10:45--12:00};
+    \node[session] at (0.25,-2.10) {PINNs I: foundations};
+    \fill[uzhblue] (0,-2.10) circle (3.5pt);
+    \node[pause] at (0.25,-2.80) {lunch break};
+    \fill[uzhblue!30] (0,-2.80) circle (2pt);
+    \node[time] at (-0.35,-3.50) {14:30--16:00};
+    \node[now] at (0.25,-3.50) {PINNs II: applications, hands-on, wrap-up};
+    \fill[uzhblue] (0,-3.50) circle (3.5pt);
+    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-3.16) {you are here $\blacktriangledown$};
+\end{tikzpicture}
 \end{center}
 \end{frame}
 
@@ -223,35 +221,35 @@
 \end{frame}
 
 % --- Slide 4: Roadmap ---
-\begin{frame}{Roadmap of This Session (50 min)}
+\begin{frame}{Roadmap of This Session (90 min)}
 \textbf{Part II of two.}  Session 8 built the method: a PDE residual on collocation points, and a
 deliberate choice between soft and hard boundary conditions.  Now we put it to work.
 
 \vspace{0.6em}
-\textbf{IV.\ HJB equations}~~\mbox{\small (14 min)}
+\textbf{IV.\ HJB equations}~~\mbox{\small (20 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item Cake-eating: scaled trial solution, hard BCs, closed-form benchmark
     \item DGM as an optional high-dimensional architecture
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{V.\ Finance: Black--Scholes}~~\mbox{\small (6 min)}
+\textbf{V.\ Finance: Black--Scholes}~~\mbox{\small (8 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item Option pricing against the closed form; Greeks for free by autodiff
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{VI.\ When to use one}~~\mbox{\small (10 min)}
+\textbf{VI.\ When to use one}~~\mbox{\small (12 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item A borrowing constraint, where the grid wins and the residual does not tell you
     \item Inverse problems: $\rho$ recovered from data; the multi-component loss, again
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{Hands-on}~~\mbox{\small (12 min)}: build a PINN from scratch, at the keyboard.
+\textbf{Hands-on}~~\mbox{\small (20 min)}: build a PINN from scratch, at the keyboard.
 
 \vspace{0.3em}
-\textbf{Wrap-up}~~\mbox{\small (8 min)}: what to use when, and where to go next.
+\textbf{Wrap-up}~~\mbox{\small (30 min)}: what to use when, where to go next, and closing questions.
 \end{frame}
 
 % ============================================================================
@@ -722,7 +720,7 @@ Cake-eating with $\rho$ unknown and consumption observed at 20 wealth levels:
 
 \begin{exampleblock}{Now: build one yourself \hfill{\footnotesize\texttt{09\_04}}}
 \footnotesize
-A fill-in-the-blank PINN for $u''+u=0$ on $[0,\pi/2]$, $u(0)=0$, $u(\pi/2)=1$, solution $\sin x$; 12 minutes, solutions follow each task. Bonus at home: hard BCs, and why the same equation on $[0,\pi]$ with zero boundary values is ill-posed: every $c\sin x$ solves it, and the network returns $u \equiv 0$ at a loss of $10^{-6}$.
+A fill-in-the-blank PINN for $u''+u=0$ on $[0,\pi/2]$, $u(0)=0$, $u(\pi/2)=1$, solution $\sin x$; 20 minutes, solutions follow each task. Bonus at home: hard BCs, and why the same equation on $[0,\pi]$ with zero boundary values is ill-posed: every $c\sin x$ solves it, and the network returns $u \equiv 0$ at a loss of $10^{-6}$.
 \end{exampleblock}
 \end{frame}
 

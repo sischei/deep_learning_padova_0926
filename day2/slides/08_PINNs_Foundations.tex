@@ -2,7 +2,7 @@
 % Physics (Economics)-Informed Neural Networks (PINNs)
 % Summer School on AI for Economics and Finance
 % University of Padova, 23-24 September 2026
-% Session 8 of the Padova suite, 55 minutes; Session 9 continues the block
+% Session 8 of the Padova suite, 75 minutes; Session 9 continues the block in the afternoon
 % ============================================================================
 
 \documentclass[aspectratio=169,11pt]{beamer}
@@ -170,27 +170,25 @@
     pause/.style={font=\scriptsize\itshape, text=uzhgreydark, anchor=west},
     time/.style={font=\small\bfseries, text=uzhgreydark, anchor=east}
 ]
-    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-4.6);
-    \node[time] at (-0.35,0.0) {09:00 -- 09:50};
-    \node[session] at (0.25,0.0) {Deep surrogates and Gaussian processes};
-    \fill[uzhblue] (0,0.0) circle (3.5pt);
-    \node[pause] at (0.25,-0.7) {coffee break};
-    \fill[uzhblue!30] (0,-0.7) circle (2pt);
-    \node[time] at (-0.35,-1.4) {10:05 -- 11:00};
-    \node[session] at (0.25,-1.4) {Structural estimation via SMM};
-    \fill[uzhblue] (0,-1.4) circle (3.5pt);
-    \node[pause] at (0.25,-2.1) {lunch break};
-    \fill[uzhblue!30] (0,-2.1) circle (2pt);
-    \node[time] at (-0.35,-2.8) {14:00 -- 14:55};
-    \node[now] at (0.25,-2.8) {PINNs I: foundations};
-    \fill[uzhblue] (0,-2.8) circle (3.5pt);
-    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-2.35) {you are here $\blacktriangledown$};
-    \node[pause] at (0.25,-3.5) {coffee break};
-    \fill[uzhblue!30] (0,-3.5) circle (2pt);
-    \node[time] at (-0.35,-4.2) {15:10 -- 16:00};
-    \node[session] at (0.25,-4.2) {PINNs II: applications, hands-on, wrap-up};
-    \fill[uzhblue] (0,-4.2) circle (3.5pt);
-    \end{tikzpicture}
+    \draw[uzhblue!30, line width=2pt] (0,0.5) -- (0,-3.92);
+    \node[time] at (-0.35,0.00) {09:00--09:45};
+    \node[session] at (0.25,0.00) {Deep surrogates and Gaussian processes};
+    \fill[uzhblue] (0,0.00) circle (3.5pt);
+    \node[time] at (-0.35,-0.70) {09:45--10:30};
+    \node[session] at (0.25,-0.70) {Structural estimation via SMM};
+    \fill[uzhblue] (0,-0.70) circle (3.5pt);
+    \node[pause] at (0.25,-1.40) {coffee break};
+    \fill[uzhblue!30] (0,-1.40) circle (2pt);
+    \node[time] at (-0.35,-2.10) {10:45--12:00};
+    \node[now] at (0.25,-2.10) {PINNs I: foundations};
+    \fill[uzhblue] (0,-2.10) circle (3.5pt);
+    \node[font=\tiny\bfseries, text=uzhblue, anchor=south east] at (8.85,-1.76) {you are here $\blacktriangledown$};
+    \node[pause] at (0.25,-2.80) {lunch break};
+    \fill[uzhblue!30] (0,-2.80) circle (2pt);
+    \node[time] at (-0.35,-3.50) {14:30--16:00};
+    \node[session] at (0.25,-3.50) {PINNs II: applications, hands-on, wrap-up};
+    \fill[uzhblue] (0,-3.50) circle (3.5pt);
+\end{tikzpicture}
 \end{center}
 \end{frame}
 
@@ -223,26 +221,26 @@
 \end{frame}
 
 % --- Slide 4: Roadmap ---
-\begin{frame}{Roadmap of This Session (55 min)}
-\textbf{Part I of two.}  This session builds the method; Session 9 after the break applies it to
+\begin{frame}{Roadmap of This Session (75 min)}
+\textbf{Part I of two.}  This session builds the method; Session 9, in the afternoon, applies it to
 economic and financial models.
 
 \vspace{0.6em}
-\textbf{I.\ From DEQNs to PINNs}~~\mbox{\small (12 min)}
+\textbf{I.\ From DEQNs to PINNs}~~\mbox{\small (16 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item Discrete vs.\ continuous time, the PINN loss
     \item Finger exercise
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{II.\ PINN fundamentals}~~\mbox{\small (20 min)}
+\textbf{II.\ PINN fundamentals}~~\mbox{\small (27 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item Autograd for PDEs, collocation, the training loop
     \item Adam $\to$ L-BFGS in FP64; warm-up 1D ODE
 \end{itemize}
 
 \vspace{0.5em}
-\textbf{III.\ Boundary conditions}~~\mbox{\small (23 min)}
+\textbf{III.\ Boundary conditions}~~\mbox{\small (32 min)}
 \begin{itemize}\setlength\itemsep{1pt}
     \item Soft penalties vs.\ hard trial solutions
     \item Hard BCs in 2D; the Poisson equation; finger exercise
@@ -342,7 +340,7 @@ Loss: PDE residual $\mathcal{R}(\cdot) = 0$
 
 \vspace{0.4em}
 \begin{block}{Where this sits in the course}
-Day 1 solved equilibrium conditions in \emphc{discrete} time with DEQNs. This afternoon we do the \emphc{continuous-time} counterpart: this session builds the method on equations with known solutions, Session 9 applies it to the cake-eating HJB, to Black--Scholes, and to a consumption-savings problem with a borrowing constraint and a discrete income state, solved by finite differences and by a PINN side by side.
+Day 1 solved equilibrium conditions in \emphc{discrete} time with DEQNs. Today we do the \emphc{continuous-time} counterpart: this session builds the method on equations with known solutions, Session 9 applies it to the cake-eating HJB, to Black--Scholes, and to a consumption-savings problem with a borrowing constraint and a discrete income state, solved by finite differences and by a PINN side by side.
 \end{block}
 \end{frame}
 
