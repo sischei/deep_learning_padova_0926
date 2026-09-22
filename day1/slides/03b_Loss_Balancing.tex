@@ -243,7 +243,7 @@ $\Rightarrow$ The network \emph{ignores} the small-scale component.
 % --- Slide 4: Multi-Output Network ---
 \begin{frame}{One Network, Several Equilibrium Conditions}
 \begin{center}
-\begin{tikzpicture}[scale=0.74, transform shape,
+\begin{tikzpicture}[scale=0.70, transform shape,
     block/.style={rectangle, draw=uzhblue, fill=uzhgreylight, rounded corners,
                   minimum height=0.9cm, minimum width=2cm, align=center, font=\small},
     resbase/.style={rectangle, rounded corners, minimum height=0.8cm,
@@ -260,28 +260,31 @@ $\Rightarrow$ The network \emph{ignores} the small-scale component.
     \node[block, minimum width=2.5cm] (h2) at (5.8,0) {Dense 64, ReLU};
     \node[block, minimum width=2.6cm, fill=uzhblue!12] (pol) at (8.8,0) {Policy $\pi_\theta(\x)$\\[-1pt]{\scriptsize e.g.\ savings rate, hours}};
 
-    % The same network at next period's state, for the Euler equation
-    \node[block, dashed, minimum width=2.6cm, minimum height=0.7cm, font=\scriptsize] (next) at (8.8,1.7)
-          {$\pi_\theta(\x_{t+1})$: same weights};
-
     % Residuals: each one uses every output
-    \node[resbase, draw=softblue, fill=softblue!10] (rA) at (12.3, 1.5) {Euler residual $R_1$};
-    \node[resbase, draw=softorange, fill=softorange!10] (rB) at (12.3, 0) {Labour condition $R_2$};
-    \node[resbase, draw=softgreen, fill=softgreen!10] (rC) at (12.3,-1.5) {Constraint / KKT $R_3$};
+    \node[resbase, draw=softblue, fill=softblue!10] (rA) at (13.0, 1.5) {Euler residual $R_1$};
+    \node[resbase, draw=softorange, fill=softorange!10] (rB) at (13.0, 0) {Labour condition $R_2$};
+    \node[resbase, draw=softgreen, fill=softgreen!10] (rC) at (13.0,-1.5) {Constraint / KKT $R_3$};
+
+    % The same network at next period's state, needed by the Euler equation
+    \node[block, dashed, minimum width=0pt, minimum height=0.65cm, inner xsep=6pt, font=\scriptsize] (next) at (13.0,2.85)
+          {$\pi_\theta(\x_{t+1})$: same network, same weights};
 
     % Losses
-    \node[lossbase, draw=softblue, fill=softblue!15] (lossA) at (15.5, 1.5) {$\mathcal{L}_1$};
-    \node[lossbase, draw=softorange, fill=softorange!15] (lossB) at (15.5, 0) {$\mathcal{L}_2$};
-    \node[lossbase, draw=softgreen, fill=softgreen!15] (lossC) at (15.5,-1.5) {$\mathcal{L}_3$};
+    \node[lossbase, draw=softblue, fill=softblue!15] (lossA) at (16.1, 1.5) {$\mathcal{L}_1$};
+    \node[lossbase, draw=softorange, fill=softorange!15] (lossB) at (16.1, 0) {$\mathcal{L}_2$};
+    \node[lossbase, draw=softgreen, fill=softgreen!15] (lossC) at (16.1,-1.5) {$\mathcal{L}_3$};
 
-    % Arrows
+    % Arrows: the whole policy fans out to every residual from one junction
+    \coordinate (j) at (10.7,0);
     \draw[->, thick] (input) -- (h1);
     \draw[->, thick] (h1) -- (h2);
     \draw[->, thick] (h2) -- (pol);
-    \draw[->, thick] (pol.east) -- ++(0.3,0) |- (rA.west);
-    \draw[->, thick] (pol.east) -- (rB.west);
-    \draw[->, thick] (pol.east) -- ++(0.3,0) |- (rC.west);
-    \draw[->, thick, dashed] (next.east) -- (rA.west);
+    \draw[thick] (pol.east) -- (j);
+    \fill[uzhblue] (j) circle (2pt);
+    \draw[->, thick] (j) |- (rA.west);
+    \draw[->, thick] (j) -- (rB.west);
+    \draw[->, thick] (j) |- (rC.west);
+    \draw[->, thick, dashed] (next.south) -- (rA.north);
     \draw[->, thick] (rA) -- (lossA);
     \draw[->, thick] (rB) -- (lossB);
     \draw[->, thick] (rC) -- (lossC);
@@ -291,7 +294,7 @@ $\Rightarrow$ The network \emph{ignores} the small-scale component.
           uzhgreydark, thick] (1.6,-0.8) -- (10.1,-0.8)
           node[midway, below=10pt, font=\small] {One network, all parameters shared};
     \draw[decorate, decoration={brace, amplitude=8pt, mirror},
-          uzhgreydark, thick] (10.6,-2.1) -- (14.0,-2.1)
+          uzhgreydark, thick] (11.35,-2.1) -- (14.65,-2.1)
           node[midway, below=10pt, font=\small] {Model equations, after the network};
 \end{tikzpicture}
 \end{center}
