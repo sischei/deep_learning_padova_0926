@@ -241,59 +241,71 @@ $\Rightarrow$ The network \emph{ignores} the small-scale component.
 \end{frame}
 
 % --- Slide 4: Multi-Output Network ---
-\begin{frame}{Multi-Output Network Architecture}
+\begin{frame}{One Network, Several Equilibrium Conditions}
 \begin{center}
-\begin{tikzpicture}[scale=0.85, transform shape,
+\begin{tikzpicture}[scale=0.74, transform shape,
     block/.style={rectangle, draw=uzhblue, fill=uzhgreylight, rounded corners,
                   minimum height=0.9cm, minimum width=2cm, align=center, font=\small},
-    headbase/.style={rectangle, rounded corners, minimum height=0.8cm,
-                     minimum width=1.8cm, align=center, font=\small},
+    resbase/.style={rectangle, rounded corners, minimum height=0.8cm,
+                    minimum width=3.3cm, inner xsep=4pt, align=center, font=\small},
     lossbase/.style={ellipse, minimum height=0.7cm, minimum width=1.6cm,
                      align=center, font=\small},
     >=Stealth,
 ]
     % Input
-    \node[block] (input) at (0,0) {Input $\x$};
+    \node[block] (input) at (0,0) {State $\x$};
 
-    % Shared trunk
-    \node[block, minimum width=2.5cm] (h1) at (3,0) {Dense 64, ReLU};
-    \node[block, minimum width=2.5cm] (h2) at (6,0) {Dense 64, ReLU};
-    \node[block, minimum width=2.5cm] (h3) at (9,0) {Dense 64, ReLU};
+    % One network: trunk and one output layer
+    \node[block, minimum width=2.5cm] (h1) at (2.9,0) {Dense 64, ReLU};
+    \node[block, minimum width=2.5cm] (h2) at (5.8,0) {Dense 64, ReLU};
+    \node[block, minimum width=2.6cm, fill=uzhblue!12] (pol) at (8.8,0) {Policy $\pi_\theta(\x)$\\[-1pt]{\scriptsize e.g.\ savings rate, hours}};
 
-    % Heads
-    \node[headbase, draw=softblue, fill=softblue!10] (headA) at (11.5, 1.5) {Head A};
-    \node[headbase, draw=softorange, fill=softorange!10] (headB) at (11.5, 0) {Head B};
-    \node[headbase, draw=softgreen, fill=softgreen!10] (headC) at (11.5,-1.5) {Head C};
+    % The same network at next period's state, for the Euler equation
+    \node[block, dashed, minimum width=2.6cm, minimum height=0.7cm, font=\scriptsize] (next) at (8.8,1.7)
+          {$\pi_\theta(\x_{t+1})$: same weights};
+
+    % Residuals: each one uses every output
+    \node[resbase, draw=softblue, fill=softblue!10] (rA) at (12.3, 1.5) {Euler residual $R_1$};
+    \node[resbase, draw=softorange, fill=softorange!10] (rB) at (12.3, 0) {Labour condition $R_2$};
+    \node[resbase, draw=softgreen, fill=softgreen!10] (rC) at (12.3,-1.5) {Constraint / KKT $R_3$};
 
     % Losses
-    \node[lossbase, draw=softblue, fill=softblue!15] (lossA) at (14, 1.5) {$\mathcal{L}_A$};
-    \node[lossbase, draw=softorange, fill=softorange!15] (lossB) at (14, 0) {$\mathcal{L}_B$};
-    \node[lossbase, draw=softgreen, fill=softgreen!15] (lossC) at (14,-1.5) {$\mathcal{L}_C$};
+    \node[lossbase, draw=softblue, fill=softblue!15] (lossA) at (15.5, 1.5) {$\mathcal{L}_1$};
+    \node[lossbase, draw=softorange, fill=softorange!15] (lossB) at (15.5, 0) {$\mathcal{L}_2$};
+    \node[lossbase, draw=softgreen, fill=softgreen!15] (lossC) at (15.5,-1.5) {$\mathcal{L}_3$};
 
     % Arrows
     \draw[->, thick] (input) -- (h1);
     \draw[->, thick] (h1) -- (h2);
-    \draw[->, thick] (h2) -- (h3);
-    \draw[->, thick] (h3.east) -- ++(0.3,0) |- (headA.west);
-    \draw[->, thick] (h3.east) -- (headB.west);
-    \draw[->, thick] (h3.east) -- ++(0.3,0) |- (headC.west);
-    \draw[->, thick] (headA) -- (lossA);
-    \draw[->, thick] (headB) -- (lossB);
-    \draw[->, thick] (headC) -- (lossC);
+    \draw[->, thick] (h2) -- (pol);
+    \draw[->, thick] (pol.east) -- ++(0.3,0) |- (rA.west);
+    \draw[->, thick] (pol.east) -- (rB.west);
+    \draw[->, thick] (pol.east) -- ++(0.3,0) |- (rC.west);
+    \draw[->, thick, dashed] (next.east) -- (rA.west);
+    \draw[->, thick] (rA) -- (lossA);
+    \draw[->, thick] (rB) -- (lossB);
+    \draw[->, thick] (rC) -- (lossC);
 
-    % Brace for shared trunk
+    % Braces
     \draw[decorate, decoration={brace, amplitude=8pt, mirror},
-          uzhgreydark, thick] (2,-0.8) -- (10.2,-0.8)
-          node[midway, below=10pt, font=\small] {Shared trunk};
+          uzhgreydark, thick] (1.6,-0.8) -- (10.1,-0.8)
+          node[midway, below=10pt, font=\small] {One network, all parameters shared};
+    \draw[decorate, decoration={brace, amplitude=8pt, mirror},
+          uzhgreydark, thick] (10.6,-2.1) -- (14.0,-2.1)
+          node[midway, below=10pt, font=\small] {Model equations, after the network};
 \end{tikzpicture}
 \end{center}
 
-\vspace{0.3cm}
+\vspace{-0.15cm}
 \[
-    \mathcal{L}_\text{total} = w_A \cdot \mathcal{L}_A + w_B \cdot \mathcal{L}_B + w_C \cdot \mathcal{L}_C
+    \mathcal{L}_\text{total} = w_1 \mathcal{L}_1 + w_2 \mathcal{L}_2 + w_3 \mathcal{L}_3,
+    \qquad \mathcal{L}_k = \mathbb{E}_{\x}\!\left[R_k(\x;\theta)^2\right]
 \]
+\vspace{-0.35cm}
 
-\emphc{How should we set the weights $w_A, w_B, w_C$?}
+{\small The components are equations, not outputs: every residual reads the whole policy, no head owns a loss,
+and every parameter receives the sum of all three gradients.}
+\emphc{How should we set $w_1, w_2, w_3$?}
 \end{frame}
 
 % ============================================================================
@@ -671,6 +683,8 @@ $f_C(\x)$ & $=$ & $10{,}000 \times \text{genz\_continuous}(\x)$ \\
     \item 3 output heads (Dense(1) each)
     \item Adam, $\eta = 10^{-3}$
 \end{itemize}
+
+{\small The heads stand in for residuals; what the testbed shares with a DEQN is the trunk.}
 
 \vspace{0.2cm}
 \textbf{Data and budget:}
